@@ -11,7 +11,7 @@
         body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        /* LOGO & SPLASH (TETAP SESUAI PERMINTAAN SEBELUMNYA) */
+        /* LOGO & SPLASH */
         #splashScreen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .splash-content { display: flex; flex-direction: column; align-items: center; animation: splashScale 0.8s ease-out; }
         .splash-logo { width: 80px; height: 80px; margin-bottom: 2px; }
@@ -41,8 +41,8 @@
         .stat-label { font-size: 13px; font-weight: 400; line-height: 1; }
         .stat-item.active-stat { color: #fff; }
         
-        .bio { font-size: 13px; line-height: 1.25; margin-bottom: 15px; margin-top: -8px; }
-        .bio-name-wrapper { display: flex; align-items: center; gap: 4px; margin-bottom: 1px; }
+        .bio { font-size: 13px; line-height: 1.4; margin-bottom: 15px; margin-top: -8px; }
+        .bio-name-wrapper { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
         .bio-name { font-weight: 700; font-size: 13px; display: inline-block; }
 
         .action-buttons { display: flex; gap: 6px; margin-bottom: 15px; }
@@ -127,6 +127,14 @@
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #1c1c1c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 300; }
         .bottom-nav i { color: #a8a8a8; transition: color 0.3s; }
         .bottom-nav i.active-nav { color: #fff; }
+
+        /* SIDEBAR / ABOUT MENU */
+        #sideMenu { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9000; display: none; padding: 40px 25px; overflow-y: auto; }
+        .side-close { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; }
+        .about-title { font-size: 22px; font-weight: 900; margin-bottom: 20px; border-left: 4px solid #fff; padding-left: 12px; }
+        .about-content { font-size: 14px; line-height: 1.6; color: #ccc; }
+        .about-feature { margin-top: 20px; background: #111; padding: 15px; border-radius: 12px; border: 1px solid #222; }
+        .about-footer { margin-top: 40px; text-align: center; border-top: 1px solid #222; padding-top: 20px; font-size: 12px; color: #666; }
     </style>
 </head>
 <body>
@@ -142,6 +150,30 @@
         </div>
     </div>
 
+    <div id="sideMenu">
+        <i class="fa-solid fa-xmark side-close" onclick="toggleSideMenu()"></i>
+        <div class="about-title">About Amnesfubbia</div>
+        <div class="about-content">
+            amnesfubbia adalah platform katalog sinema digital yang dirancang untuk memberikan pengalaman eksplorasi film dan series tanpa batas.
+        </div>
+        <div class="about-feature">
+            <div class="font-bold mb-3 text-white">Fitur Utama:</div>
+            <ul class="space-y-3 text-[13px]">
+                <li>🎬 <span class="font-semibold text-white">Database Luas:</span> Akses ke lebih dari 25.000+ film dan series global.</li>
+                <li>🔍 <span class="font-semibold text-white">Smart Search:</span> Cari berdasarkan judul, aktor, hingga studio produksi (Marvel, Disney, dll).</li>
+                <li>📥 <span class="font-semibold text-white">Personal Archive:</span> Simpan film favoritmu ke dalam koleksi pribadi (Bookmark).</li>
+                <li>🌍 <span class="font-semibold text-white">Multi-Server:</span> Pilihan server streaming dan download yang stabil.</li>
+            </ul>
+        </div>
+        <div class="mt-8 text-sm text-zinc-400 italic">
+            Dikembangkan dengan dedikasi untuk para pecinta sinema di seluruh dunia.
+        </div>
+        <div class="about-footer">
+            Created by <span class="text-white font-bold">Anasteas</span><br>
+            © 2026 Amnesfubbia Network
+        </div>
+    </div>
+
     <div id="mainProfile" style="display: none;">
         <div class="profile-header">
             <div class="top-bar">
@@ -152,7 +184,7 @@
                 </div>
                 <div class="flex gap-5">
                     <i class="fa-regular fa-square-plus text-2xl"></i>
-                    <i class="fa-solid fa-bars text-2xl"></i>
+                    <i class="fa-solid fa-bars text-2xl cursor-pointer" onclick="toggleSideMenu()"></i>
                 </div>
             </div>
 
@@ -170,7 +202,8 @@
 
             <div class="bio">
                 <div class="bio-name-wrapper"><span class="bio-name">amnesfubbia</span><i class="fa-solid fa-circle-check text-[#0095f6] text-[13px]"></i></div>
-                <span>dari indonesia untuk dunia</span><br><span>By Anasteas</span>
+                <span>🎬 Discover. Watch. Archive.</span><br>
+                <span class="text-zinc-400">Cari film, tonton trailer, simpan & Download film favoritmu.</span>
             </div>
 
             <div class="action-buttons">
@@ -293,6 +326,13 @@
 
         function updateActiveNav(el) { document.querySelectorAll('.bottom-nav i').forEach(i => i.classList.remove('active-nav')); el.classList.add('active-nav'); }
 
+        function toggleSideMenu() {
+            const menu = document.getElementById('sideMenu');
+            const isVisible = menu.style.display === 'block';
+            menu.style.display = isVisible ? 'none' : 'block';
+            document.body.style.overflow = isVisible ? 'auto' : 'hidden';
+        }
+
         function backToHome() {
             closeModal(); closeSearch(); closeD();
             currentGenre = ''; currentYear = ''; currentCountry = ''; currentSchedule = 'trending'; currentType = 'movie'; searchQuery = ''; currentCastId = ''; currentCompany = '';
@@ -308,7 +348,6 @@
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
-        /* FITUR PENCARIAN AKTOR & JUDUL */
         function initSmartSearch() { 
             const inp = document.getElementById('searchInp'); 
             const drop = document.getElementById('smartSearchDropdown'); 
@@ -518,12 +557,13 @@
             if(vids.length > 0) { 
                 vids.forEach((v, i) => { 
                     track.innerHTML += `<div class="carousel-slide"><iframe id="yt-${i}" src="https://www.youtube.com/embed/${v.key}?enablejsapi=1&autoplay=${i===0?1:0}&rel=0" class="w-full h-full" allow="autoplay; fullscreen"></iframe></div>`; 
-                    dots.innerHTML += `<div class="dot w-1.5 h-1.5 rounded-full ${i===currentIdx?'bg-blue-500':'bg-zinc-700'}"></div>`; 
+                    if(vids.length > 1) {
+                        dots.innerHTML += `<div class="dot w-1.5 h-1.5 rounded-full ${i===currentIdx?'bg-blue-500':'bg-zinc-700'}"></div>`; 
+                    }
                 }); 
-                document.getElementById('swipeOverlay').style.display = 'block'; 
+                document.getElementById('swipeOverlay').style.display = vids.length > 1 ? 'block' : 'none'; 
             } else { 
                 track.innerHTML = `<div class="carousel-slide"><iframe src="https://vidrock.net/embed/${type}/${id}${type==='tv'?'/1/1':''}" class="w-full h-full" allowfullscreen></iframe></div>`; 
-                dots.innerHTML = `<div class="dot bg-blue-500 w-1.5 h-1.5 rounded-full"></div>`; 
                 document.getElementById('swipeOverlay').style.display = 'none'; 
             }
 
@@ -600,7 +640,7 @@
 
         function renderSynopsis() { const descEl = document.getElementById('mDesc'), toggleBtn = document.getElementById('mToggleBtn'); if (globalFullDesc.length > 90) { toggleBtn.classList.remove('hidden'); descEl.innerText = isExpanded ? globalFullDesc : globalFullDesc.substring(0, 90) + "..."; toggleBtn.innerText = isExpanded ? "ringkas" : "selengkapnya"; } else { descEl.innerText = globalFullDesc; toggleBtn.classList.add('hidden'); } }
         function handleToggleDesc() { isExpanded = !isExpanded; renderSynopsis(); }
-        function playVid(url, el) { const track = document.getElementById('carouselTrack'); const dots = document.getElementById('carouselDots'); track.innerHTML = `<div class="carousel-slide"><iframe src="${url}" class="w-full h-full" allowfullscreen></iframe></div>`; track.style.transform = 'translateX(0)'; currentIdx = 0; dots.innerHTML = `<div class="dot bg-blue-500 w-1.5 h-1.5 rounded-full"></div>`; document.getElementById('swipeOverlay').style.display = 'none'; highlightBtn(el); }
+        function playVid(url, el) { const track = document.getElementById('carouselTrack'); const dots = document.getElementById('carouselDots'); track.innerHTML = `<div class="carousel-slide"><iframe src="${url}" class="w-full h-full" allowfullscreen></iframe></div>`; track.style.transform = 'translateX(0)'; currentIdx = 0; dots.innerHTML = ''; document.getElementById('swipeOverlay').style.display = 'none'; highlightBtn(el); }
         function highlightBtn(el) { document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active-link')); el.classList.add('active-link'); }
         async function loadEpisodes() { const s = document.getElementById('seasonSel').value; const res = await fetch(`https://api.themoviedb.org/3/tv/${window.currentMediaId}/season/${s}?api_key=${API_KEY}`); const d = await res.json(); document.getElementById('episodeGrid').innerHTML = (d.episodes||[]).map(e => `<div class="pill text-[10px]" onclick="playVid('https://vidrock.net/embed/tv/${window.currentMediaId}/${s}/${e.episode_number}', this)">${e.episode_number}</div>`).join(''); }
         
