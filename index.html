@@ -95,6 +95,12 @@
         .smart-name { font-size: 13px; font-weight: 600; color: #fff; }
         .smart-meta { font-size: 11px; color: #8e8e8e; }
 
+        /* CALENDAR ITEM STYLE */
+        .calendar-item { display: flex; align-items: center; gap: 15px; padding: 15px; border-bottom: 1px solid #1c1c1c; }
+        .calendar-date { flex: 0 0 50px; text-align: center; background: #262626; border-radius: 8px; padding: 5px; }
+        .calendar-date .day { font-size: 16px; font-weight: 700; color: #fff; }
+        .calendar-date .month { font-size: 10px; text-transform: uppercase; color: #8e8e8e; }
+
         #backToTop { position: fixed; bottom: 85px; right: 20px; background: rgba(255,255,255,0.3); width: 42px; height: 42px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
 
         .modal-player { display: none; position: fixed; inset: 0; z-index: 8000; background: #000; overflow-y: auto; }
@@ -187,7 +193,7 @@
                     <span class="dot-notify"></span>
                 </div>
                 <div class="flex gap-5">
-                    <i class="fa-regular fa-square-plus text-2xl"></i>
+                    <i class="fa-regular fa-square-plus text-2xl cursor-pointer" onclick="openComingSoon()"></i>
                     <i class="fa-solid fa-bars text-2xl cursor-pointer" onclick="toggleSideMenu()"></i>
                 </div>
             </div>
@@ -342,7 +348,6 @@
             currentGenre = ''; currentYear = ''; currentCountry = ''; currentSchedule = 'trending'; 
             currentType = 'multi'; searchQuery = ''; currentCastId = ''; currentCompany = '';
             
-            // RESET HIGHLIGHT BORDER
             document.querySelectorAll('.highlight-item').forEach(i => i.classList.remove('active-hl'));
             
             document.getElementById('btnGenre').innerText = 'Genre';
@@ -397,6 +402,51 @@
                 }, 300); 
             }); 
             document.addEventListener('click', (e) => { if(!e.target.closest('.search-input-box')) drop.style.display = 'none'; }); 
+        }
+
+        async function openComingSoon() {
+            const grid = document.getElementById('searchGrid');
+            const overlay = document.getElementById('searchOverlay');
+            const titleInp = document.getElementById('searchInp');
+            
+            overlay.style.display = 'block';
+            titleInp.value = '';
+            titleInp.placeholder = "Jadwal Rilis Mendatang...";
+            grid.innerHTML = '<div class="col-span-3 text-center py-10 text-zinc-500">Memuat jadwal rilis...</div>';
+            document.body.style.overflow = 'hidden';
+
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=id-ID&sort_by=primary_release_date.asc&primary_release_date.gte=${today}`);
+                const data = await res.json();
+                
+                grid.innerHTML = ''; 
+                
+                data.results.forEach(m => {
+                    if(!m.release_date) return;
+                    const relDate = new Date(m.release_date);
+                    const day = relDate.getDate();
+                    const month = relDate.toLocaleDateString('id-ID', { month: 'short' });
+
+                    const item = document.createElement('div');
+                    item.className = 'col-span-3 calendar-item cursor-pointer active:bg-zinc-900';
+                    item.onclick = () => openModal(m.id, 'movie');
+                    item.innerHTML = `
+                        <div class="calendar-date">
+                            <div class="day">${day}</div>
+                            <div class="month">${month}</div>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="text-[14px] font-bold text-white truncate w-48">${m.title}</div>
+                            <div class="text-[11px] text-zinc-500">Rating: ★ ${m.vote_average.toFixed(1)}</div>
+                        </div>
+                        <img src="https://image.tmdb.org/t/p/w92${m.poster_path}" class="w-12 h-16 object-cover rounded">
+                    `;
+                    grid.appendChild(item);
+                });
+            } catch (e) {
+                grid.innerHTML = '<div class="col-span-3 text-center py-10">Gagal memuat jadwal.</div>';
+            }
         }
 
         function searchByCast(castId) { 
@@ -519,14 +569,21 @@
             }); 
         }
 
-        function openSearch() { document.getElementById('searchOverlay').style.display = 'block'; document.getElementById('searchInp').value = ''; document.getElementById('searchGrid').innerHTML = ''; document.getElementById('searchInp').focus(); document.body.style.overflow='hidden'; }
+        function openSearch() { 
+            const titleInp = document.getElementById('searchInp');
+            document.getElementById('searchOverlay').style.display = 'block'; 
+            titleInp.placeholder = "Cari film, series, atau aktor...";
+            titleInp.value = ''; 
+            document.getElementById('searchGrid').innerHTML = ''; 
+            titleInp.focus(); 
+            document.body.style.overflow='hidden'; 
+        }
         function closeSearch() { document.getElementById('searchOverlay').style.display = 'none'; document.body.style.overflow='auto'; searchQuery=''; currentCastId=''; document.getElementById('smartSearchDropdown').style.display = 'none'; }
         
         function searchAction() { 
             currentLibMode = false; 
             currentCastId = ''; 
             searchQuery = document.getElementById('searchInp').value; 
-            // FIX: Tutup dropdown saran saat tekan enter
             document.getElementById('smartSearchDropdown').style.display = 'none'; 
             loadFeed(true); 
         }
