@@ -856,33 +856,26 @@
                 document.getElementById('mTranslateBtn').classList.add('hidden');
             }
             
-            // --- FILTER TRAILER KETAT ---
-            // Hanya ambil video YouTube/Vimeo yang bertipe 'Trailer' atau 'Teaser'
-            // Filter video yang mengandung kata 'private', 'unlisted', 'BTS', atau 'Shorts' agar tidak merusak pengalaman
+            // --- FILTER TRAILER KETAT UNTUK MENGHINDARI PORTRAIT/SHORTS ---
             const allVideos = (dId.videos?.results || []).filter(v => 
                 (v.type === 'Trailer' || v.type === 'Teaser') && 
                 v.official === true &&
+                v.site === 'YouTube' && // Prioritaskan YouTube karena embed Vimeo sering bermasalah portrait
                 !v.name.toLowerCase().includes('private') &&
                 !v.name.toLowerCase().includes('behind the scenes') &&
                 !v.name.toLowerCase().includes('bts') &&
-                !v.name.toLowerCase().includes('shorts')
+                !v.name.toLowerCase().includes('shorts') && // Membuang model portrait Shorts
+                !v.name.toLowerCase().includes('tiktok') // Membuang model portrait TikTok style
             );
 
             const track = document.getElementById('carouselTrack'), dots = document.getElementById('carouselDots');
             track.innerHTML = ''; dots.innerHTML = ''; track.style.transform = 'translateX(0)';
             
-            // Urutan prioritas: YouTube Trailer > YouTube Teaser > Vimeo
             let vidsToDisplay = allVideos.sort((a, b) => (a.type === 'Trailer' ? -1 : 1)).slice(0, 5);
 
             if(vidsToDisplay.length > 0) { 
                 vidsToDisplay.forEach((v, i) => { 
-                    let embedUrl = "";
-                    if(v.site === 'Vimeo') {
-                        embedUrl = `https://player.vimeo.com/video/${v.key}?autoplay=${i===0?1:0}&muted=0`;
-                    } else if(v.site === 'YouTube') {
-                        // Tambahkan parameter 'rel=0' untuk mencegah video rekomendasi aneh di akhir trailer
-                        embedUrl = `https://www.youtube.com/embed/${v.key}?enablejsapi=1&autoplay=${i===0?1:0}&rel=0&modestbranding=1&mute=0`;
-                    }
+                    const embedUrl = `https://www.youtube.com/embed/${v.key}?enablejsapi=1&autoplay=${i===0?1:0}&rel=0&modestbranding=1&mute=0`;
                     track.innerHTML += `<div class="carousel-slide"><iframe id="vid-${i}" src="${embedUrl}" class="w-full h-full" allow="autoplay; fullscreen"></iframe></div>`; 
                     if(vidsToDisplay.length > 1) {
                         dots.innerHTML += `<div class="dot w-1.5 h-1.5 rounded-full ${i===currentIdx?'bg-blue-500':'bg-zinc-700'}"></div>`; 
@@ -890,7 +883,6 @@
                 }); 
                 document.getElementById('swipeOverlay').style.display = vidsToDisplay.length > 1 ? 'block' : 'none'; 
             } else { 
-                // FALLBACK KE SERVER JIKA TIDAK ADA TRAILER RESMI
                 const fallbackUrl = `https://vidlink.pro/${type}/${id}${seriesSuffix}`;
                 track.innerHTML = `<div class="carousel-slide"><iframe src="${fallbackUrl}" class="w-full h-full" allowfullscreen allow="autoplay"></iframe></div>`; 
                 document.getElementById('swipeOverlay').style.display = 'none'; 
@@ -914,7 +906,6 @@
             const rel = dId.release_date || dId.first_air_date || ""; 
             document.getElementById('mDateDisplay').innerText = rel ? new Date(rel).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
             
-            // --- SERVER FILTERING (REORDERED BY STABILITY) ---
             document.getElementById('serverList').innerHTML = `
                 <button class="server-btn" onclick="playVid('https://vidlink.pro/${type}/${id}${seriesSuffix}', this)">Server 1</button>
                 <button class="server-btn" onclick="playVid('https://vidsrc.me/embed/${type}?tmdb=${id}', this)">Server 2</button>
@@ -982,7 +973,6 @@
             track.style.transform = 'translateX(0)'; currentIdx = 0; dots.innerHTML = ''; 
             document.getElementById('swipeOverlay').style.display = 'none'; highlightBtn(el); 
 
-            // Fallback Logic: Jika frame gagal load dalam 5 detik, coba server alternatif otomatis
             const frame = document.getElementById('player-frame');
             frame.onerror = () => {
                 frame.src = `https://vidsrc.me/embed/${window.currentMediaType}?tmdb=${window.currentMediaId}`;
