@@ -161,7 +161,6 @@
         }
         .ls-controls.visible { opacity: 1; pointer-events: auto; }
         .ls-top { display: flex; justify-content: space-between; align-items: center; }
-        .ls-center { display: flex; justify-content: center; align-items: center; gap: 80px; }
         .ls-btn { color: #fff; font-size: 28px; cursor: pointer; text-shadow: 0 0 15px rgba(0,0,0,0.9); transition: transform 0.1s; }
         .ls-btn:active { transform: scale(1.1); }
         .ls-lock-screen { position: absolute; inset: 0; z-index: 11000; display: none; align-items: flex-start; justify-content: flex-end; padding: 30px; background: rgba(0,0,0,0.01); pointer-events: auto; }
@@ -195,11 +194,6 @@
                 <i class="fa-solid fa-arrow-left ls-btn" onclick="event.stopPropagation(); handleLsBack()"></i>
                 <div id="lsTitle" class="text-white font-bold truncate max-w-[60%] text-sm"></div>
                 <i class="fa-solid fa-lock-open ls-btn" onclick="event.stopPropagation(); lockScreen()"></i>
-            </div>
-            <div class="ls-center">
-                <i id="lsMute" class="fa-solid fa-volume-high ls-btn" onclick="event.stopPropagation(); toggleLsMute()"></i>
-                <i id="lsPlay" class="fa-solid fa-pause ls-btn text-6xl" onclick="event.stopPropagation(); toggleLsPlay()"></i>
-                <i class="fa-solid fa-expand ls-btn" onclick="event.stopPropagation(); handleLsBack()"></i>
             </div>
             <div class="ls-bottom text-center text-[10px] text-zinc-400">Tap untuk menyembunyikan kontrol</div>
         </div>
@@ -473,32 +467,6 @@
                     ui.classList.remove('visible');
                 }
             }, 3000);
-        }
-
-        function toggleLsPlay() {
-            const iframes = document.querySelectorAll('#carouselTrack iframe');
-            const currentIframe = iframes[currentIdx];
-            const btn = document.getElementById('lsPlay');
-            
-            isLsPaused = !isLsPaused;
-            const cmd = isLsPaused ? 'pauseVideo' : 'playVideo';
-            
-            currentIframe.contentWindow.postMessage(JSON.stringify({"event":"command","func":cmd,"args":""}), '*');
-            btn.className = isLsPaused ? 'fa-solid fa-play ls-btn text-6xl' : 'fa-solid fa-pause ls-btn text-6xl';
-            showLsUI();
-        }
-
-        function toggleLsMute() {
-            const iframes = document.querySelectorAll('#carouselTrack iframe');
-            const currentIframe = iframes[currentIdx];
-            const btn = document.getElementById('lsMute');
-            
-            isLsMuted = !isLsMuted;
-            const cmd = isLsMuted ? 'mute' : 'unMute';
-            
-            currentIframe.contentWindow.postMessage(JSON.stringify({"event":"command","func":cmd,"args":""}), '*');
-            btn.className = isLsMuted ? 'fa-solid fa-volume-xmark ls-btn' : 'fa-solid fa-volume-high ls-btn';
-            showLsUI();
         }
 
         function lockScreen() {
