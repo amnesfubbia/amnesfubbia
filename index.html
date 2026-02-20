@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>amnesfubbia</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -487,6 +487,9 @@
         let currentImdbId = ""; 
 
         window.onload = () => {
+            // FIX: Tambahkan State Awal untuk Back Button
+            history.replaceState({view: 'home'}, "");
+
             setTimeout(() => {
                 document.getElementById('splashScreen').style.display = 'none';
                 document.getElementById('mainProfile').style.display = 'block';
@@ -502,25 +505,25 @@
         window.addEventListener('popstate', function(event) {
             const state = event.state;
             
-            // Tutup Landscape dulu jika aktif
-            if (document.getElementById('landscapeOverlay').style.display === 'block') {
+            // Periksa semua elemen UI yang terbuka
+            const isLandscapeOpen = document.getElementById('landscapeOverlay').style.display === 'block';
+            const isActorOpen = document.getElementById('actorModal').style.display === 'block';
+            const isMovieOpen = document.getElementById('movieModal').style.display === 'block';
+            const isSearchOpen = document.getElementById('searchOverlay').style.display === 'block';
+            const isMenuOpen = document.getElementById('sideMenu').style.display === 'block';
+
+            if (isLandscapeOpen) {
                 closeLandscapeSilently();
-            } 
-            // Tutup Modal Aktor jika aktif
-            else if (document.getElementById('actorModal').style.display === 'block') {
+            } else if (isActorOpen) {
                 closeActorModal();
-            } 
-            // Tutup Modal Film jika aktif
-            else if (document.getElementById('movieModal').style.display === 'block') {
+            } else if (isMovieOpen) {
                 closeModal();
-            } 
-            // Tutup Search jika aktif
-            else if (document.getElementById('searchOverlay').style.display === 'block') {
+            } else if (isSearchOpen) {
                 closeSearch();
-            } 
-            // Tutup Side Menu jika aktif
-            else if (document.getElementById('sideMenu').style.display === 'block') {
+            } else if (isMenuOpen) {
                 toggleSideMenu();
+            } else {
+                // Jika semua tertutup dan user tekan back di home, biarkan browser keluar/back asli
             }
         });
 
@@ -537,14 +540,19 @@
             document.getElementById('landscapeOverlay').appendChild(videoArea);
             
             showLsUI();
-            history.pushState({view: 'landscape'}, "");
+            
+            // Push state hanya jika belum ada state landscape
+            if (!window.history.state || window.history.state.view !== 'landscape') {
+                history.pushState({view: 'landscape'}, "");
+            }
 
             try {
                 if (document.documentElement.requestFullscreen) {
                     await document.documentElement.requestFullscreen();
-                    if (screen.orientation && screen.orientation.lock) {
-                        await screen.orientation.lock('landscape').catch(() => {});
-                    }
+                }
+                // Paksa orientasi jika didukung mobile browser
+                if (screen.orientation && screen.orientation.lock) {
+                    await screen.orientation.lock('landscape').catch(() => {});
                 }
             } catch (e) {}
         }
@@ -567,10 +575,6 @@
             if (screen.orientation && screen.orientation.unlock) {
                 screen.orientation.unlock();
             }
-        }
-
-        function exitLandscape() {
-            window.history.back();
         }
 
         function toggleLsUI() {
@@ -617,7 +621,6 @@
 
         /* --- FITUR: PROFIL AKTOR MENDETAIL (Updated Instagram Style) --- */
         async function openActorProfile(actorId) {
-            // Hentikan video yang sedang diputar di modal film
             const track = document.getElementById('carouselTrack');
             if(track) {
                 track.querySelectorAll('iframe').forEach(f => f.src = "");
@@ -627,7 +630,6 @@
             actorModal.style.display = 'block';
             document.body.style.overflow = 'hidden';
             
-            // Push state hanya jika belum dalam state actor
             if (!window.history.state || window.history.state.view !== 'actor') {
                 history.pushState({view: 'actor'}, "");
             }
@@ -662,7 +664,6 @@
                     const mType = m.media_type || 'movie';
                     const card = document.createElement('div');
                     card.className = 'post-card';
-                    // FIX: Fungsi klik untuk membuka modal film
                     card.onclick = () => { 
                         openModal(m.id, mType); 
                     };
@@ -679,7 +680,6 @@
 
         function closeActorModal() {
             document.getElementById('actorModal').style.display = 'none';
-            // Jika modal film masih terbuka di belakangnya, jangan kembalikan overflow ke auto
             if (document.getElementById('movieModal').style.display !== 'block') {
                 document.body.style.overflow = 'auto';
             }
@@ -872,7 +872,7 @@
                 {n: 'Anime', g: 16, img: 'Anime.png', t: 'movie', c: 'JP', s: true},
                 {n: 'Indonesia', c: 'ID', img: 'Indonesia.png', t: 'movie', s: false},
                 {n: 'Korea', c: 'KR', img: 'Korea.png', t: 'movie', s: false},
-                {n: 'India', c: 'IN', img: 'India.png', t: 'movie', s: false},
+                {n: 'India', c: 'IN', img: 'Indonesia.png', t: 'movie', s: false},
                 {n: 'Thailand', c: 'TH', img: 'Thailand.png', t: 'movie', s: false}
             ]; 
             const cont = document.getElementById('highlightList'); 
@@ -1049,7 +1049,6 @@
         }
 
         async function openModal(id, type) {
-            // FIX: Tutup modal aktor jika terbuka saat klik film baru
             const actorModal = document.getElementById('actorModal');
             if (actorModal.style.display === 'block') {
                 actorModal.style.display = 'none';
@@ -1065,7 +1064,6 @@
             document.getElementById('mHashtags').innerHTML = "";
             document.getElementById('castContainer').innerHTML = "";
             
-            // Hentikan video lama sebelum memuat yang baru
             const track = document.getElementById('carouselTrack');
             if(track) {
                 track.querySelectorAll('iframe').forEach(f => f.src = "");
@@ -1085,7 +1083,6 @@
             currentIdx = 0; 
             isTranslated = false;
             
-            // Push state baru jika belum ada state modal
             if (!window.history.state || window.history.state.view !== 'modal') {
                 history.pushState({view: 'modal'}, "");
             }
