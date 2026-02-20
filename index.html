@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>amnesfubbia</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -259,7 +259,7 @@
 
     <div id="sideMenu">
         <i class="ph ph-x side-close" onclick="toggleSideMenu()"></i>
-        <div class="about-title">Amnesfubbia</div>
+        <div class="about-title">About Amnesfubbia</div>
         <div class="about-content px-1">
             amnesfubbia adalah platform katalog sinema digital yang dirancang untuk memberikan pengalaman eksplorasi movie dan tv tanpa batas.
         </div>
@@ -485,11 +485,9 @@
         let abortController = null;
         let isLsPaused = false, isLsMuted = false, lsControlTimer;
         let currentImdbId = ""; 
+        let lastTrailerSources = []; // Variable untuk menyimpan trailer sementara
 
         window.onload = () => {
-            // FIX: Tambahkan State Awal untuk Back Button
-            history.replaceState({view: 'home'}, "");
-
             setTimeout(() => {
                 document.getElementById('splashScreen').style.display = 'none';
                 document.getElementById('mainProfile').style.display = 'block';
@@ -505,25 +503,25 @@
         window.addEventListener('popstate', function(event) {
             const state = event.state;
             
-            // Periksa semua elemen UI yang terbuka
-            const isLandscapeOpen = document.getElementById('landscapeOverlay').style.display === 'block';
-            const isActorOpen = document.getElementById('actorModal').style.display === 'block';
-            const isMovieOpen = document.getElementById('movieModal').style.display === 'block';
-            const isSearchOpen = document.getElementById('searchOverlay').style.display === 'block';
-            const isMenuOpen = document.getElementById('sideMenu').style.display === 'block';
-
-            if (isLandscapeOpen) {
+            // Tutup Landscape dulu jika aktif
+            if (document.getElementById('landscapeOverlay').style.display === 'block') {
                 closeLandscapeSilently();
-            } else if (isActorOpen) {
+            } 
+            // Tutup Modal Aktor jika aktif
+            else if (document.getElementById('actorModal').style.display === 'block') {
                 closeActorModal();
-            } else if (isMovieOpen) {
+            } 
+            // Tutup Modal Film jika aktif
+            else if (document.getElementById('movieModal').style.display === 'block') {
                 closeModal();
-            } else if (isSearchOpen) {
+            } 
+            // Tutup Search jika aktif
+            else if (document.getElementById('searchOverlay').style.display === 'block') {
                 closeSearch();
-            } else if (isMenuOpen) {
+            } 
+            // Tutup Side Menu jika aktif
+            else if (document.getElementById('sideMenu').style.display === 'block') {
                 toggleSideMenu();
-            } else {
-                // Jika semua tertutup dan user tekan back di home, biarkan browser keluar/back asli
             }
         });
 
@@ -540,19 +538,14 @@
             document.getElementById('landscapeOverlay').appendChild(videoArea);
             
             showLsUI();
-            
-            // Push state hanya jika belum ada state landscape
-            if (!window.history.state || window.history.state.view !== 'landscape') {
-                history.pushState({view: 'landscape'}, "");
-            }
+            history.pushState({view: 'landscape'}, "");
 
             try {
                 if (document.documentElement.requestFullscreen) {
                     await document.documentElement.requestFullscreen();
-                }
-                // Paksa orientasi jika didukung mobile browser
-                if (screen.orientation && screen.orientation.lock) {
-                    await screen.orientation.lock('landscape').catch(() => {});
+                    if (screen.orientation && screen.orientation.lock) {
+                        await screen.orientation.lock('landscape').catch(() => {});
+                    }
                 }
             } catch (e) {}
         }
@@ -575,6 +568,10 @@
             if (screen.orientation && screen.orientation.unlock) {
                 screen.orientation.unlock();
             }
+        }
+
+        function exitLandscape() {
+            window.history.back();
         }
 
         function toggleLsUI() {
@@ -619,12 +616,16 @@
             return data;
         }
 
-        /* --- FITUR: PROFIL AKTOR MENDETAIL (Updated Instagram Style) --- */
+        /* --- FITUR: PROFIL AKTOR MENDETAIL --- */
         async function openActorProfile(actorId) {
-            const track = document.getElementById('carouselTrack');
-            if(track) {
-                track.querySelectorAll('iframe').forEach(f => f.src = "");
-            }
+            // Simpan trailer yang ada sebelum dikosongkan agar bisa dikembalikan nanti
+            lastTrailerSources = [];
+            const frames = document.querySelectorAll('#carouselTrack iframe');
+            frames.forEach(f => {
+                lastTrailerSources.push(f.src);
+                // Matikan video agar suara tidak bentrok
+                f.src = "";
+            });
 
             const actorModal = document.getElementById('actorModal');
             actorModal.style.display = 'block';
@@ -664,9 +665,7 @@
                     const mType = m.media_type || 'movie';
                     const card = document.createElement('div');
                     card.className = 'post-card';
-                    card.onclick = () => { 
-                        openModal(m.id, mType); 
-                    };
+                    card.onclick = () => { openModal(m.id, mType); };
                     card.innerHTML = `
                         <div class="badge-rating">★ ${(m.vote_average||0).toFixed(1)}</div>
                         <div class="badge-type">${mType === 'tv' ? 'tv' : 'movie'}</div>
@@ -680,7 +679,16 @@
 
         function closeActorModal() {
             document.getElementById('actorModal').style.display = 'none';
-            if (document.getElementById('movieModal').style.display !== 'block') {
+            
+            // Kembalikan trailer ke modal film jika modal film sedang terbuka
+            if (document.getElementById('movieModal').style.display === 'block') {
+                const frames = document.querySelectorAll('#carouselTrack iframe');
+                frames.forEach((f, i) => {
+                    if (lastTrailerSources[i]) {
+                        f.src = lastTrailerSources[i];
+                    }
+                });
+            } else {
                 document.body.style.overflow = 'auto';
             }
         }
@@ -872,7 +880,7 @@
                 {n: 'Anime', g: 16, img: 'Anime.png', t: 'movie', c: 'JP', s: true},
                 {n: 'Indonesia', c: 'ID', img: 'Indonesia.png', t: 'movie', s: false},
                 {n: 'Korea', c: 'KR', img: 'Korea.png', t: 'movie', s: false},
-                {n: 'India', c: 'IN', img: 'Indonesia.png', t: 'movie', s: false},
+                {n: 'India', c: 'IN', img: 'India.png', t: 'movie', s: false},
                 {n: 'Thailand', c: 'TH', img: 'Thailand.png', t: 'movie', s: false}
             ]; 
             const cont = document.getElementById('highlightList'); 
@@ -1049,6 +1057,7 @@
         }
 
         async function openModal(id, type) {
+            // Tutup modal aktor jika terbuka saat klik film baru
             const actorModal = document.getElementById('actorModal');
             if (actorModal.style.display === 'block') {
                 actorModal.style.display = 'none';
@@ -1064,6 +1073,7 @@
             document.getElementById('mHashtags').innerHTML = "";
             document.getElementById('castContainer').innerHTML = "";
             
+            // Hentikan video lama sebelum memuat yang baru
             const track = document.getElementById('carouselTrack');
             if(track) {
                 track.querySelectorAll('iframe').forEach(f => f.src = "");
