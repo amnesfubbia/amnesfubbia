@@ -241,15 +241,7 @@
         .tv-item.tv-active { border-color: #fff; background: #1a1a1a; }
         .tv-logo-placeholder { width: 38px; height: 38px; background: #222; border-radius: 50%; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; }
         .tv-name { font-size: 9px; font-weight: 700; color: #fff; }
-        /* TV Player - clip iframe agar UI vidio/inews tidak kelihatan */
-        .tv-mode #mainVideoArea { overflow: hidden; background: #000; }
-        .tv-mode .carousel-slide { overflow: hidden; position: relative; }
-        .tv-mode .carousel-slide iframe {
-            width: 100%;
-            height: calc(100% + 120px);
-            margin-top: -60px;
-            pointer-events: auto;
-        }
+        /* TV Player mode - sembunyikan elemen film */
         .tv-mode #castContainer,
         .tv-mode #btnLikeModal,
         .tv-mode #btnBookModal,
