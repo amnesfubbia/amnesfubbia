@@ -269,6 +269,14 @@
         .search-header { position: sticky; top: 0; background: #000; display: flex; align-items: center; padding: 10px 15px; gap: 10px; border-bottom: 1px solid #1c1c1c; z-index: 100; }
         .search-input-box { flex-grow: 1; background: #262626; border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; position: relative; }
         .search-input-box input { background: transparent !important; border: none; outline: none; color: #fff !important; font-size: 14px; width: 100%; margin-left: 8px; }
+        /* Search type tabs */
+        .search-tab {
+            flex: 1; text-align: center; padding: 10px 0;
+            font-size: 12px; font-weight: 700; color: #555;
+            cursor: pointer; border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .search-tab.active { color: #fff; border-bottom-color: #fff; }
         
         #smartSearchDropdown { position: absolute; top: 100%; left: 0; right: 0; background: #1a1a1a; border-radius: 0 0 10px 10px; border: 1px solid #333; border-top: none; display: none; z-index: 500; max-height: 300px; overflow-y: auto; }
         .smart-item { display: flex; align-items: center; padding: 10px; gap: 12px; border-bottom: 1px solid #262626; cursor: pointer; }
@@ -363,9 +371,8 @@
         /* Sticky topbar */
         .about-topbar {
             position: sticky; top: 0; z-index: 100;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid #1a1a1a;
+            background: #000;
+            border-bottom: 1px solid #1c1c1c;
             display: flex; align-items: center; padding: 0 16px; height: 54px;
         }
         .about-topbar-title {
@@ -377,39 +384,26 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Hero section */
+        /* Hero section - solid black, no glow */
         .about-hero {
             display: flex; flex-direction: column; align-items: center;
-            padding: 36px 20px 28px;
-            border-bottom: 1px solid #111;
-            position: relative; overflow: hidden;
+            padding: 28px 20px 22px;
+            border-bottom: 1px solid #1c1c1c;
+            background: #000;
         }
-        .about-hero-glow {
-            position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
-            width: 220px; height: 220px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(220,39,67,0.18) 0%, transparent 70%);
-            pointer-events: none;
-        }
-        .about-app-icon {
-            width: 88px; height: 88px; border-radius: 22px;
-            background: #000; border: 1px solid #1c1c1c;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; margin-bottom: 14px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
-        }
-        .about-app-icon img { width: 100%; height: 100%; object-fit: contain; }
+        .about-hero-glow { display: none; }
         .about-app-name {
-            font-size: 24px; font-weight: 900; color: #fff;
-            letter-spacing: -1px; margin-bottom: 4px;
+            font-size: 20px; font-weight: 900; color: #fff;
+            letter-spacing: -0.5px; margin-bottom: 6px;
         }
         .about-app-tagline {
             font-size: 13px; color: #8e8e8e; font-weight: 400; text-align: center;
-            line-height: 1.4; margin-bottom: 20px;
+            line-height: 1.4; margin-bottom: 18px;
         }
         .about-version-badge {
-            background: #1a1a1a; border: 1px solid #2a2a2a;
+            background: #111; border: 1px solid #1c1c1c;
             border-radius: 20px; padding: 5px 14px;
-            font-size: 11px; font-weight: 700; color: #8e8e8e;
+            font-size: 11px; font-weight: 700; color: #555;
             letter-spacing: 0.3px;
         }
 
@@ -492,6 +486,19 @@
         .about-link-row:active { background: #1a1a1a; }
         .about-link-label { font-size: 14px; color: #fff; font-weight: 500; }
         .about-link-arrow { color: #444; font-size: 12px; }
+
+        /* About Page hero - solid black, no glow */
+        .about-hero {
+            display: flex; flex-direction: column; align-items: center;
+            padding: 28px 20px 24px;
+            border-bottom: 1px solid #1c1c1c;
+            background: #000;
+        }
+        .about-hero-glow { display: none; }
+        .about-app-name {
+            font-size: 20px; font-weight: 900; color: #fff;
+            letter-spacing: -0.5px; margin-bottom: 6px;
+        }
 
         /* Credits footer */
         .about-credits {
@@ -666,8 +673,7 @@
         /* Sticky top nav bar */
         .actor-topbar {
             position: sticky; top: 0; z-index: 200;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            background: #000;
             border-bottom: 1px solid #1a1a1a;
             display: flex; align-items: center; padding: 0 15px; height: 54px;
         }
@@ -681,7 +687,7 @@
 
         /* Cover / backdrop blur area */
         .actor-cover {
-            position: relative; height: 140px; overflow: hidden; background: #0a0a0a;
+            position: relative; height: 90px; overflow: hidden; background: #0a0a0a;
         }
         .actor-cover-blur {
             position: absolute; inset: -20px;
@@ -698,8 +704,8 @@
         .actor-profile-row {
             position: relative; z-index: 10;
             display: flex; align-items: flex-end; gap: 14px;
-            padding: 0 15px 14px;
-            margin-top: -54px;
+            padding: 0 15px 12px;
+            margin-top: -44px;
         }
 
         /* IG-style ring */
@@ -1017,8 +1023,7 @@
             position: relative; transition: background 0.2s;
         }
         .tv-schedule-row.now-playing {
-            background: rgba(255,59,48,0.05);
-            border-left: 2px solid #ff3b30;
+            background: rgba(255,59,48,0.04);
         }
         .tv-schedule-row.past { opacity: 0.45; }
         .tv-schedule-time {
@@ -1077,6 +1082,23 @@
             font-size: 8px; font-weight: 900; color: #fff;
         }
         .tv-switcher-name-new { font-size: 8px; font-weight: 700; color: #ccc; }
+
+        /* TV Modal bottom nav - icons only, match main nav */
+        .tv-bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #000; border-top: 1px solid #1c1c1c;
+            display: flex; justify-content: space-around;
+            padding: 12px 0; z-index: 9700;
+        }
+        .tv-bottom-item {
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: #a8a8a8;
+            -webkit-tap-highlight-color: transparent;
+            padding: 0 16px;
+        }
+        .tv-bottom-item i { font-size: 22px; transition: color 0.2s; }
+        .tv-bottom-item:active i { opacity: 0.6; }
+        .tv-bottom-active i { color: #fff !important; }
     </style>
 </head>
 <body>
@@ -1151,10 +1173,7 @@
         <!-- Hero -->
         <div class="about-hero">
             <div class="about-hero-glow"></div>
-            <div class="about-app-icon">
-                <img src="amnesfubbia.png" alt="Logo">
-            </div>
-            <div class="about-app-name">amnesfubbia</div>
+            <div class="about-app-name" style="font-size:20px;">amnesfubbia</div>
             <div class="about-app-tagline">Platform katalog sinema digital.<br>Discover. Watch. Archive.</div>
             <div class="about-version-badge">Versi 2.0.0 · Build 2026</div>
         </div>
@@ -1274,24 +1293,6 @@
                 <span class="about-info-label">Bahasa</span>
                 <span class="about-info-value">Indonesia / Inggris</span>
             </div>
-            <div class="about-info-row" style="cursor:pointer" onclick="toggleTheme()">
-                <span class="about-info-label">Tema Aplikasi</span>
-                <div style="display:flex;align-items:center;gap:8px">
-                    <span class="about-info-value" id="themeLabel">Gelap</span>
-                    <div id="themeToggle" style="
-                        width:44px;height:26px;border-radius:99px;
-                        background:#333;position:relative;transition:background 0.3s;
-                        flex-shrink:0;
-                    ">
-                        <div id="themeThumb" style="
-                            position:absolute;top:3px;left:3px;
-                            width:20px;height:20px;border-radius:50%;
-                            background:#fff;transition:transform 0.3s;
-                            box-shadow:0 1px 4px rgba(0,0,0,0.4);
-                        "></div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Legal -->
@@ -1385,11 +1386,28 @@
             <i class="fa-solid fa-arrow-left text-xl text-white" onclick="closeSearch()"></i>
             <div class="search-input-box">
                 <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
-                <input type="text" id="searchInp" autocomplete="off" placeholder="Cari movie, tv, atau aktor..." onkeydown="if(event.key==='Enter') searchAction()">
+                <input type="text" id="searchInp" autocomplete="off" placeholder="Cari movie, tv, atau aktor..." onkeydown="if(event.key==='Enter') searchAction()" oninput="handleSearchInput(this.value)">
+                <i class="fa-solid fa-xmark text-zinc-500 text-xs cursor-pointer" id="searchClearBtn" style="display:none;padding-left:6px" onclick="clearSearch()"></i>
                 <div id="smartSearchDropdown" class="no-scrollbar"></div>
             </div>
         </div>
-        <div id="searchContent" class="flex flex-col">
+        <!-- Search type tabs (tampil saat ada hasil) -->
+        <div id="searchTypeTabs" style="display:none; border-bottom:1px solid #1c1c1c; background:#000; position:sticky; top:54px; z-index:90; flex-direction:row;">
+            <div class="search-tab active" id="stab-all" onclick="setSearchTab('multi',this)">Semua</div>
+            <div class="search-tab" id="stab-movie" onclick="setSearchTab('movie',this)">Film</div>
+            <div class="search-tab" id="stab-tv" onclick="setSearchTab('tv',this)">Serial</div>
+        </div>
+        <!-- Empty/idle state -->
+        <div id="searchEmptyState" style="padding:40px 20px; text-align:center;">
+            <i class="fa-solid fa-magnifying-glass" style="font-size:40px;color:#222;margin-bottom:16px;display:block"></i>
+            <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">Cari Film & Serial</div>
+            <div style="font-size:13px;color:#555;line-height:1.5">Ketik judul film, nama serial,<br>nama aktor, atau nama studio</div>
+            <div style="margin-top:28px;text-align:left">
+                <div style="font-size:10px;font-weight:800;color:#333;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;padding:0 4px">Pencarian Populer</div>
+                <div id="popularChips" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+            </div>
+        </div>
+        <div id="searchContent" style="display:none; flex-direction:column;">
             <div id="calendarHeader" class="hidden sticky-wrapper"></div>
             <div id="searchGrid" class="movie-grid"></div>
         </div>
@@ -1568,13 +1586,30 @@
             <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer;padding:6px" onclick="closeTvModal()"></i>
             <div class="tv-live-dot"></div>
             <div class="tv-topbar-title">Live TV Indonesia</div>
-            <i class="fa-solid fa-magnifying-glass" style="font-size:16px;color:#8e8e8e;cursor:pointer;padding:6px" onclick="document.getElementById('tvSearchInp').focus()"></i>
+            <i class="fa-solid fa-magnifying-glass" style="font-size:16px;color:#8e8e8e;cursor:pointer;padding:6px" onclick="focusTvSearch()"></i>
         </div>
-        <div class="tv-search-box">
+        <div class="tv-search-box" id="tvSearchBox" style="display:none">
             <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
-            <input type="text" id="tvSearchInp" placeholder="Cari channel..." autocomplete="off" oninput="filterTvChannels(this.value)">
+            <input type="text" id="tvSearchInp" placeholder="Cari channel TV..." autocomplete="off" oninput="filterTvChannels(this.value)">
+            <i class="fa-solid fa-xmark" style="color:#8e8e8e;font-size:14px;cursor:pointer;padding:2px 0 2px 4px" onclick="closeTvSearch()"></i>
         </div>
-        <div id="tvChannelList"></div>
+        <div id="tvChannelList" style="padding-bottom:70px"></div>
+
+        <!-- Bottom nav khusus TV - ikon saja -->
+        <nav class="tv-bottom-nav">
+            <div class="tv-bottom-item" onclick="closeTvModal(); updateActiveNav(document.getElementById('homeBtnNav'))">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <div class="tv-bottom-item tv-bottom-search" onclick="focusTvSearch()">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div class="tv-bottom-item tv-bottom-active">
+                <i class="fa-solid fa-clapperboard"></i>
+            </div>
+            <div class="tv-bottom-item" onclick="closeTvModal(); updateActiveNav(document.getElementById('bookmarkBtnNav')); switchTab('bookmarks', document.getElementById('tabBookmark'))">
+                <i class="fa-solid fa-bookmark"></i>
+            </div>
+        </nav>
     </div>
 
     <nav class="bottom-nav">
@@ -1607,6 +1642,14 @@
 
         window.onload = () => {
             initFilters(); initHighlights(); loadFeed(); setupSwipe(); initSmartSearch(); initTvChannels();
+            // Isi popular chips
+            const chips = ['Avengers','One Piece','Interstellar','Squid Game','Parasite','Dune','Breaking Bad','Inception'];
+            const container = document.getElementById('popularChips');
+            if (container) {
+                container.innerHTML = chips.map(t =>
+                    `<span onclick="quickSearch('${t}')" style="background:#111;border:1px solid #1c1c1c;border-radius:20px;padding:6px 14px;font-size:12px;color:#ccc;cursor:pointer;-webkit-tap-highlight-color:transparent">${t}</span>`
+                ).join('');
+            }
             window.addEventListener('scroll', () => { 
                 document.getElementById('backToTop').style.display = window.scrollY > 500 ? 'flex' : 'none'; 
             }); 
@@ -1955,9 +1998,31 @@
         function initTvChannels() { renderTvList(''); }
         function filterTvChannels(q) { renderTvList(q); }
 
+        function focusTvSearch() {
+            const box = document.getElementById('tvSearchBox');
+            const inp = document.getElementById('tvSearchInp');
+            box.style.display = 'flex';
+            inp.focus();
+            // highlight search icon in bottom nav
+            document.querySelectorAll('.tv-bottom-item').forEach(el => el.classList.remove('tv-bottom-active'));
+            document.querySelector('.tv-bottom-search').classList.add('tv-bottom-active');
+        }
+
+        function closeTvSearch() {
+            const box = document.getElementById('tvSearchBox');
+            const inp = document.getElementById('tvSearchInp');
+            box.style.display = 'none';
+            inp.value = '';
+            renderTvList('');
+            // restore TV active
+            document.querySelectorAll('.tv-bottom-item').forEach(el => el.classList.remove('tv-bottom-active'));
+            document.querySelector('.tv-bottom-item:nth-child(3)').classList.add('tv-bottom-active');
+        }
+
         function openTvModal() {
             closeModal(); closeSearch();
             document.getElementById('tvSearchInp').value = '';
+            document.getElementById('tvSearchBox').style.display = 'none';
             renderTvList('');
             document.getElementById('tvModal').style.display = 'block';
             document.getElementById('tvModal').scrollTop = 0;
@@ -2600,50 +2665,108 @@
             document.addEventListener('click', (e) => { if(!e.target.closest('.search-input-box')) drop.style.display = 'none'; }); 
         }
 
+        let calendarMediaType = 'movie';
+
         async function openComingSoon() {
-            const grid = document.getElementById('searchGrid');
             const overlay = document.getElementById('searchOverlay');
             const calendarHeader = document.getElementById('calendarHeader');
             overlay.style.display = 'block';
+            showSearchEmptyState(); // hide search results
+            // Show only calendar header, not search tabs
+            document.getElementById('searchTypeTabs').style.display = 'none';
+            document.getElementById('searchEmptyState').style.display = 'none';
+            document.getElementById('searchContent').style.display = 'flex';
+            document.getElementById('searchGrid').innerHTML = '<div id="calendarList" class="col-span-3"></div>';
             calendarHeader.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
-            
             history.pushState({view: 'search'}, "");
 
-            let dateStripHTML = '<div class="date-strip no-scrollbar">';
+            // Build tab + date strip
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            for(let i=0; i<14; i++) {
+            let headerHTML = `
+                <div style="display:flex;border-bottom:1px solid #1c1c1c;background:#000">
+                    <div class="search-tab active" id="calTabMovie" onclick="switchCalTab('movie',this)" style="flex:1">Film</div>
+                    <div class="search-tab" id="calTabTv" onclick="switchCalTab('tv',this)" style="flex:1">Serial</div>
+                </div>
+                <div class="date-strip no-scrollbar" id="calDateStrip">`;
+            for(let i = 0; i < 30; i++) {
                 let d = new Date(); d.setDate(d.getDate() + i);
-                let active = i === 0 ? 'active-date' : '';
-                dateStripHTML += `<div class="date-chip ${active}" onclick="filterByDate('${d.toISOString().split('T')[0]}', this)"><span class="d-month">${months[d.getMonth()]}</span><span class="d-day">${d.getDate()}</span></div>`;
+                const active = i === 0 ? 'active-date' : '';
+                headerHTML += `<div class="date-chip ${active}" onclick="filterByDate('${d.toISOString().split('T')[0]}', this)"><span class="d-month">${months[d.getMonth()]}</span><span class="d-day">${d.getDate()}</span></div>`;
             }
-            dateStripHTML += '</div>';
-            calendarHeader.innerHTML = dateStripHTML;
-            grid.innerHTML = '<div id="calendarList" class="col-span-3"></div>';
+            headerHTML += '</div>';
+            calendarHeader.innerHTML = headerHTML;
             filterByDate(new Date().toISOString().split('T')[0]);
+        }
+
+        function switchCalTab(type, el) {
+            calendarMediaType = type;
+            document.querySelectorAll('#calendarHeader .search-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            // Re-filter with active date
+            const activeChip = document.querySelector('.date-chip.active-date');
+            const dateStr = activeChip ? activeChip.getAttribute('onclick').match(/'([^']+)'/)?.[1] : new Date().toISOString().split('T')[0];
+            filterByDate(dateStr);
         }
 
         async function filterByDate(dateStr, el) {
             if(el) { document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active-date')); el.classList.add('active-date'); }
             const list = document.getElementById('calendarList');
-            list.innerHTML = '<div class="text-center py-10 text-zinc-500 text-xs">Mencari tayangan...</div>';
+            list.innerHTML = '<div class="text-center py-10 text-zinc-500 text-xs animate-pulse">Mencari tayangan...</div>';
             try {
-                const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=id-ID&sort_by=popularity.desc&primary_release_date.gte=${dateStr}&primary_release_date.lte=${dateStr}`);
+                const mediaType = calendarMediaType || 'movie';
+                let apiUrl;
+                if (mediaType === 'tv') {
+                    apiUrl = `https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&language=id-ID&sort_by=popularity.desc&first_air_date.gte=${dateStr}&first_air_date.lte=${dateStr}&include_adult=false`;
+                } else {
+                    apiUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=id-ID&sort_by=popularity.desc&primary_release_date.gte=${dateStr}&primary_release_date.lte=${dateStr}&include_adult=false`;
+                }
+                const res = await fetch(apiUrl);
                 const data = await res.json();
-                if(data.results.length === 0) { list.innerHTML = '<div class="text-center py-20 text-zinc-600 text-xs">Tidak ada jadwal rilis hari ini.</div>'; return; }
-                list.innerHTML = '';
-                const gRes = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}&language=id-ID`);
+
+                if (!data.results || data.results.length === 0) {
+                    const typeLabel = mediaType === 'tv' ? 'serial' : 'film';
+                    list.innerHTML = `<div style="text-align:center;padding:60px 20px">
+                        <i class="fa-regular fa-calendar-xmark" style="font-size:36px;color:#222;margin-bottom:14px;display:block"></i>
+                        <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:6px">Tidak ada jadwal</div>
+                        <div style="font-size:12px;color:#555">Belum ada ${typeLabel} yang rilis<br>pada tanggal ini.</div>
+                    </div>`;
+                    return;
+                }
+
+                const gEndpoint = mediaType === 'tv' ? 'tv' : 'movie';
+                const gRes = await fetch(`https://api.themoviedb.org/3/genre/${gEndpoint}/list?api_key=${API_KEY}&language=id-ID`);
                 const gData = await gRes.json();
                 const genreMap = {}; gData.genres.forEach(g => genreMap[g.id] = g.name);
+
+                list.innerHTML = '';
                 data.results.forEach(m => {
-                    const genres = m.genre_ids.slice(0, 2).map(id => `<span class="cal-genre-pill">${genreMap[id]}</span>`).join('');
+                    const title = m.title || m.name || '';
+                    const releaseDate = m.release_date || m.first_air_date || '';
+                    const year = releaseDate.split('-')[0];
+                    const rating = (m.vote_average || 0).toFixed(1);
+                    const genres = (m.genre_ids || []).slice(0, 2).map(id => `<span class="cal-genre-pill">${genreMap[id] || ''}</span>`).join('');
+                    const posterSrc = m.poster_path ? `https://image.tmdb.org/t/p/w185${m.poster_path}` : '';
                     const item = document.createElement('div');
                     item.className = 'calendar-item active:bg-zinc-900';
-                    item.onclick = () => openModal(m.id, 'movie');
-                    item.innerHTML = `<div class="calendar-poster"><img src="https://image.tmdb.org/t/p/w185${m.poster_path}" onerror="this.src='https://via.placeholder.com/185x278?text=No+Poster'" class="w-full h-full object-cover" loading="lazy"></div><div class="calendar-info"><div class="cal-title">${m.title}</div><div class="cal-meta"><span class="cal-rating">★ ${m.vote_average.toFixed(1)}</span><span class="text-zinc-600">•</span><span>${m.release_date.split('-')[0]}</span></div><div class="flex gap-1 mt-1">${genres}</div></div><i class="fa-solid fa-chevron-right text-zinc-800 text-xs"></i>`;
+                    item.onclick = () => openModal(m.id, mediaType);
+                    item.innerHTML = `
+                        <div class="calendar-poster"><img src="${posterSrc}" onerror="this.parentElement.style.background='#111'" class="w-full h-full object-cover" loading="lazy"></div>
+                        <div class="calendar-info">
+                            <div class="cal-title">${title}</div>
+                            <div class="cal-meta">
+                                <span class="cal-rating">★ ${rating}</span>
+                                <span class="text-zinc-600">·</span>
+                                <span style="font-size:11px;color:#8e8e8e">${year}</span>
+                                <span class="text-zinc-600">·</span>
+                                <span style="font-size:10px;color:#555;text-transform:uppercase;font-weight:700">${mediaType === 'tv' ? 'Serial' : 'Film'}</span>
+                            </div>
+                            <div class="flex gap-1 mt-1 flex-wrap">${genres}</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="color:#2a2a2a;font-size:11px;flex-shrink:0"></i>`;
                     list.appendChild(item);
                 });
-            } catch (e) { list.innerHTML = '<div class="text-center py-10">Gagal memuat data.</div>'; }
+            } catch (e) { list.innerHTML = '<div class="text-center py-10 text-zinc-600 text-xs">Gagal memuat data.</div>'; }
         }
 
         function searchByCast(castId) { 
@@ -2709,7 +2832,13 @@
             if(isNew) { page = 1; grid.innerHTML = ''; }
             let url;
             if(currentCastId) { url = `https://api.themoviedb.org/3/person/${currentCastId}/combined_credits?api_key=${API_KEY}&language=id-ID`; }
-            else if(searchQuery) { url = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(searchQuery)}&api_key=${API_KEY}&page=${page}&include_adult=false`; }
+            else if(searchQuery) { 
+                if (searchTabType === 'multi' || searchTabType === 'person') {
+                    url = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(searchQuery)}&api_key=${API_KEY}&page=${page}&include_adult=false`;
+                } else {
+                    url = `https://api.themoviedb.org/3/search/${searchTabType}?query=${encodeURIComponent(searchQuery)}&api_key=${API_KEY}&page=${page}&include_adult=false`;
+                }
+            }
             else if(currentType === 'multi') { url = `https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&language=id-ID&page=${page}`; }
             else {
                 let endpoint = (currentType === 'tv') ? 'discover/tv' : 'discover/movie';
@@ -2753,30 +2882,85 @@
             }); 
         }
 
+        // Search tab state
+        let searchTabType = 'multi';
+
+        function setSearchTab(type, el) {
+            searchTabType = type;
+            document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            if (searchQuery) searchAction();
+        }
+
+        function handleSearchInput(val) {
+            const clearBtn = document.getElementById('searchClearBtn');
+            clearBtn.style.display = val ? 'block' : 'none';
+            if (!val) {
+                showSearchEmptyState();
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInp').value = '';
+            document.getElementById('searchClearBtn').style.display = 'none';
+            document.getElementById('smartSearchDropdown').style.display = 'none';
+            showSearchEmptyState();
+        }
+
+        function showSearchEmptyState() {
+            document.getElementById('searchEmptyState').style.display = 'block';
+            document.getElementById('searchContent').style.display = 'none';
+            document.getElementById('searchTypeTabs').style.display = 'none';
+            searchQuery = '';
+        }
+
+        function showSearchResults() {
+            document.getElementById('searchEmptyState').style.display = 'none';
+            document.getElementById('searchContent').style.display = 'flex';
+            document.getElementById('searchTypeTabs').style.display = 'flex';
+        }
+
+        function quickSearch(term) {
+            document.getElementById('searchInp').value = term;
+            document.getElementById('searchClearBtn').style.display = 'block';
+            document.getElementById('smartSearchDropdown').style.display = 'none';
+            searchQuery = term;
+            showSearchResults();
+            loadFeed(true);
+        }
+
         function openSearch() { 
-            closeModal(); closeD(); closeActorModal(); closeTvModal(); if(document.getElementById('sideMenu').style.display === 'block') toggleSideMenu();
-            document.querySelector('.search-header').style.display = 'flex';
-            document.getElementById('searchGrid').innerHTML = ''; 
-            document.getElementById('searchOverlay').style.display = 'block'; 
-            document.getElementById('searchInp').focus(); 
-            document.body.style.overflow='hidden'; 
-            updateActiveNav(document.getElementById('homeBtnNav'));
+            closeModal(); closeD(); closeActorModal(); closeTvModal();
+            if(document.getElementById('sideMenu').style.display === 'block') toggleSideMenu();
+            document.getElementById('searchGrid').innerHTML = '';
+            document.getElementById('searchOverlay').style.display = 'block';
+            showSearchEmptyState();
+            document.getElementById('searchInp').value = '';
+            document.getElementById('searchClearBtn').style.display = 'none';
+            document.getElementById('searchInp').focus();
+            document.body.style.overflow = 'hidden';
+            updateActiveNav(document.getElementById('searchBtnNav'));
             history.pushState({view: 'search'}, "");
         }
 
         function closeSearch() { 
             document.getElementById('searchOverlay').style.display = 'none'; 
             document.getElementById('calendarHeader').classList.add('hidden');
-            document.body.style.overflow='auto'; 
-            searchQuery=''; currentCastId=''; document.getElementById('searchInp').value = '';
-            document.getElementById('smartSearchDropdown').style.display = 'none'; 
+            document.body.style.overflow = 'auto'; 
+            searchQuery = ''; currentCastId = '';
+            document.getElementById('searchInp').value = '';
+            document.getElementById('searchClearBtn').style.display = 'none';
+            document.getElementById('smartSearchDropdown').style.display = 'none';
             updateActiveNav(document.getElementById('homeBtnNav'));
         }
         
         function searchAction() { 
-            currentLibMode = false; currentCastId = ''; searchQuery = document.getElementById('searchInp').value; 
+            currentLibMode = false; currentCastId = '';
+            searchQuery = document.getElementById('searchInp').value;
+            if (!searchQuery) { showSearchEmptyState(); return; }
             document.getElementById('calendarHeader').classList.add('hidden');
-            document.getElementById('smartSearchDropdown').style.display = 'none'; 
+            document.getElementById('smartSearchDropdown').style.display = 'none';
+            showSearchResults();
             loadFeed(true); 
         }
 
