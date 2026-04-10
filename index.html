@@ -9,7 +9,186 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+        /* ===== THEME VARIABLES ===== */
+        :root {
+            --bg: #000; --bg2: #0a0a0a; --bg3: #111; --bg4: #1a1a1a;
+            --border: #1c1c1c; --border2: #2a2a2a;
+            --text: #fff; --text2: #efefef; --text3: #8e8e8e; --text4: #555;
+            --card: #111; --card2: #1a1a1a;
+        }
+        body.light-theme {
+            --bg: #f2f2f7; --bg2: #fff; --bg3: #fff; --bg4: #f2f2f7;
+            --border: #e5e5ea; --border2: #d1d1d6;
+            --text: #000; --text2: #1c1c1e; --text3: #6c6c70; --text4: #aeaeb2;
+            --card: #fff; --card2: #f2f2f7;
+        }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
+
+        /* Light theme targeted overrides */
+        body.light-theme .modal-player,
+        body.light-theme #actorModal,
+        body.light-theme #tvModal,
+        body.light-theme #sideMenu,
+        body.light-theme #searchOverlay,
+        body.light-theme #soundtrackModal,
+        body.light-theme .filter-dropdown { background: var(--bg) !important; }
+
+        body.light-theme .profile-header,
+        body.light-theme .highlights-wrapper,
+        body.light-theme .tab-nav { background: var(--bg2) !important; }
+
+        body.light-theme .top-bar,
+        body.light-theme .bio,
+        body.light-theme .action-buttons { background: var(--bg2); }
+
+        body.light-theme .btn-ig { background: #e5e5ea !important; color: #000 !important; }
+        body.light-theme .btn-ig.active { background: #d1d1d6 !important; border-color: #aeaeb2 !important; }
+        body.light-theme .btn-icon-sq { background: #e5e5ea !important; color: #000 !important; }
+
+        body.light-theme .movie-grid,
+        body.light-theme #feedGrid { background: var(--bg); }
+
+        body.light-theme .post-card { background: #e5e5ea; }
+        body.light-theme .badge-rating { background: rgba(0,0,0,0.75) !important; color: #fff !important; }
+        body.light-theme .badge-type { background: rgba(0,0,0,0.6) !important; color: #fff !important; }
+
+        body.light-theme .ig-logo { color: #000; }
+        body.light-theme .stat-val { color: #000; }
+        body.light-theme .stat-label { color: #6c6c70; }
+        body.light-theme .bio-name { color: #000; }
+        body.light-theme .ig-caption { color: #1c1c1e; }
+        body.light-theme .ig-hashtags { color: #007aff; }
+        body.light-theme .ig-date { color: #8e8e93; }
+
+        body.light-theme .bottom-nav { background: rgba(242,242,247,0.95) !important; border-top-color: #e5e5ea !important; }
+        body.light-theme .bottom-nav i { color: #8e8e93; }
+        body.light-theme .bottom-nav i.active-nav { color: #000; }
+
+        body.light-theme .tab-item { color: #8e8e93; }
+        body.light-theme .tab-item.active { color: #000; border-bottom-color: #000; }
+        body.light-theme .tab-nav { border-top-color: #e5e5ea; }
+
+        body.light-theme .highlight-circle { border-color: #e5e5ea; background: #fff; }
+        body.light-theme .highlight-text { color: #000; }
+        body.light-theme .highlights-wrapper { border-bottom-color: #e5e5ea; }
+
+        body.light-theme .pill { border-color: #d1d1d6; color: #000; }
+        body.light-theme .pill.active-pill { border-color: #000; background: rgba(0,0,0,0.05); }
+
+        body.light-theme .search-header { background: var(--bg) !important; border-bottom-color: #e5e5ea; }
+        body.light-theme .search-input-box { background: #e5e5ea; }
+        body.light-theme .search-input-box input { color: #000 !important; }
+
+        body.light-theme #smartSearchDropdown { background: #fff; border-color: #e5e5ea; }
+        body.light-theme .smart-item { border-bottom-color: #f2f2f7; }
+        body.light-theme .smart-name { color: #000; }
+        body.light-theme .smart-meta { color: #8e8e93; }
+
+        body.light-theme .modal-player .sticky { background: rgba(255,255,255,0.95) !important; border-bottom-color: #e5e5ea !important; }
+        body.light-theme #mTitle { color: #000; }
+        body.light-theme .interaction-icon { color: #000; }
+        body.light-theme .ig-likes-count { color: #000; }
+        body.light-theme .ig-username { color: #000; }
+        body.light-theme .toggle-btn { color: #8e8e93; }
+        body.light-theme #mTranslateBtn { color: #007aff; }
+
+        body.light-theme .server-btn { background: #f2f2f7; color: #000; border-color: #e5e5ea; }
+        body.light-theme .server-btn.active-link { background: rgba(0,0,0,0.08) !important; border-color: #000 !important; }
+        body.light-theme .dl-link-btn { background: #fff; color: #000; border-color: #e5e5ea; }
+
+        body.light-theme .about-topbar { background: rgba(242,242,247,0.92) !important; border-bottom-color: #e5e5ea; }
+        body.light-theme .about-topbar-title { color: #000; }
+        body.light-theme .about-close-btn { color: #000; }
+        body.light-theme .about-app-name { color: #000; }
+        body.light-theme .about-app-tagline { color: #6c6c70; }
+        body.light-theme .about-version-badge { background: #e5e5ea; border-color: #d1d1d6; color: #6c6c70; }
+        body.light-theme .about-stat-card { background: #fff; border-color: #e5e5ea; }
+        body.light-theme .about-stat-num { color: #000; }
+        body.light-theme .about-stat-lbl { color: #6c6c70; }
+        body.light-theme .about-section-label { color: #8e8e93; }
+        body.light-theme .about-feature-row { background: #fff; border-bottom-color: #f2f2f7; }
+        body.light-theme .about-feat-title { color: #000; }
+        body.light-theme .about-feat-desc { color: #6c6c70; }
+        body.light-theme .about-info-row { background: #fff; }
+        body.light-theme .about-info-label { color: #000; }
+        body.light-theme .about-info-value { color: #6c6c70; }
+        body.light-theme .about-link-row { background: #fff; }
+        body.light-theme .about-link-label { color: #000; }
+        body.light-theme .about-credits-made { color: #8e8e93; }
+        body.light-theme .about-credits-by { color: #000; }
+        body.light-theme .about-credits-copy { color: #aeaeb2; }
+
+        body.light-theme .actor-topbar { background: rgba(242,242,247,0.92) !important; border-bottom-color: #e5e5ea; }
+        body.light-theme .actor-cover { background: #e5e5ea; }
+        body.light-theme .actor-cover-name { color: #000; }
+        body.light-theme .actor-stats-bar { border-bottom-color: #e5e5ea; }
+        body.light-theme .actor-stat-num { color: #000; }
+        body.light-theme .actor-stat-lbl { color: #6c6c70; }
+        body.light-theme .actor-stat-divider { background: #e5e5ea; }
+        body.light-theme .actor-btn-msg { background: #e5e5ea; color: #000; }
+        body.light-theme .actor-btn-sq { background: #e5e5ea; color: #000; }
+        body.light-theme .actor-bio-name { color: #000; }
+        body.light-theme .actor-bio-text { color: #1c1c1e; }
+        body.light-theme .actor-bio-meta { color: #8e8e93; }
+        body.light-theme .actor-highlights-wrapper { border-bottom-color: #e5e5ea; }
+        body.light-theme .actor-hl-circle { border-color: #e5e5ea; background: #fff; }
+        body.light-theme .actor-hl-label { color: #000; }
+        body.light-theme .actor-tab-nav { background: #fff; border-top-color: #e5e5ea; }
+        body.light-theme .actor-tab-item { color: #8e8e93; }
+        body.light-theme .actor-tab-item.active { color: #000; border-bottom-color: #000; }
+
+        body.light-theme .tv-topbar { background: rgba(242,242,247,0.92) !important; border-bottom-color: #e5e5ea; }
+        body.light-theme .tv-topbar-title { color: #000; }
+        body.light-theme .tv-search-box { background: #e5e5ea; border-color: #d1d1d6; }
+        body.light-theme .tv-search-box input { color: #000; }
+        body.light-theme .tv-category-label { color: #8e8e93; }
+        body.light-theme .tv-ch-card { background: #fff; border-color: #e5e5ea; }
+        body.light-theme .tv-ch-logo-box { background: #f2f2f7; color: #000; }
+        body.light-theme .tv-ch-name { color: #6c6c70; }
+        body.light-theme .tv-now-bar { background: #fff; border-bottom-color: #f2f2f7; }
+        body.light-theme .tv-now-show { color: #000; }
+        body.light-theme .tv-now-time { color: #8e8e93; }
+        body.light-theme .tv-now-next-show { color: #6c6c70; }
+        body.light-theme .tv-schedule-show { color: #000; }
+        body.light-theme .tv-schedule-genre { color: #8e8e93; }
+        body.light-theme .tv-schedule-row { border-bottom-color: #f2f2f7; }
+        body.light-theme .tv-schedule-row.past { opacity: 0.4; }
+        body.light-theme .tv-switcher-btn-new { background: #fff; border-color: #e5e5ea; }
+        body.light-theme .tv-switcher-name-new { color: #6c6c70; }
+        body.light-theme .tv-switcher-section-title { color: #8e8e93; }
+        body.light-theme .tv-switcher-logo-new { background: #f2f2f7; color: #000; }
+
+        body.light-theme .filter-item { color: #000; border-bottom-color: #f2f2f7; }
+        body.light-theme .sticky-reset { background: #f2f2f7 !important; color: #000 !important; border-bottom-color: #e5e5ea; }
+        body.light-theme .date-chip { background: #fff; }
+        body.light-theme .date-chip .d-day { color: #000; }
+        body.light-theme .date-chip .d-month { color: #8e8e93; }
+        body.light-theme .date-chip.active-date { border-color: #000; }
+        body.light-theme .calendar-item { border-bottom-color: #f2f2f7; }
+        body.light-theme .cal-title { color: #000; }
+        body.light-theme .cal-meta { color: #8e8e93; }
+        body.light-theme .cal-genre-pill { background: #f2f2f7; color: #6c6c70; }
+
+        body.light-theme .music-card { background: #fff; border-color: #f2f2f7; }
+        body.light-theme #soundtrackModal { background: #f2f2f7; border-top-color: #e5e5ea; }
+
+        body.light-theme #sideMenu { background: #f2f2f7; }
+        body.light-theme .about-hero { border-bottom-color: #e5e5ea; }
+        body.light-theme .about-stats-row { border-bottom-color: #e5e5ea; }
+        body.light-theme .about-hero-glow { background: radial-gradient(circle, rgba(0,122,255,0.1) 0%, transparent 70%); }
+
+        body.light-theme .seriesControl,
+        body.light-theme #seriesControl { background: #f2f2f7 !important; border-color: #e5e5ea !important; }
+        body.light-theme #seasonSel { background: #fff !important; color: #000 !important; border-color: #e5e5ea !important; }
+        body.light-theme .ep-btn { border-color: #e5e5ea !important; color: #000 !important; }
+
+        body.light-theme .about-info-row:not(:last-child) { border-bottom-color: #f2f2f7; }
+        body.light-theme .about-feature-row:not(:last-child) { border-bottom-color: #f2f2f7; }
+        body.light-theme .about-link-row:not(:last-child) { border-bottom-color: #f2f2f7; }
+
+        body.light-theme #themeToggle { background: #34c759 !important; }
+        body.light-theme #themeThumb { transform: translateX(18px); }
+        body.light-theme #themeLabel { color: #000 !important; }
         /* Fix Horizontal Scroll & Safari Smoothness */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -webkit-overflow-scrolling: touch; }
@@ -122,7 +301,8 @@
 
         .modal-player { display: none; position: fixed; inset: 0; z-index: 8000; background: #000; overflow-y: auto; }
         .carousel-track { display: flex; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: 100%; }
-        .carousel-slide { min-width: 100%; aspect-ratio: 16/9; position: relative; background: #000; }
+        .carousel-slide { min-width: 100%; aspect-ratio: 16/9; position: relative; background: #000; overflow: hidden; }
+        .carousel-slide iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .swipe-overlay { position: absolute; inset: 0; z-index: 10; background: transparent; }
         .interaction-icon { font-size: 24px; cursor: pointer; color: #fff; transition: transform 0.1s; }
         .interaction-icon:active { transform: scale(1.2); }
@@ -686,48 +866,217 @@
         .music-card { background: #000; padding: 14px; border-radius: 20px; border: 1px solid #1a1a1a; transition: all 0.2s; }
         .music-card:active { background: #0a0a0a; transform: scale(0.98); }
 
-        /* --- TV MODAL --- */
-        #tvModal { display: none; position: fixed; inset: 0; background: #000; z-index: 9600; overflow-y: auto; }
-        .tv-search-box { margin: 12px 15px; background: #1a1a1a; border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; border: 1px solid #2a2a2a; }
-        .tv-search-box input { background: transparent; border: none; outline: none; color: #fff; font-size: 13px; width: 100%; }
-        .tv-category-title { font-size: 10px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 2px; padding: 10px 15px 6px; }
-        .tv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 0 15px 8px; }
-        .tv-item { background: #111; border: 1px solid #222; border-radius: 10px; padding: 8px 4px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .tv-item:active { transform: scale(0.95); background: #222; }
-        .tv-item.tv-active { border-color: #fff; background: #1a1a1a; }
-        .tv-logo-placeholder { width: 38px; height: 38px; background: #222; border-radius: 50%; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; }
-        .tv-name { font-size: 9px; font-weight: 700; color: #fff; }
-        /* TV Player - clip iframe agar UI vidio/inews tidak kelihatan */
-        .tv-mode #mainVideoArea { overflow: hidden; background: #000; }
-        .tv-mode .carousel-slide { overflow: hidden; position: relative; }
-        .tv-mode .carousel-slide iframe {
-            width: 100%;
-            height: calc(100% + 120px);
-            margin-top: -60px;
-            pointer-events: auto;
+        /* --- TV MODAL (Professional) --- */
+        #tvModal {
+            display: none; position: fixed; inset: 0;
+            background: #000; z-index: 9600; overflow-y: auto;
+            animation: aboutSlideIn 0.3s cubic-bezier(0.25,1,0.5,1);
         }
-        .tv-mode #castContainer,
-        .tv-mode #btnLikeModal,
-        .tv-mode #btnBookModal,
-        .tv-mode #mLikeDisplay,
-        .tv-mode .fa-rotate-right,
-        .tv-mode [onclick="openSoundtrack()"],
-        .tv-mode #mHashtags,
-        .tv-mode #mDateDisplay,
-        .tv-mode #mTranslateBtn,
-        .tv-mode #mToggleBtn,
-        .tv-mode .fa-comment,
-        .tv-mode #serverList,
+        .tv-topbar {
+            position: sticky; top: 0; z-index: 200;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid #1a1a1a;
+            display: flex; align-items: center; padding: 0 15px; height: 54px; gap: 10px;
+        }
+        .tv-topbar-title {
+            flex: 1; font-size: 14px; font-weight: 800; color: #fff; letter-spacing: -0.3px;
+        }
+        .tv-live-dot {
+            width: 7px; height: 7px; border-radius: 50%; background: #ff3b30;
+            animation: livePulse 1.5s ease-in-out infinite; flex-shrink: 0;
+        }
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+        .tv-search-box {
+            margin: 12px 15px; background: #1a1a1a; border-radius: 10px;
+            padding: 8px 12px; display: flex; align-items: center; gap: 8px;
+            border: 1px solid #2a2a2a;
+        }
+        .tv-search-box input {
+            background: transparent; border: none; outline: none;
+            color: #fff; font-size: 13px; width: 100%;
+        }
+        .tv-category-label {
+            padding: 16px 15px 8px;
+            font-size: 10px; font-weight: 800; color: #555;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        /* Channel grid — bigger cards with live indicator */
+        .tv-channel-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 8px; padding: 0 15px 6px;
+        }
+        .tv-ch-card {
+            background: #111; border: 1px solid #1c1c1c; border-radius: 12px;
+            padding: 10px 6px; text-align: center; cursor: pointer;
+            transition: all 0.18s; position: relative; overflow: hidden;
+        }
+        .tv-ch-card:active { transform: scale(0.93); background: #1a1a1a; }
+        .tv-ch-card.active-ch { border-color: #fff; background: #1a1a1a; }
+        .tv-ch-logo-box {
+            width: 42px; height: 42px; border-radius: 10px;
+            background: #222; margin: 0 auto 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 900; color: #fff; letter-spacing: -0.5px;
+            overflow: hidden;
+        }
+        .tv-ch-logo-box img { width: 100%; height: 100%; object-fit: contain; }
+        .tv-ch-name {
+            font-size: 8px; font-weight: 700; color: #ccc;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        /* LIVE badge on active channel */
+        .tv-ch-live-badge {
+            position: absolute; top: 5px; right: 5px;
+            background: #ff3b30; color: #fff;
+            font-size: 6px; font-weight: 900; letter-spacing: 0.5px;
+            padding: 1px 4px; border-radius: 3px;
+            display: none;
+        }
+        .tv-ch-card.active-ch .tv-ch-live-badge { display: block; }
+
+        /* TV Player - full fit iframe, no clip hack */
+        .tv-mode #mainVideoArea { 
+            overflow: hidden; background: #000; 
+            aspect-ratio: 16/9; 
+            position: relative;
+        }
+        .tv-mode .carousel-slide { 
+            overflow: hidden; position: relative; 
+            aspect-ratio: 16/9; min-width: 100%;
+            background: #000;
+        }
+        .tv-mode .carousel-slide iframe {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: auto; border: none;
+            background: #000;
+        }
+        .tv-mode #castContainer, .tv-mode #btnLikeModal, .tv-mode #btnBookModal,
+        .tv-mode #mLikeDisplay, .tv-mode .fa-rotate-right,
+        .tv-mode [onclick="openSoundtrack()"], .tv-mode #mHashtags,
+        .tv-mode #mDateDisplay, .tv-mode #mTranslateBtn, .tv-mode #mToggleBtn,
+        .tv-mode .fa-comment, .tv-mode #serverList,
         .tv-mode .dl-grid { display: none !important; }
-        /* Channel switcher di bawah player */
-        #tvChannelSwitcher { padding: 0 15px 100px; }
-        .tv-switcher-category { font-size: 10px; font-weight: 800; color: #555; text-transform: uppercase; letter-spacing: 2px; padding: 14px 0 6px; }
-        .tv-switcher-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .tv-switcher-btn { background: #111; border: 1px solid #222; border-radius: 8px; padding: 6px 4px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .tv-switcher-btn:active { transform: scale(0.95); }
-        .tv-switcher-btn.active-ch { border-color: #fff; background: #1c1c1c; }
-        .tv-switcher-logo { width: 30px; height: 30px; border-radius: 50%; margin: 0 auto 4px; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #fff; }
-        .tv-switcher-name { font-size: 8px; font-weight: 700; color: #ccc; }
+
+        /* TV player area below video */
+        #tvChannelSwitcher { padding: 0 0 100px; }
+
+        /* Channel info bar (below player) */
+        .tv-now-bar {
+            background: #0a0a0a; border-bottom: 1px solid #111;
+            padding: 12px 15px; display: flex; align-items: center; gap: 12px;
+        }
+        .tv-now-dot {
+            width: 8px; height: 8px; border-radius: 50%; background: #ff3b30;
+            flex-shrink: 0; animation: livePulse 1.5s ease-in-out infinite;
+        }
+        .tv-now-info { flex: 1; min-width: 0; }
+        .tv-now-label {
+            font-size: 9px; font-weight: 800; color: #ff3b30;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;
+        }
+        .tv-now-show {
+            font-size: 13px; font-weight: 700; color: #fff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .tv-now-time {
+            font-size: 10px; color: #8e8e8e; margin-top: 1px;
+        }
+        .tv-now-next {
+            text-align: right; flex-shrink: 0;
+        }
+        .tv-now-next-label {
+            font-size: 9px; color: #555; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;
+        }
+        .tv-now-next-show {
+            font-size: 11px; color: #8e8e8e; font-weight: 600;
+            max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* Schedule section */
+        .tv-schedule-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 15px 8px;
+        }
+        .tv-schedule-title {
+            font-size: 10px; font-weight: 800; color: #555;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        .tv-schedule-date {
+            font-size: 10px; color: #8e8e8e; font-weight: 600;
+        }
+        /* Progress-based schedule rows */
+        .tv-schedule-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 15px; border-bottom: 1px solid #0f0f0f;
+            position: relative; transition: background 0.2s;
+        }
+        .tv-schedule-row.now-playing {
+            background: rgba(255,59,48,0.05);
+            border-left: 2px solid #ff3b30;
+        }
+        .tv-schedule-row.past { opacity: 0.45; }
+        .tv-schedule-time {
+            font-size: 11px; font-weight: 700; color: #8e8e8e;
+            flex: 0 0 40px; text-align: right;
+        }
+        .tv-schedule-row.now-playing .tv-schedule-time { color: #ff3b30; }
+        .tv-schedule-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #2a2a2a; flex-shrink: 0;
+        }
+        .tv-schedule-row.now-playing .tv-schedule-dot {
+            background: #ff3b30; box-shadow: 0 0 6px #ff3b30;
+            animation: livePulse 1.5s ease-in-out infinite;
+        }
+        .tv-schedule-info { flex: 1; min-width: 0; }
+        .tv-schedule-show {
+            font-size: 13px; font-weight: 700; color: #fff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin-bottom: 1px;
+        }
+        .tv-schedule-row.now-playing .tv-schedule-show { color: #fff; }
+        .tv-schedule-genre {
+            font-size: 10px; color: #555; font-weight: 500;
+        }
+        /* Progress bar on now-playing row */
+        .tv-progress-bar {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 2px; background: rgba(255,59,48,0.15); overflow: hidden;
+        }
+        .tv-progress-fill {
+            height: 100%; background: #ff3b30; border-radius: 99px;
+        }
+
+        /* Channel switcher section below schedule */
+        .tv-switcher-section-title {
+            padding: 16px 15px 8px;
+            font-size: 10px; font-weight: 800; color: #555;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        .tv-switcher-grid-new {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 7px; padding: 0 15px 8px;
+        }
+        .tv-switcher-btn-new {
+            background: #111; border: 1px solid #1c1c1c; border-radius: 10px;
+            padding: 8px 4px; text-align: center; cursor: pointer;
+            transition: all 0.18s; position: relative;
+        }
+        .tv-switcher-btn-new:active { transform: scale(0.93); }
+        .tv-switcher-btn-new.active-ch { border-color: #fff; background: #1a1a1a; }
+        .tv-switcher-logo-new {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: #222; margin: 0 auto 5px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8px; font-weight: 900; color: #fff;
+        }
+        .tv-switcher-name-new { font-size: 8px; font-weight: 700; color: #ccc; }
     </style>
 </head>
 <body>
@@ -925,9 +1274,23 @@
                 <span class="about-info-label">Bahasa</span>
                 <span class="about-info-value">Indonesia / Inggris</span>
             </div>
-            <div class="about-info-row">
-                <span class="about-info-label">Konten Dewasa</span>
-                <span class="about-info-value">Dinonaktifkan</span>
+            <div class="about-info-row" style="cursor:pointer" onclick="toggleTheme()">
+                <span class="about-info-label">Tema Aplikasi</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <span class="about-info-value" id="themeLabel">Gelap</span>
+                    <div id="themeToggle" style="
+                        width:44px;height:26px;border-radius:99px;
+                        background:#333;position:relative;transition:background 0.3s;
+                        flex-shrink:0;
+                    ">
+                        <div id="themeThumb" style="
+                            position:absolute;top:3px;left:3px;
+                            width:20px;height:20px;border-radius:50%;
+                            background:#fff;transition:transform 0.3s;
+                            box-shadow:0 1px 4px rgba(0,0,0,0.4);
+                        "></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1201,9 +1564,11 @@
     </div>
 
     <div id="tvModal">
-        <div class="sticky top-0 bg-black z-[100] border-b border-zinc-900 px-4 h-[54px] flex items-center">
-            <i class="fa-solid fa-chevron-left text-xl cursor-pointer" onclick="closeTvModal()"></i>
-            <div class="flex-grow text-center text-[14px] font-black uppercase tracking-widest">INDONESIA TV</div>
+        <div class="tv-topbar">
+            <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer;padding:6px" onclick="closeTvModal()"></i>
+            <div class="tv-live-dot"></div>
+            <div class="tv-topbar-title">Live TV Indonesia</div>
+            <i class="fa-solid fa-magnifying-glass" style="font-size:16px;color:#8e8e8e;cursor:pointer;padding:6px" onclick="document.getElementById('tvSearchInp').focus()"></i>
         </div>
         <div class="tv-search-box">
             <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
@@ -1306,6 +1671,266 @@
             }
         ];
 
+        // =============================================
+        // TV SCHEDULE DATA (WIB-based, per channel)
+        // =============================================
+        const tvSchedules = {
+            'RCTI': [
+                {time:'04:30',show:'Seputar Indonesia Pagi',genre:'Berita'},
+                {time:'06:00',show:'Dahsyat',genre:'Hiburan'},
+                {time:'09:00',show:'Sinetron Pagi',genre:'Drama'},
+                {time:'11:00',show:'Seputar Indonesia Siang',genre:'Berita'},
+                {time:'12:00',show:'Sinetron Siang',genre:'Drama'},
+                {time:'15:00',show:'Sinetron Sore',genre:'Drama'},
+                {time:'17:00',show:'Seputar Indonesia',genre:'Berita'},
+                {time:'19:00',show:'Sinetron Prime Time',genre:'Drama'},
+                {time:'21:00',show:'Infotainment',genre:'Hiburan'},
+                {time:'23:00',show:'Film Malam',genre:'Film'},
+            ],
+            'GTV': [
+                {time:'05:00',show:'Morning Show',genre:'Hiburan'},
+                {time:'07:00',show:'Kartun Pagi',genre:'Animasi'},
+                {time:'10:00',show:'Variety Show',genre:'Hiburan'},
+                {time:'12:00',show:'Film Siang',genre:'Film'},
+                {time:'14:00',show:'Drama Korea',genre:'Drama'},
+                {time:'16:00',show:'Kartun Sore',genre:'Animasi'},
+                {time:'19:00',show:'Film Prime Time',genre:'Film'},
+                {time:'21:00',show:'Reality Show',genre:'Hiburan'},
+                {time:'23:00',show:'Film Malam',genre:'Film'},
+            ],
+            'MNCTV': [
+                {time:'05:00',show:'Khotbah Pagi',genre:'Religi'},
+                {time:'06:00',show:'Kartun Pagi',genre:'Animasi'},
+                {time:'09:00',show:'Sinetron Pagi',genre:'Drama'},
+                {time:'12:00',show:'Berita Siang',genre:'Berita'},
+                {time:'13:00',show:'Drama Siang',genre:'Drama'},
+                {time:'15:00',show:'Game Show',genre:'Hiburan'},
+                {time:'17:00',show:'Sinetron Sore',genre:'Drama'},
+                {time:'19:00',show:'Upin & Ipin',genre:'Animasi'},
+                {time:'20:00',show:'Sinetron Malam',genre:'Drama'},
+                {time:'22:00',show:'Film Malam',genre:'Film'},
+            ],
+            'SCTV': [
+                {time:'05:00',show:'Liputan 6 Pagi',genre:'Berita'},
+                {time:'06:30',show:'Sinetron Pagi',genre:'Drama'},
+                {time:'09:00',show:'FTV Pagi',genre:'Film'},
+                {time:'11:30',show:'Liputan 6 Siang',genre:'Berita'},
+                {time:'12:00',show:'FTV Siang',genre:'Film'},
+                {time:'15:30',show:'FTV Sore',genre:'Film'},
+                {time:'17:30',show:'Liputan 6 Sore',genre:'Berita'},
+                {time:'19:00',show:'Sinetron Malam',genre:'Drama'},
+                {time:'21:30',show:'Liputan 6 Malam',genre:'Berita'},
+                {time:'22:30',show:'FTV Malam',genre:'Film'},
+            ],
+            'INDOSIAR': [
+                {time:'05:00',show:'Fokus Pagi',genre:'Berita'},
+                {time:'06:00',show:'Sinetron Pagi',genre:'Drama'},
+                {time:'09:00',show:'FTV Pagi',genre:'Film'},
+                {time:'11:30',show:'Fokus Siang',genre:'Berita'},
+                {time:'13:00',show:'Liga 1 / Hiburan',genre:'Olahraga'},
+                {time:'15:30',show:'Kisah Nyata',genre:'Drama'},
+                {time:'17:30',show:'Fokus',genre:'Berita'},
+                {time:'20:00',show:'Sinetron Malam',genre:'Drama'},
+                {time:'22:00',show:'Fokus Malam',genre:'Berita'},
+            ],
+            'ANTV': [
+                {time:'05:00',show:'Topik Pagi',genre:'Berita'},
+                {time:'07:00',show:'Drama India',genre:'Drama'},
+                {time:'10:00',show:'FTV',genre:'Film'},
+                {time:'12:00',show:'Topik Siang',genre:'Berita'},
+                {time:'13:00',show:'Drama India',genre:'Drama'},
+                {time:'16:00',show:'Animasi',genre:'Animasi'},
+                {time:'18:00',show:'Topik Petang',genre:'Berita'},
+                {time:'19:00',show:'Drama India Prime',genre:'Drama'},
+                {time:'22:00',show:'Film Malam',genre:'Film'},
+            ],
+            'Trans 7': [
+                {time:'05:00',show:'Redaksi Pagi',genre:'Berita'},
+                {time:'06:00',show:'Laptop Si Unyil',genre:'Edukasi'},
+                {time:'07:30',show:'Bukan Haji Biasa',genre:'Religi'},
+                {time:'09:00',show:'Redaksi',genre:'Berita'},
+                {time:'10:00',show:'Jejak Petualang',genre:'Dokumenter'},
+                {time:'12:00',show:'Redaksi Siang',genre:'Berita'},
+                {time:'14:00',show:'Hitam Putih',genre:'Talkshow'},
+                {time:'16:00',show:'Redaksi Sore',genre:'Berita'},
+                {time:'18:30',show:'Insert',genre:'Hiburan'},
+                {time:'19:30',show:'On The Spot',genre:'Hiburan'},
+                {time:'20:30',show:'Bocah Petualang',genre:'Dokumenter'},
+                {time:'22:00',show:'Redaksi Malam',genre:'Berita'},
+            ],
+            'Trans TV': [
+                {time:'05:00',show:'CNN Indonesia Pagi',genre:'Berita'},
+                {time:'07:00',show:'Sinema Pagi',genre:'Film'},
+                {time:'09:00',show:'Bioskop Trans',genre:'Film'},
+                {time:'12:00',show:'CNN Indonesia Siang',genre:'Berita'},
+                {time:'13:00',show:'Sinema Siang',genre:'Film'},
+                {time:'15:00',show:'Bioskop Trans',genre:'Film'},
+                {time:'17:00',show:'CNN Indonesia Sore',genre:'Berita'},
+                {time:'19:00',show:'Bioskop Prime',genre:'Film'},
+                {time:'21:30',show:'CNN Indonesia Malam',genre:'Berita'},
+                {time:'22:30',show:'Sinema Malam',genre:'Film'},
+            ],
+            'NET TV': [
+                {time:'06:00',show:'NET Pagi',genre:'Hiburan'},
+                {time:'09:00',show:'The Comment',genre:'Talkshow'},
+                {time:'11:00',show:'Ini Talk Show',genre:'Talkshow'},
+                {time:'14:00',show:'NET 12',genre:'Hiburan'},
+                {time:'16:00',show:'The Comment',genre:'Talkshow'},
+                {time:'18:00',show:'Ini Talk Show',genre:'Talkshow'},
+                {time:'20:00',show:'Film Prime',genre:'Film'},
+                {time:'22:00',show:'Tonight Show',genre:'Talkshow'},
+            ],
+            'METRO TV': [
+                {time:'04:30',show:'Metro Pagi Primetime',genre:'Berita'},
+                {time:'07:00',show:'Metro Kini',genre:'Berita'},
+                {time:'09:00',show:'Election Update',genre:'Berita'},
+                {time:'10:00',show:'Metro Siang',genre:'Berita'},
+                {time:'12:00',show:'Primetime News',genre:'Berita'},
+                {time:'14:00',show:'Metro Sore',genre:'Berita'},
+                {time:'17:00',show:'Top News',genre:'Berita'},
+                {time:'18:00',show:'Prime Time',genre:'Berita'},
+                {time:'20:00',show:'Indonesia Now',genre:'Berita'},
+                {time:'22:00',show:'Headline News',genre:'Berita'},
+            ],
+            'TV ONE': [
+                {time:'05:00',show:'Kabar Pagi',genre:'Berita'},
+                {time:'07:00',show:'Indonesia Morning Show',genre:'Berita'},
+                {time:'09:00',show:'Apa Kabar Indonesia',genre:'Berita'},
+                {time:'12:00',show:'Kabar Siang',genre:'Berita'},
+                {time:'14:00',show:'Kabar Pasar',genre:'Berita'},
+                {time:'16:00',show:'Kabar Petang',genre:'Berita'},
+                {time:'18:00',show:'Kabar Pilihan',genre:'Berita'},
+                {time:'20:00',show:'Prime Time',genre:'Berita'},
+                {time:'22:00',show:'Kabar Malam',genre:'Berita'},
+            ],
+            'KOMPAS TV': [
+                {time:'05:00',show:'Kompas Pagi',genre:'Berita'},
+                {time:'07:00',show:'Sapa Indonesia Pagi',genre:'Berita'},
+                {time:'09:00',show:'Sapa Indonesia',genre:'Berita'},
+                {time:'12:00',show:'Kompas Siang',genre:'Berita'},
+                {time:'15:00',show:'Sapa Indonesia Sore',genre:'Berita'},
+                {time:'17:00',show:'Kompas Petang',genre:'Berita'},
+                {time:'19:00',show:'Kompas Malam',genre:'Berita'},
+                {time:'21:00',show:'Malam Ini',genre:'Talkshow'},
+                {time:'23:00',show:'Kompas Larut Malam',genre:'Berita'},
+            ],
+            'CNN INDO': [
+                {time:'04:30',show:'First News',genre:'Berita'},
+                {time:'07:00',show:'The Brief',genre:'Berita'},
+                {time:'09:00',show:'Closing Bell',genre:'Berita'},
+                {time:'12:00',show:'News Flash',genre:'Berita'},
+                {time:'14:00',show:'State of The Economy',genre:'Berita'},
+                {time:'17:00',show:'The World Tonight',genre:'Berita'},
+                {time:'19:00',show:'Prime Time News',genre:'Berita'},
+                {time:'21:00',show:'Special Report',genre:'Berita'},
+                {time:'23:00',show:'Late Night Show',genre:'Berita'},
+            ],
+            'TVRI': [
+                {time:'05:00',show:'Berita Nusantara',genre:'Berita'},
+                {time:'06:00',show:'Mutiara Hikmah',genre:'Religi'},
+                {time:'07:00',show:'Berita Pagi',genre:'Berita'},
+                {time:'09:00',show:'Indonesia Bagus',genre:'Dokumenter'},
+                {time:'12:00',show:'Berita Siang',genre:'Berita'},
+                {time:'13:00',show:'Kuis Kebangsaan',genre:'Hiburan'},
+                {time:'15:00',show:'Budaya Nusantara',genre:'Budaya'},
+                {time:'17:00',show:'Berita Petang',genre:'Berita'},
+                {time:'19:00',show:'Berita Nasional',genre:'Berita'},
+                {time:'21:00',show:'Bincang Malam',genre:'Talkshow'},
+                {time:'23:00',show:'Berita Malam',genre:'Berita'},
+            ],
+        };
+
+        // Ambil jadwal sekarang & berikutnya berdasarkan WIB
+        function getCurrentSchedule(channelName) {
+            const schedule = tvSchedules[channelName];
+            if (!schedule || schedule.length === 0) return null;
+
+            // WIB = UTC+7
+            const now = new Date();
+            const wibOffset = 7 * 60;
+            const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+            const wibMinutes = (utcMinutes + wibOffset) % (24 * 60);
+
+            const toMinutes = t => {
+                const [h, m] = t.split(':').map(Number);
+                return h * 60 + m;
+            };
+
+            let nowIdx = -1;
+            for (let i = schedule.length - 1; i >= 0; i--) {
+                if (wibMinutes >= toMinutes(schedule[i].time)) { nowIdx = i; break; }
+            }
+            if (nowIdx === -1) nowIdx = schedule.length - 1;
+
+            const nextIdx = (nowIdx + 1) % schedule.length;
+            const current = schedule[nowIdx];
+            const next = schedule[nextIdx];
+
+            const currentStart = toMinutes(current.time);
+            const nextStart = toMinutes(next.time);
+            const duration = nextStart > currentStart ? nextStart - currentStart : (24*60 - currentStart + nextStart);
+            const elapsed = wibMinutes >= currentStart ? wibMinutes - currentStart : (24*60 - currentStart + wibMinutes);
+            const progress = Math.min(100, Math.round((elapsed / duration) * 100));
+
+            return { current, next, progress, schedule, nowIdx, wibMinutes };
+        }
+
+        function buildScheduleHTML(channelName) {
+            const info = getCurrentSchedule(channelName);
+            if (!info) return '';
+            const { current, next, progress, schedule, nowIdx, wibMinutes } = info;
+
+            const toMinutes = t => { const [h,m]=t.split(':').map(Number); return h*60+m; };
+            const wibH = Math.floor(wibMinutes / 60);
+            const wibM = wibMinutes % 60;
+            const wibStr = `${String(wibH).padStart(2,'0')}:${String(wibM).padStart(2,'0')} WIB`;
+
+            let nowBarHTML = `
+                <div class="tv-now-bar">
+                    <div class="tv-now-dot"></div>
+                    <div class="tv-now-info">
+                        <div class="tv-now-label">Sedang Tayang</div>
+                        <div class="tv-now-show">${current.show}</div>
+                        <div class="tv-now-time">${current.time} WIB · ${current.genre}</div>
+                    </div>
+                    <div class="tv-now-next">
+                        <div class="tv-now-next-label">Berikutnya</div>
+                        <div class="tv-now-next-show">${next.show}</div>
+                        <div class="tv-now-time">${next.time} WIB</div>
+                    </div>
+                </div>`;
+
+            let schedHTML = `<div class="tv-schedule-header">
+                <div class="tv-schedule-title">Jadwal Hari Ini</div>
+                <div class="tv-schedule-date">${wibStr}</div>
+            </div>`;
+
+            schedule.forEach((item, i) => {
+                const isNow = i === nowIdx;
+                const isPast = !isNow && (() => {
+                    const itemMin = toMinutes(item.time);
+                    if (wibMinutes >= toMinutes(schedule[0].time)) {
+                        return itemMin < toMinutes(schedule[nowIdx].time);
+                    }
+                    return false;
+                })();
+                const rowClass = isNow ? 'tv-schedule-row now-playing' : isPast ? 'tv-schedule-row past' : 'tv-schedule-row';
+                const progressBar = isNow ? `<div class="tv-progress-bar"><div class="tv-progress-fill" style="width:${progress}%"></div></div>` : '';
+                schedHTML += `
+                    <div class="${rowClass}">
+                        <div class="tv-schedule-time">${item.time}</div>
+                        <div class="tv-schedule-dot"></div>
+                        <div class="tv-schedule-info">
+                            <div class="tv-schedule-show">${item.show}</div>
+                            <div class="tv-schedule-genre">${item.genre}${isNow ? ` · ${progress}% selesai` : ''}</div>
+                        </div>
+                        ${progressBar}
+                    </div>`;
+            });
+
+            return nowBarHTML + schedHTML;
+        }
+
         function renderTvList(filter) {
             const cont = document.getElementById('tvChannelList');
             const q = (filter || '').toLowerCase();
@@ -1313,11 +1938,12 @@
             tvCategories.forEach(cat => {
                 const filtered = cat.channels.filter(ch => ch.name.toLowerCase().includes(q));
                 if (filtered.length === 0) return;
-                html += `<div class="tv-category-title">${cat.label}</div><div class="tv-grid">`;
+                html += `<div class="tv-category-label">${cat.label}</div><div class="tv-channel-grid">`;
                 filtered.forEach(ch => {
-                    html += `<div class="tv-item" onclick="playTvChannel('${ch.name}', '${ch.url}')">
-                        <div class="tv-logo-placeholder">${ch.logo}</div>
-                        <div class="tv-name">${ch.name}</div>
+                    html += `<div class="tv-ch-card" onclick="playTvChannel('${ch.name}', '${ch.url}')">
+                        <div class="tv-ch-live-badge">LIVE</div>
+                        <div class="tv-ch-logo-box">${ch.logo}</div>
+                        <div class="tv-ch-name">${ch.name}</div>
                     </div>`;
                 });
                 html += `</div>`;
@@ -1327,7 +1953,6 @@
         }
 
         function initTvChannels() { renderTvList(''); }
-
         function filterTvChannels(q) { renderTvList(q); }
 
         function openTvModal() {
@@ -1335,6 +1960,7 @@
             document.getElementById('tvSearchInp').value = '';
             renderTvList('');
             document.getElementById('tvModal').style.display = 'block';
+            document.getElementById('tvModal').scrollTop = 0;
             document.body.style.overflow = 'hidden';
             history.pushState({view: 'tv'}, "");
         }
@@ -1363,30 +1989,63 @@
             document.body.style.overflow = 'hidden';
             history.pushState({view: 'modal'}, '');
 
-            // Render channel switcher di bawah player
             const postContent = document.querySelector('#movieModal .ig-post-content');
-            let switcherHTML = '<div id="tvChannelSwitcher">';
+
+            // Build channel switcher + schedule
+            let switcherHTML = `<div id="tvChannelSwitcher">`;
+
+            // Schedule section
+            const schedHTML = buildScheduleHTML(name);
+            if (schedHTML) switcherHTML += schedHTML;
+
+            // Channel switcher
             tvCategories.forEach(cat => {
-                switcherHTML += `<div class="tv-switcher-category">${cat.label}</div><div class="tv-switcher-grid">`;
+                switcherHTML += `<div class="tv-switcher-section-title">${cat.label}</div><div class="tv-switcher-grid-new">`;
                 cat.channels.forEach(ch => {
                     const isActive = ch.name === name ? 'active-ch' : '';
-                    switcherHTML += `<div class="tv-switcher-btn ${isActive}" onclick="switchTvChannel('${ch.name}','${ch.url}',this)">
-                        <div class="tv-switcher-logo">${ch.logo}</div>
-                        <div class="tv-switcher-name">${ch.name}</div>
+                    switcherHTML += `<div class="tv-switcher-btn-new ${isActive}" onclick="switchTvChannel('${ch.name}','${ch.url}',this)">
+                        <div class="tv-switcher-logo-new">${ch.logo}</div>
+                        <div class="tv-switcher-name-new">${ch.name}</div>
                     </div>`;
                 });
                 switcherHTML += `</div>`;
             });
-            switcherHTML += '</div>';
+            switcherHTML += `</div>`;
             postContent.innerHTML = switcherHTML;
 
             playVid(url);
         }
 
         function switchTvChannel(name, url, el) {
-            document.querySelectorAll('.tv-switcher-btn').forEach(b => b.classList.remove('active-ch'));
+            document.querySelectorAll('.tv-switcher-btn-new').forEach(b => b.classList.remove('active-ch'));
             el.classList.add('active-ch');
             document.getElementById('mTitle').innerText = '● LIVE: ' + name;
+
+            // Update schedule section
+            const switcher = document.getElementById('tvChannelSwitcher');
+            if (switcher) {
+                // Remove old schedule nodes (everything before first .tv-switcher-section-title)
+                const postContent = document.querySelector('#movieModal .ig-post-content');
+                const currentSwitcherHTML = document.getElementById('tvChannelSwitcher');
+                const newSchedHTML = buildScheduleHTML(name);
+                // Rebuild schedule + keep channel grid
+                let switcherHTML = `<div id="tvChannelSwitcher">`;
+                if (newSchedHTML) switcherHTML += newSchedHTML;
+                tvCategories.forEach(cat => {
+                    switcherHTML += `<div class="tv-switcher-section-title">${cat.label}</div><div class="tv-switcher-grid-new">`;
+                    cat.channels.forEach(ch => {
+                        const isActive = ch.name === name ? 'active-ch' : '';
+                        switcherHTML += `<div class="tv-switcher-btn-new ${isActive}" onclick="switchTvChannel('${ch.name}','${ch.url}',this)">
+                            <div class="tv-switcher-logo-new">${ch.logo}</div>
+                            <div class="tv-switcher-name-new">${ch.name}</div>
+                        </div>`;
+                    });
+                    switcherHTML += `</div>`;
+                });
+                switcherHTML += `</div>`;
+                postContent.innerHTML = switcherHTML;
+            }
+
             playVid(url);
         }
 
@@ -2480,6 +3139,27 @@
         }
         async function showLibrary(k) { const items = JSON.parse(localStorage.getItem(k) || '[]'); const grid = document.getElementById('feedGrid'); grid.innerHTML = ''; if (!items.length) { grid.innerHTML = '<div class="col-span-3 text-center py-20 text-zinc-500 text-xs">Belum ada konten disimpan</div>'; return; } const promises = items.map(i => fetchWithCache(`https://api.themoviedb.org/3/${i.type}/${i.id}?api_key=${API_KEY}&language=id-ID`).then(r => r)); const results = await Promise.all(promises); renderGrid(results.filter(m => m.id), grid); }
         window.onscroll = () => { if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000 && !loading && !searchQuery && !currentLibMode) { page++; loadFeed(false); } };
+
+        // ===== THEME TOGGLE =====
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-theme');
+            localStorage.setItem('amnesTheme', isLight ? 'light' : 'dark');
+            document.getElementById('themeLabel').innerText = isLight ? 'Terang' : 'Gelap';
+            // toggle pill color handled by CSS
+        }
+
+        // Apply saved theme on load
+        (function() {
+            const saved = localStorage.getItem('amnesTheme');
+            if (saved === 'light') {
+                document.body.classList.add('light-theme');
+                // update label after DOM ready
+                document.addEventListener('DOMContentLoaded', () => {
+                    const lbl = document.getElementById('themeLabel');
+                    if (lbl) lbl.innerText = 'Terang';
+                });
+            }
+        })();
     </script>
 </body>
 </html>
