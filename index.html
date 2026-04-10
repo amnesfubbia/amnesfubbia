@@ -592,15 +592,15 @@
             display: flex; gap: 7px; padding: 14px 15px 0;
         }
         .actor-btn-follow {
-            flex: 1; background: #0095f6; color: #fff;
-            font-size: 13px; font-weight: 700;
+            flex: 1; background: #262626; color: #fff;
+            font-size: 13px; font-weight: 600;
             border-radius: 8px; padding: 7px 10px; text-align: center; cursor: pointer;
             transition: background 0.2s;
         }
-        .actor-btn-follow:active { background: #007ad1; }
+        .actor-btn-follow:active { background: #363636; }
         .actor-btn-msg {
             flex: 1; background: #262626; color: #fff;
-            font-size: 13px; font-weight: 700;
+            font-size: 13px; font-weight: 600;
             border-radius: 8px; padding: 7px 10px; text-align: center; cursor: pointer;
             transition: background 0.2s;
         }
@@ -1075,15 +1075,6 @@
                     <div class="about-feat-desc">Tonton siaran langsung channel TV nasional Indonesia.</div>
                 </div>
             </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#2a1a20">
-                    <i class="ph ph-device-mobile-camera" style="color:#f48fb1"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Mode Landscape</div>
-                    <div class="about-feat-desc">Tonton dalam mode layar penuh horizontal dengan kontrol profesional.</div>
-                </div>
-            </div>
         </div>
 
         <!-- Data source -->
@@ -1372,12 +1363,8 @@
 
         <!-- Action buttons (IG style) -->
         <div class="actor-action-row">
-            <div class="actor-btn-follow" onclick="searchByCast(window._currentActorId)">
-                <i class="fa-solid fa-table-cells-large mr-1"></i> Lihat Filmografi
-            </div>
-            <div class="actor-btn-msg" id="actorImdbBtn" onclick="openActorImdb()">
-                <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> IMDb
-            </div>
+            <div class="actor-btn-follow" onclick="searchByCast(window._currentActorId)">Filmografi</div>
+            <div class="actor-btn-msg" id="actorImdbBtn" onclick="openActorImdb()">IMDb</div>
             <div class="actor-btn-sq"><i class="fa-solid fa-chevron-down"></i></div>
         </div>
 
@@ -2010,14 +1997,16 @@
 
         function closeSoundtrack() {
             document.getElementById('soundtrackModal').style.display = 'none';
-            document.querySelectorAll('.audio-player-mini').forEach(a => a.pause());
-            if (document.getElementById('movieModal').style.display === 'block') {
-                replayTrailer();
-            }
+            document.querySelectorAll('.audio-player-mini').forEach(a => { a.pause(); a.currentTime = 0; });
+            document.getElementById('filterOverlay').style.display = 'none';
+            // Resume video yang sudah ada (tidak reload)
+            document.querySelectorAll('#carouselTrack iframe').forEach(iframe => {
+                try {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                } catch(e) {}
+            });
             if (document.getElementById('movieModal').style.display !== 'block') {
                 document.body.style.overflow = 'auto';
-            } else {
-                document.getElementById('filterOverlay').style.display = 'none';
             }
         }
 
@@ -2282,6 +2271,7 @@
                 if (bioText) {
                     const short = bioText.length > 120;
                     bioEl.innerText = short ? bioText.substring(0, 120) + '...' : bioText;
+                    bioEl.style.display = '';
                     if (short) {
                         const more = document.createElement('span');
                         more.className = 'toggle-btn';
@@ -2290,7 +2280,8 @@
                         bioEl.after(more);
                     }
                 } else {
-                    bioEl.innerText = 'Tidak ada biografi.';
+                    bioEl.innerText = '';
+                    bioEl.style.display = 'none';
                 }
 
                 // Bio meta: birth date, place, gender
@@ -2401,7 +2392,10 @@
                         track.appendChild(slide);
                     }
                 });
-            } else { document.body.style.overflow = 'auto'; }
+                // body tetap hidden karena movieModal masih buka
+            } else {
+                document.body.style.overflow = 'auto';
+            }
         }
 
         function searchByStudio(studioId, studioName) {
@@ -2497,6 +2491,7 @@
         let calendarMediaType = 'movie';
 
         async function openComingSoon() {
+            calendarMediaType = 'movie'; // reset tiap buka
             const overlay = document.getElementById('searchOverlay');
             const calendarHeader = document.getElementById('calendarHeader');
             overlay.style.display = 'block';
@@ -2599,8 +2594,13 @@
         }
 
         function searchByCast(castId) { 
-            closeModal(); currentCastId = castId; searchQuery = ''; document.getElementById('searchInp').value = ''; 
-            document.getElementById('searchOverlay').style.display = 'block'; document.getElementById('smartSearchDropdown').style.display = 'none';
+            closeActorModal();
+            closeModal(); 
+            currentCastId = castId; searchQuery = ''; 
+            document.getElementById('searchInp').value = ''; 
+            document.getElementById('searchOverlay').style.display = 'block';
+            document.getElementById('smartSearchDropdown').style.display = 'none';
+            showSearchResults();
             document.body.style.overflow='hidden'; 
             history.pushState({view: 'search'}, "");
             loadFeed(true); 
@@ -2638,12 +2638,44 @@
             let yearHTML = '<div class="filter-item sticky-reset" onclick="setYear(\'\')">Semua Tahun</div>'; 
             for(let y=2026; y>=1930; y--) yearHTML += `<div class="filter-item" onclick="setYear(${y})">${y}</div>`; 
             yD.innerHTML = yearHTML; 
-            const countries = [['ID','Indonesia'],['US','USA'],['KR','Korea Selatan'],['JP','Jepang'],['IN','India'],['TH','Thailand'],['CN','China'],['PH','Filipina'],['GB','Inggris'],['FR','Prancis'],['ES','Spanyol'],['IT','Italia'],['TR','Turki'],['DE','Jerman']]; 
+
+            // Negara — Indonesia pertama, sisanya abjad
+            const countries = [
+                ['ID','Indonesia'],
+                ['DZ','Aljazair'],['AR','Argentina'],['AU','Australia'],
+                ['AT','Austria'],['BE','Belgia'],['BR','Brasil'],
+                ['CA','Kanada'],['CL','Cile'],['CN','China'],
+                ['CO','Kolombia'],['HR','Kroasia'],['CZ','Ceko'],
+                ['DK','Denmark'],['EG','Mesir'],['FI','Finlandia'],
+                ['FR','Prancis'],['DE','Jerman'],['GR','Yunani'],
+                ['HK','Hong Kong'],['HU','Hungaria'],['IN','India'],
+                ['IE','Irlandia'],['IL','Israel'],['IT','Italia'],
+                ['JP','Jepang'],['MX','Meksiko'],['MY','Malaysia'],
+                ['MA','Maroko'],['NL','Belanda'],['NZ','Selandia Baru'],
+                ['NG','Nigeria'],['NO','Norwegia'],['PK','Pakistan'],
+                ['PH','Filipina'],['PL','Polandia'],['PT','Portugal'],
+                ['RO','Rumania'],['RU','Rusia'],['SA','Arab Saudi'],
+                ['ZA','Afrika Selatan'],['KR','Korea Selatan'],['ES','Spanyol'],
+                ['SE','Swedia'],['CH','Swiss'],['TW','Taiwan'],
+                ['TH','Thailand'],['TR','Turki'],['UA','Ukraina'],
+                ['AE','UEA'],['GB','Inggris'],['US','Amerika Serikat'],
+                ['VN','Vietnam']
+            ];
             const cD = document.getElementById('countryDropdown'); 
             let countryHTML = '<div class="filter-item sticky-reset" onclick="setCountry(\'\',\'Negara\')">Semua Negara</div>'; 
             countries.forEach(c => countryHTML += `<div class="filter-item" onclick="setCountry('${c[0]}','${c[1]}')">${c[1]}</div>`); 
             cD.innerHTML = countryHTML; 
-            const genres = [[28,'Action'],[12,'Adventure'],[16,'Animasi'],[35,'Komedi'],[80,'Crime'],[99,'Dokumenter'],[18,'Drama'],[10751,'Family'],[14,'Fantasy'],[36,'History'],[27,'Horror'],[10402,'Music'],[9648,'Misteri'],[10749,'Romance'],[878,'Sci-Fi'],[53,'Thriller']]; 
+
+            // Genre — lengkap, urut abjad (ID TMDb)
+            const genres = [
+                [28,'Action'],[12,'Adventure'],[16,'Animasi'],
+                [35,'Komedi'],[80,'Crime'],
+                [99,'Dokumenter'],[18,'Drama'],[10751,'Family'],
+                [14,'Fantasy'],[36,'History'],[27,'Horror'],
+                [10402,'Musik'],[9648,'Misteri'],[10749,'Romance'],
+                [878,'Sci-Fi'],[10770,'TV Movie'],[53,'Thriller'],
+                [10752,'War'],[37,'Western']
+            ].sort((a,b) => a[1].localeCompare(b[1]));
             const gD = document.getElementById('genreDropdown'); 
             let genreHTML = '<div class="filter-item sticky-reset" onclick="setGenre(\'\',\'Genre\')">Semua Genre</div>'; 
             genres.forEach(g => genreHTML += `<div class="filter-item" onclick="setGenre('${g[0]}','${g[1]}')">${g[1]}</div>`); 
@@ -3153,12 +3185,12 @@
         async function showLibrary(k) { const items = JSON.parse(localStorage.getItem(k) || '[]'); const grid = document.getElementById('feedGrid'); grid.innerHTML = ''; if (!items.length) { grid.innerHTML = '<div class="col-span-3 text-center py-20 text-zinc-500 text-xs">Belum ada konten disimpan</div>'; return; } const promises = items.map(i => fetchWithCache(`https://api.themoviedb.org/3/${i.type}/${i.id}?api_key=${API_KEY}&language=id-ID`).then(r => r)); const results = await Promise.all(promises); renderGrid(results.filter(m => m.id), grid); }
         window.onscroll = () => { if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000 && !loading && !searchQuery && !currentLibMode) { page++; loadFeed(false); } };
 
-        // ===== THEME TOGGLE =====
+        // ===== THEME TOGGLE (disabled - UI removed) =====
         function toggleTheme() {
             const isLight = document.body.classList.toggle('light-theme');
             localStorage.setItem('amnesTheme', isLight ? 'light' : 'dark');
-            document.getElementById('themeLabel').innerText = isLight ? 'Terang' : 'Gelap';
-            // toggle pill color handled by CSS
+            const lbl = document.getElementById('themeLabel');
+            if (lbl) lbl.innerText = isLight ? 'Terang' : 'Gelap';
         }
 
         // Apply saved theme on load
@@ -3166,11 +3198,6 @@
             const saved = localStorage.getItem('amnesTheme');
             if (saved === 'light') {
                 document.body.classList.add('light-theme');
-                // update label after DOM ready
-                document.addEventListener('DOMContentLoaded', () => {
-                    const lbl = document.getElementById('themeLabel');
-                    if (lbl) lbl.innerText = 'Terang';
-                });
             }
         })();
     </script>
