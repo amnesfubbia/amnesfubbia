@@ -1036,14 +1036,14 @@
         }
         .reel-translate-btn:active { color: rgba(255,255,255,0.9); }
         .reel-detail-btn {
-            pointer-events: auto; display: inline-flex; align-items: center; gap: 5px;
-            padding: 6px 14px; border-radius: 20px;
-            background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35);
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            font-size: 11px; font-weight: 700; color: #fff; cursor: pointer;
-            -webkit-tap-highlight-color: transparent; transition: background 0.15s;
+            pointer-events: auto; display: inline-block;
+            padding: 0; border-radius: 0;
+            background: transparent; border: none;
+            font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6);
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+            transition: color 0.15s;
         }
-        .reel-detail-btn:active { background: rgba(255,255,255,0.3); }
+        .reel-detail-btn:active { color: #fff; }
 
         /* Tombol aksi kanan bawah (like, bookmark) */
         .reel-actions {
@@ -1232,13 +1232,11 @@
             text-align: center; cursor: pointer;
             text-transform: uppercase; letter-spacing: 0.5px;
             -webkit-tap-highlight-color: transparent;
-            border: 1px solid #333;
-            background: #000; color: #fff;
-            transition: border-color 0.15s, background 0.15s;
+            border: none; background: transparent;
+            color: #8e8e8e;
+            transition: color 0.15s;
         }
-        .rds-btn:active, .rds-btn.pressed {
-            border-color: #fff; background: #111;
-        }
+        .rds-btn:active, .rds-btn.pressed { color: #fff; }
 
 
         /* ===== MOVIE INFO GRID (2 col, no border) ===== */
@@ -1358,6 +1356,8 @@
         }
         .pull-arrow.ready { transform: rotate(180deg); color: #fff; }
         .pull-inner.ready { color: #fff; }
+
+
 
     </style>
 </head>
@@ -1596,7 +1596,7 @@
                 <div class="ig-logo-wrapper" onclick="backToHome()">
                     <h1 class="ig-logo">amnesfubbia</h1>
                     <i class="fa-solid fa-chevron-down text-[10px] ml-0.5"></i>
-                    <span class="dot-notify"></span>
+                    <span class="dot-notify" onclick="event.stopPropagation(); openComingSoon()" style="cursor:pointer" title="Jadwal Rilis"></span>
                 </div>
                 <div class="flex gap-5">
                     <i class="fa-regular fa-square-plus cursor-pointer" style="font-size:24px" onclick="openComingSoon()"></i>
@@ -1826,7 +1826,7 @@
         <div class="actor-action-row">
             <div class="actor-btn-follow" onclick="searchByCast(window._currentActorId)">Filmografi</div>
             <div class="actor-btn-msg" id="actorImdbBtn" onclick="openActorImdb()">IMDb</div>
-            <div class="actor-btn-sq"><i class="fa-solid fa-chevron-down"></i></div>
+            <div class="actor-btn-sq" onclick="openActorShare()" title="Bagikan"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
         </div>
 
         <!-- Bio block -->
@@ -1912,16 +1912,16 @@
 
     <!-- Bottom nav reels — terpisah dari reelsModal agar tidak tertutup overlay -->
     <nav class="reels-bottom-nav" id="reelsBottomNav" style="display:none">
-        <div class="reels-bottom-item" onclick="closeReels(); updateActiveNav(document.getElementById('homeBtnNav')); backToHome()">
+        <div class="reels-bottom-item" onclick="closeReelDetail(); closeReels(); updateActiveNav(document.getElementById('homeBtnNav')); backToHome()">
             <i class="fa-solid fa-house"></i>
         </div>
-        <div class="reels-bottom-item" onclick="closeReels(); openSearch()">
+        <div class="reels-bottom-item" onclick="closeReelDetail(); closeReels(); openSearch()">
             <i class="fa-solid fa-magnifying-glass"></i>
         </div>
         <div class="reels-bottom-item active-reel-nav">
             <i class="fa-solid fa-clapperboard"></i>
         </div>
-        <div class="reels-bottom-item" onclick="closeReels(); updateActiveNav(document.getElementById('tvBtnNav')); openTvModal()">
+        <div class="reels-bottom-item" onclick="closeReelDetail(); closeReels(); updateActiveNav(document.getElementById('tvBtnNav')); openTvModal()">
             <i class="fa-solid fa-tv"></i>
         </div>
         <div class="reels-bottom-item" onclick="openBookmarksFromReels()">
@@ -2096,16 +2096,19 @@
         // =============================================
         const tvSchedules = {
             'RCTI': [
+                {time:'03:00',show:'Layar Drama Indonesia',genre:'Drama'},
                 {time:'04:30',show:'Seputar Indonesia Pagi',genre:'Berita'},
                 {time:'06:00',show:'Dahsyat',genre:'Hiburan'},
-                {time:'09:00',show:'Sinetron Pagi',genre:'Drama'},
+                {time:'09:30',show:'Sinetron Pagi',genre:'Drama'},
                 {time:'11:00',show:'Seputar Indonesia Siang',genre:'Berita'},
-                {time:'12:00',show:'Sinetron Siang',genre:'Drama'},
-                {time:'15:00',show:'Sinetron Sore',genre:'Drama'},
+                {time:'11:30',show:'Sinetron Siang',genre:'Drama'},
+                {time:'14:30',show:'Sinetron Sore',genre:'Drama'},
                 {time:'17:00',show:'Seputar Indonesia',genre:'Berita'},
-                {time:'19:00',show:'Sinetron Prime Time',genre:'Drama'},
-                {time:'21:00',show:'Infotainment',genre:'Hiburan'},
-                {time:'23:00',show:'Film Malam',genre:'Film'},
+                {time:'17:30',show:'Sinetron Sore',genre:'Drama'},
+                {time:'19:30',show:'Sinetron Prime Time',genre:'Drama'},
+                {time:'21:00',show:'Seputar Indonesia Malam',genre:'Berita'},
+                {time:'21:30',show:'Film Malam',genre:'Film'},
+                {time:'23:30',show:'Layar Drama Indonesia',genre:'Drama'},
             ],
             'GTV': [
                 {time:'05:00',show:'Morning Show',genre:'Hiburan'},
@@ -2321,7 +2324,7 @@
                 </div>`;
 
             let schedHTML = `<div class="tv-schedule-header">
-                <div class="tv-schedule-title">Jadwal Hari Ini</div>
+                <div class="tv-schedule-title">Jadwal Hari Ini <span style="font-weight:400;color:#444;font-size:8px;text-transform:none;letter-spacing:0">(perkiraan)</span></div>
                 <div class="tv-schedule-date">${wibStr}</div>
             </div>`;
 
@@ -2431,6 +2434,9 @@
             modal.classList.add('tv-mode');
             modal.style.display = 'block';
             document.getElementById('mTitle').innerText = '● LIVE: ' + name;
+            // Tandai tombol back agar kembali ke tvModal bukan home
+            const _mBackBtn = document.querySelector('#movieModal .fa-chevron-left');
+            if (_mBackBtn) _mBackBtn.setAttribute('onclick', 'handleModalBack()');
             document.getElementById('mDesc').innerText = '';
             document.getElementById('mLikeDisplay').innerText = '';
             document.getElementById('mDateDisplay').innerText = '';
@@ -3233,6 +3239,25 @@
             }
         }
 
+        function openActorShare() {
+            const name = document.getElementById('actorName').innerText;
+            if (!name) return;
+            const imdbId = window._actorImdbId || '';
+            const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(name + ' actor interview')}`;
+            const imdbUrl = imdbId ? `https://www.imdb.com/name/${imdbId}` : `https://www.google.com/search?q=${encodeURIComponent(name + ' actor')}`;
+            // Share sheet native jika tersedia
+            if (navigator.share) {
+                navigator.share({
+                    title: name,
+                    text: `Lihat profil ${name} di amnesfubbia`,
+                    url: imdbUrl
+                }).catch(() => {});
+            } else {
+                // Fallback: buka YouTube search aktor
+                window.open(searchUrl, '_blank');
+            }
+        }
+
         function openActorImdb() {
             if (window._actorImdbId) {
                 window.open(`https://www.imdb.com/name/${window._actorImdbId}`, '_blank');
@@ -3293,6 +3318,15 @@
         const PORTRAIT_REGEX = /\bvertical\b|\bportrait\b|9\s*:\s*16|\breels?\b|\btiktok\b|#shorts|\bshorts\b/i;
 
         async function openReels() {
+            // Pause/mute semua video dari modal film yang mungkin masih main
+            document.querySelectorAll('#carouselTrack iframe').forEach(f => {
+                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                try { f.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*'); } catch(e) {}
+            });
+            document.querySelectorAll('#mainVideoArea iframe').forEach(f => {
+                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                // Streaming server iframe - mute via src param tidak bisa, tapi remove src momentarily
+            });
             const modal = document.getElementById('reelsModal');
             modal.style.display = 'block';
             document.getElementById('reelsBottomNav').style.display = 'flex';
@@ -3305,6 +3339,10 @@
         }
 
         function closeReels() {
+            // Tutup detail sheet jika masih terbuka
+            document.getElementById('reelDetailOverlay').style.display = 'none';
+            document.getElementById('reelDetailSheet').style.display = 'none';
+            _rdsCurrentId = null; _rdsCurrentType = null;
             document.getElementById('reelsModal').style.display = 'none';
             document.getElementById('reelsBottomNav').style.display = 'none';
             document.body.style.overflow = 'auto';
@@ -3477,9 +3515,7 @@
                                  data-translated="0" data-orig="${encodeURIComponent(reel.synopsis)}" data-trans="">
                                 Lihat terjemahan
                             </div>` : ''}
-                            <div class="reel-detail-btn" onclick="openReelDetail(${reel.movieId}, '${reel.type}')">
-                                <i class="fa-solid fa-circle-info" style="font-size:10px"></i>Detail Film
-                            </div>
+                            <div class="reel-detail-btn" onclick="openReelDetail(${reel.movieId}, '${reel.type}')">Detail Film</div>
                         </div>
                         <div class="reel-actions">
                             <div class="reel-action-btn ${lib.liked ? 'liked' : ''}" 
@@ -4058,6 +4094,8 @@
             const btnCountry = document.getElementById('btnCountry');
             const btnGenre = document.getElementById('btnGenre');
             const btnYear = document.getElementById('yearBtn');
+            const btnRatingEl = document.getElementById('btnRating');
+            if(btnRatingEl) { btnRatingEl.innerHTML = 'Rating <i class="fa-solid fa-caret-down"></i>'; btnRatingEl.classList.remove('active-pill'); }
             btnCountry.innerHTML = 'Negara <i class="fa-solid fa-caret-down"></i>';
             btnGenre.innerHTML = 'Genre <i class="fa-solid fa-caret-down"></i>';
             btnYear.innerHTML = 'Tahun <i class="fa-solid fa-caret-down"></i>';
@@ -4245,10 +4283,6 @@
                 {n: 'Dreamworks', com: '521|778', img: 'Dreamwork.png', t: 'movie', s: true},
                 {n: 'Ghibli', com: '10342', img: 'Ghibli.png', t: 'movie', s: true},
                 {n: 'Anime', g: 16, img: 'Anime.png', t: 'movie', c: 'JP', s: true},
-                {n: 'Indonesia', c: 'ID', img: 'Indonesia.png', t: 'movie', s: false},
-                {n: 'Korea', c: 'KR', img: 'Korea.png', t: 'movie', s: false},
-                {n: 'India', c: 'IN', img: 'India.png', t: 'movie', s: false},
-                {n: 'Thailand', c: 'TH', img: 'Thailand.png', t: 'movie', s: false}
             ]; 
             const cont = document.getElementById('highlightList'); 
             hls.forEach(h => { 
@@ -4944,6 +4978,22 @@
             renderSynopsis();
         }
         
+        function handleModalBack() {
+            // Jika TV mode aktif, kembali ke tvModal
+            if (document.getElementById('movieModal').classList.contains('tv-mode')) {
+                _closeModalSilent();
+                document.getElementById('tvSearchInp').value = '';
+                document.getElementById('tvSearchBox').style.display = 'none';
+                renderTvList('');
+                document.getElementById('tvModal').style.display = 'block';
+                document.getElementById('tvModal').scrollTop = 0;
+                document.body.style.overflow = 'hidden';
+                history.replaceState({view: 'tv'}, '');
+            } else {
+                closeModal();
+            }
+        }
+
         function closeModal() { 
             const track = document.getElementById('carouselTrack'); 
             if(track) { 
@@ -5127,7 +5177,8 @@
         }
 
         async function loadEpisodes() { 
-            activeSeason = document.getElementById('seasonSel').value; 
+            activeSeason = document.getElementById('seasonSel').value;
+            activeEpisode = 1;
             const data = await fetchWithCache(`https://api.themoviedb.org/3/tv/${window.currentMediaId}/season/${activeSeason}?api_key=${API_KEY}`); 
             const episodes = data.episodes || [];
             document.getElementById('episodeGrid').innerHTML = episodes.map((e) => { 
@@ -5218,6 +5269,7 @@
                 document.body.classList.add('light-theme');
             }
         })();
+
 
         // ===== RECENTLY VIEWED =====
         const RV_KEY = 'recentlyViewed';
