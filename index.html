@@ -2644,7 +2644,7 @@
             if (_mBackBtn) _mBackBtn.setAttribute('onclick', 'handleModalBack()');
             document.getElementById('mDesc').innerText = '';
             document.getElementById('mLikeDisplay').innerText = '';
-            document.getElementById('mDateDisplay').innerText = '';
+            // mDateDisplay disabled
             document.getElementById('castContainer').innerHTML = '';
             document.getElementById('serverList').innerHTML = '';
             document.getElementById('seriesControl').classList.add('hidden');
@@ -2687,6 +2687,9 @@
             document.querySelectorAll('.tv-switcher-btn-new').forEach(b => b.classList.remove('active-ch'));
             el.classList.add('active-ch');
             document.getElementById('mTitle').innerText = '● LIVE: ' + name;
+            // Pastikan back btn tetap ke handleModalBack setelah switch channel
+            const _backBtn = document.querySelector('#movieModal .fa-chevron-left');
+            if (_backBtn) _backBtn.setAttribute('onclick', 'handleModalBack()');
 
             // Update schedule section
             const switcher = document.getElementById('tvChannelSwitcher');
@@ -2899,7 +2902,6 @@
                     <div class="poster-gallery-scroll" id="mPosterScroll"></div>
                 </div>
 <div id="mHashtags" style="display:none"></div>
-                <p id="mTranslateBtn" class="hidden" onclick="handleTranslate()" style="margin-top:4px"></p>
                 <div id="mDateDisplay" style="display:none"></div>
                 <div id="seriesControl" class="hidden mt-4 p-4 bg-zinc-950 rounded-2xl border border-zinc-900">
                     <div class="flex justify-between items-center mb-4">
@@ -5634,9 +5636,13 @@
                 document.body.style.overflow = 'hidden';
             } else {
                 document.body.style.overflow = 'hidden';
-                // Un-mute trailer setelah lightbox ditutup
-                document.querySelectorAll('#carouselTrack iframe').forEach(f => {
+                // Un-mute dan auto-play trailer aktif setelah lightbox ditutup
+                document.querySelectorAll('#carouselTrack iframe').forEach((f, i) => {
                     try { f.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*'); } catch(e) {}
+                    // Play hanya iframe yang aktif (currentIdx)
+                    if (i === currentIdx) {
+                        try { f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch(e) {}
+                    }
                 });
             }
         }
@@ -5907,6 +5913,12 @@
         function closeActorPhotos() {
             const m = document.getElementById('actorPhotosModal');
             if (m) m.style.display = 'none';
+            // Clear actor gallery agar tidak polusi lightbox film berikutnya
+            window._actorGallery = null;
+            if (window._prevGalleryImages !== undefined) {
+                window._galleryImages = window._prevGalleryImages;
+                window._prevGalleryImages = undefined;
+            }
             // Cek apakah actor modal masih terbuka
             if (document.getElementById('actorModal').style.display === 'block') {
                 document.body.style.overflow = 'hidden';
