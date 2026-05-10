@@ -5247,7 +5247,7 @@
                 <div class="mb-1">
                     <span class="ig-username" id="mModalTitle"></span>
                     <span id="mDesc" class="ig-caption"></span>
-                    <div class="mt-1"><span id="mToggleBtn" class="toggle-btn hidden" onclick="handleToggleDesc()">selengkapnya</span></div>
+                    <div class="mt-1"><span id="mToggleBtn" class="toggle-btn hidden" onclick="handleToggleDesc()">selengkapnya</span><p id="mTranslateBtn" class="hidden" onclick="handleTranslate()" style="margin-top:2px;font-size:11px;color:#fff;font-weight:700;cursor:pointer;display:inline-block"></p></div>
                 </div>
                 <div id="mInfoGrid" class="minfo-grid" style="display:none"></div>
                 <div id="mPosterGallery" class="poster-gallery-section" style="display:none">
@@ -5255,7 +5255,6 @@
                     <div class="poster-gallery-scroll" id="mPosterScroll"></div>
                 </div>
 <div id="mHashtags" style="display:none"></div>
-                <p id="mTranslateBtn" class="hidden" onclick="handleTranslate()" style="margin-top:4px"></p>
                 <div id="mDateDisplay" style="display:none"></div>
                 <div id="seriesControl" class="hidden mt-4 p-4 bg-zinc-950 rounded-2xl border border-zinc-900">
                     <div class="flex justify-between items-center mb-4">
@@ -5426,16 +5425,31 @@
         }
         
         function setupSwipe() { 
-            const overlay = document.getElementById('swipeOverlay'); overlay.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive:true}); 
+            const overlay = document.getElementById('swipeOverlay');
+            let _swSx = 0;
+            overlay.addEventListener('touchstart', e => { _swSx = e.touches[0].clientX; }, {passive:true}); 
             overlay.addEventListener('touchend', e => { 
-                let diff = startX - e.changedTouches[0].clientX; const slides = document.querySelectorAll('.carousel-slide'); 
+                let diff = _swSx - e.changedTouches[0].clientX;
+                const slides = document.querySelectorAll('.carousel-slide'); 
                 if(Math.abs(diff) > 50 && slides.length > 1) { 
-                    let oldIdx = currentIdx; if(diff > 0 && currentIdx < slides.length - 1) currentIdx++; else if(diff < 0 && currentIdx > 0) currentIdx--; 
+                    let oldIdx = currentIdx;
+                    if(diff > 0 && currentIdx < slides.length - 1) currentIdx++;
+                    else if(diff < 0 && currentIdx > 0) currentIdx--;
+                    if(oldIdx === currentIdx) return;
                     document.getElementById('carouselTrack').style.transform = `translateX(-${currentIdx * 100}%)`; 
-                    document.querySelectorAll('.dot').forEach((d, i) => { d.className = `dot w-1.5 h-1.5 rounded-full ${i===currentIdx?'bg-blue-500':'bg-zinc-700'}`; }); 
-                    const oldVid = document.getElementById(`vid-${oldIdx}`), newVid = document.getElementById(`vid-${currentIdx}`);
-                    if(oldVid) try{oldVid.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');}catch(e){}
-                    if(newVid) try{newVid.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');}catch(e){}
+                    document.querySelectorAll('.dot').forEach((d, i) => { d.className = `dot w-1.5 h-1.5 rounded-full ${i===currentIdx?'bg-blue-500':'bg-zinc-700'}`; });
+                    // Pause SEMUA slide dulu, baru play yang aktif
+                    slides.forEach(s => {
+                        const f = s.querySelector('iframe');
+                        if (!f) return;
+                        try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                        s.classList.remove('playing');
+                    });
+                    const newVid = document.getElementById(`vid-${currentIdx}`);
+                    if(newVid) {
+                        try { newVid.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch(e) {}
+                        newVid.closest('.carousel-slide')?.classList.add('playing');
+                    }
                 } 
             }); 
         }
@@ -5499,6 +5513,11 @@
         function openLightbox(startIdx) {
             const images = window._galleryImages || [];
             if (!images.length) return;
+            // Pause semua video yang sedang main
+            document.querySelectorAll('#carouselTrack iframe, #mainVideoArea iframe').forEach(f => {
+                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                try { f.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*'); } catch(e) {}
+            });
             _lbIdx = Math.max(0, Math.min(startIdx || 0, images.length - 1));
             const modal = document.getElementById('lightboxModal');
             const track = document.getElementById('lbTrack');
@@ -5545,8 +5564,23 @@
         function closeLightbox() {
             const modal = document.getElementById('lightboxModal');
             if (modal) modal.style.display = 'none';
-            document.body.style.overflow = 'hidden';
-            history.replaceState({view:'modal'}, '');
+            
+            // Cek apakah dibuka dari actor photos
+            if (window._prevGalleryImages !== undefined) {
+                // Restore gallery film
+                window._galleryImages = window._prevGalleryImages;
+                window._prevGalleryImages = undefined;
+                // Kembalikan actor photos modal
+                const actorPhotos = document.getElementById('actorPhotosModal');
+                if (actorPhotos) actorPhotos.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'hidden';
+                // Un-mute trailer setelah lightbox ditutup
+                document.querySelectorAll('#carouselTrack iframe').forEach(f => {
+                    try { f.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*'); } catch(e) {}
+                });
+            }
         }
 
         async function downloadLbImage() {
@@ -5554,22 +5588,53 @@
             if (!images[_lbIdx]) return;
             const img = images[_lbIdx];
             const size = img.isBackdrop ? 'original' : 'w780';
-            const url = `https://image.tmdb.org/t/p/${size}${img.path}`;
+            const directUrl = `https://image.tmdb.org/t/p/${size}${img.path}`;
             const btn = document.getElementById('lbDownloadBtn');
             if (btn) btn.className = 'fa-solid fa-spinner fa-spin lb-download';
+            
+            // Coba via CORS proxy untuk download langsung
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(directUrl)}`;
+            const filename = 'amnesfubbia' + img.path.replace(/[^a-zA-Z0-9.]/g, '_') + '.jpg';
+            
             try {
-                const resp = await fetch(url, {mode:'cors'});
+                const resp = await fetch(proxyUrl);
+                if (!resp.ok) throw new Error('proxy failed');
                 const blob = await resp.blob();
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = 'poster' + img.path.replace(/[^a-zA-Z0-9.]/g,'_');
+                a.download = filename;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+                setTimeout(() => URL.revokeObjectURL(a.href), 3000);
             } catch(e) {
-                // CORS fallback: open in new tab
-                window.open(url, '_blank');
+                // Fallback: canvas dengan proxy
+                try {
+                    const imgEl = new Image();
+                    imgEl.crossOrigin = 'anonymous';
+                    await new Promise((res, rej) => {
+                        imgEl.onload = res;
+                        imgEl.onerror = rej;
+                        imgEl.src = proxyUrl;
+                    });
+                    const canvas = document.createElement('canvas');
+                    canvas.width = imgEl.naturalWidth;
+                    canvas.height = imgEl.naturalHeight;
+                    canvas.getContext('2d').drawImage(imgEl, 0, 0);
+                    canvas.toBlob(blob => {
+                        if (!blob) { window.open(directUrl, '_blank'); return; }
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+                    }, 'image/jpeg', 0.95);
+                } catch(e2) {
+                    // Final fallback: buka di tab baru, user bisa long-press save
+                    window.open(directUrl, '_blank');
+                }
             } finally {
                 if (btn) btn.className = 'fa-solid fa-download lb-download';
             }
@@ -5730,14 +5795,56 @@
                     grid.innerHTML = '<div class="actor-photos-loading" style="color:#555">Foto tidak tersedia</div>';
                     return;
                 }
-                grid.innerHTML = profiles.map(p => `
-                    <div class="actor-photo-item">
+                // Simpan ke _actorGallery untuk lightbox khusus aktor
+                window._actorGallery = profiles.map(p => ({
+                    path: p.file_path,
+                    isBackdrop: false
+                }));
+                grid.innerHTML = profiles.map((p, idx) => `
+                    <div class="actor-photo-item" onclick="openActorLightbox(${idx})">
                         <img src="https://image.tmdb.org/t/p/w342${p.file_path}" loading="lazy" onload="this.style.opacity=1">
                     </div>`).join('');
             } catch(e) {
                 grid.innerHTML = '<div class="actor-photos-loading" style="color:#555">Gagal memuat foto</div>';
             }
         }
+
+        // Lightbox khusus foto pemeran (pakai lightbox yang sudah ada)
+        function openActorLightbox(startIdx) {
+            // Simpan gallery film ke temp, ganti dengan actor gallery
+            window._prevGalleryImages = window._galleryImages;
+            window._galleryImages = window._actorGallery || [];
+            if (!window._galleryImages.length) return;
+            
+            // Sembunyikan actor photos modal sementara
+            document.getElementById('actorPhotosModal').style.display = 'none';
+            
+            // Buka lightbox
+            const modal = document.getElementById('lightboxModal');
+            const track = document.getElementById('lbTrack');
+            const dots = document.getElementById('lbDots');
+            _lbIdx = Math.max(0, Math.min(startIdx, window._galleryImages.length - 1));
+            modal.style.display = 'flex';
+            // Tidak perlu push history lagi karena actorPhotos sudah push
+
+            track.innerHTML = window._galleryImages.map((img, i) => {
+                return `<div class="lb-slide" style="min-width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#000">
+                    <img src="https://image.tmdb.org/t/p/w780${img.path}"
+                         loading="${Math.abs(i - _lbIdx) <= 1 ? 'eager' : 'lazy'}"
+                         draggable="false"
+                         style="max-width:100vw;max-height:100vh;object-fit:contain;display:block">
+                </div>`;
+            }).join('');
+
+            if (window._galleryImages.length > 1 && window._galleryImages.length <= 15) {
+                dots.innerHTML = window._galleryImages.map(() => `<div class="lb-dot"></div>`).join('');
+                dots.style.display = 'flex';
+            } else { dots.style.display = 'none'; }
+
+            lbGoTo(_lbIdx, false);
+            setupLbSwipe();
+        }
+
 
         function closeActorPhotos() {
             const m = document.getElementById('actorPhotosModal');
