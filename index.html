@@ -1801,7 +1801,7 @@
                 <div class="stats">
                     <div class="stat-item" id="stat-movie" onclick="setFilter('type', 'movie', this)"><span class="stat-val">25.4rb</span><span class="stat-label">movie</span></div>
                     <div class="stat-item" id="stat-tv" onclick="setFilter('type', 'tv', this)"><span class="stat-val">8.2rb</span><span class="stat-label">tv</span></div>
-                    <div class="stat-item" id="stat-anime" onclick="setFilter('type', 'anime', this)"><span class="stat-val">8.5rb</span><span class="stat-label">anime</span></div>
+                    <div class="stat-item" id="stat-short" onclick="setFilter('type', 'short', this)"><span class="stat-val">1.5rb</span><span class="stat-label">short</span></div>
                 </div>
             </div>
 
@@ -4538,7 +4538,7 @@
                 {n: 'Pixar', com: '3', img: 'Pixar.png', t: 'movie', s: true},
                 {n: 'Dreamworks', com: '521|778', img: 'Dreamwork.png', t: 'movie', s: true},
                 {n: 'Ghibli', com: '10342', img: 'Ghibli.png', t: 'movie', s: true},
-                {n: 'Netflix', com: '213', img: 'Netflix.png', t: 'multi', s: true},
+                {n: 'Anime', g: 16, img: 'Anime.png', t: 'movie', c: 'JP', s: true},
             ]; 
             const cont = document.getElementById('highlightList'); 
             hls.forEach(h => { 
@@ -4708,7 +4708,7 @@
                 }
                 if(currentGenre) url += `&with_genres=${currentGenre}`;
                 if(currentCompany) url += `&with_companies=${currentCompany}`;
-                if(currentType === 'anime') { url += `&with_genres=16&with_origin_country=JP`; }
+                if(currentType === 'short') { url += `&with_runtime.lte=20&with_runtime.gte=1&vote_count.lte=5000`; }
                 if(currentSchedule === 'now_playing' || currentSchedule === 'upcoming') { 
                     const today = new Date().toISOString().split('T')[0]; 
                     if(currentSchedule === 'now_playing') { 
@@ -4742,7 +4742,7 @@
                 card.onclick = function() { openModal(m.id, mType); }; 
                 const _rd = m.release_date || m.first_air_date || '';
                 const _nb = isNewRelease(_rd) ? '<div class="badge-new">NEW</div>' : '';
-                card.innerHTML = `<div class="badge-rating">${(m.vote_average||0).toFixed(1)}</div><div class="badge-type">${currentType==='anime'?'ANIME':(mType==='tv'?'tv':'movie')}</div>${_nb}<img src="https://image.tmdb.org/t/p/w342${m.poster_path}" loading="lazy" onload="this.style.opacity=1" style="opacity:0">`;
+                card.innerHTML = `<div class="badge-rating">${(m.vote_average||0).toFixed(1)}</div><div class="badge-type">${currentType==='short'?'SHORT':(mType==='tv'?'tv':'movie')}</div>${_nb}<img src="https://image.tmdb.org/t/p/w342${m.poster_path}" loading="lazy" onload="this.style.opacity=1" style="opacity:0">`;
                 fragment.appendChild(card); 
             });
             grid.appendChild(fragment);
