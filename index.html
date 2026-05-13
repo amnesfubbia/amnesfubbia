@@ -1502,6 +1502,7 @@
         }
 
 
+
         /* ===== CUSTOM LIGHTBOX ===== */
         #lightboxModal {
             display: none; position: fixed; inset: 0; z-index: 10000;
@@ -5019,6 +5020,7 @@
                     }
                 });
 
+
                 const soR = document.getElementById('swipeOverlay');
                 soR.style.display = vidsToDisplay.length > 1 ? 'block' : 'none';
                 soR.style.pointerEvents = 'auto';
@@ -5173,10 +5175,10 @@
                     slideDiv.className = 'carousel-slide';
                     slideDiv.innerHTML = `<iframe id="vid-${i}" src="${embedUrl}" class="w-full h-full" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe><div class="yt-overlay-mask" onclick="void(0)"></div>`;
                     track.appendChild(slideDiv);
-                    // Hide YT controls after video starts playing (3 detik)
                     setTimeout(() => { slideDiv.classList.add('playing'); }, 3000);
                     if(vidsToDisplay.length > 1) { dots.innerHTML += `<div class="dot w-1.5 h-1.5 rounded-full ${i===currentIdx?'bg-blue-500':'bg-zinc-700'}"></div>`; }
-                }); 
+                });
+
                 const so = document.getElementById('swipeOverlay');
                 so.style.display = vidsToDisplay.length > 1 ? 'block' : 'none';
                 so.style.pointerEvents = 'auto'; // aktifkan kembali untuk swipe trailer
@@ -5539,6 +5541,8 @@
                 } 
             }); 
         }
+
+
         function updateLibButtons(id) { const isL = JSON.parse(localStorage.getItem('likes') || '[]').some(x=>x.id==id); const isB = JSON.parse(localStorage.getItem('bookmarks') || '[]').some(x=>x.id==id); document.getElementById('btnLikeModal').className = isL ? 'fa-solid fa-heart text-red-500 interaction-icon' : 'fa-regular fa-heart interaction-icon'; document.getElementById('btnBookModal').className = isB ? 'fa-solid fa-bookmark text-white interaction-icon' : 'fa-regular fa-bookmark interaction-icon'; document.getElementById('btnLikeModal').onclick = () => toggleLib('likes'); document.getElementById('btnBookModal').onclick = () => toggleLib('bookmarks'); }
         function toggleLib(k) { let items = JSON.parse(localStorage.getItem(k) || '[]'); const idx = items.findIndex(x => x.id == window.currentMediaId); idx > -1 ? items.splice(idx,1) : items.push({id: window.currentMediaId, type: window.currentMediaType}); localStorage.setItem(k, JSON.stringify(items)); updateLibButtons(window.currentMediaId); }
         async function switchTab(mode, el) { 
