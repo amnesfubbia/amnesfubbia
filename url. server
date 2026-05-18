@@ -1,0 +1,38 @@
+1. Vidrock.net `https://vidrock.net/embed/${type}/${id}${seriesSuffix}`; break;
+ 2. Vidstorm.ru
+`https://vidstorm.ru/embed/${type}/${id}${seriesSuffix}`; break;
+3. player.vidzee.wtf
+`https://player.vidzee.wtf/embed/${type}/${id}${seriesSuffix}`; break;
+4. vidlink.pro
+`https://vidlink.pro/${type}/${id}${seriesSuffix}`; break;
+5. vidsrc.wtf
+`https://vidsrc.wtf/1/${type}/${id}${seriesSuffix}`; break;
+6. vidnest.fun
+`https://vidnest.fun/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+ 7. 111movie.com
+`https://111movies.com/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+8. vidfast.pro
+`https://vidfast.pro/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;              
+ 9. 2embed.online
+`https://www.2embed.online/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+10. player.videasy.net
+`https://player.videasy.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+ 11. nontongo.win `https://www.nontongo.win/embed/${type}/${id}${seriesSuffix}`; break;
+ 12. vidscrme.ru `https://vidsrcme.ru/embed/${type}/${id}${seriesSuffix}`; break;
+ 13. vidfast.net `https://vidfast.net/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
+ 14. 111.movies.net
+`https://111movies.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+15. player.vidify.top
+`https://player.vidify.top/embed/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
+ 16. player.vidplus.to
+`https://player.vidplus.to/embed/${type}/${id}${seriesSuffix}`; break;
+ 17. vidsrc.ru
+`https://vidsrc.ru/${type}/${currentImdbId || id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
+ 18. multiembed.mov
+`https://multiembed.mov/?video_id=${id}&tmdb=1${type==='tv'?`&s=${s}&e=${e}`:''}`; break;  
+ 19. 2embed.cc `https://www.2embed.cc/embed/${type}/${id}${seriesSuffix}`; break;
+ 20. vidsrc. cc
+`https://vidsrc.cc/v2/embed/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
+ 20. vidsrc.me
+`https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv'?`&s=${s}&e=${e}`:''}`; break;
+ 21. warezcdn.site `https://warezcdn.site/${type==='tv'?'serie':'filme'}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
