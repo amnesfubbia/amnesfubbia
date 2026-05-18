@@ -1,4 +1,5 @@
-1. Vidrock.net `https://vidrock.net/embed/${type}/${id}${seriesSuffix}`; break;
+1. Vidrock.net
+`https://vidrock.net/embed/${type}/${id}${seriesSuffix}`; break;
  2. Vidstorm.ru
 `https://vidstorm.ru/embed/${type}/${id}${seriesSuffix}`; break;
 3. player.vidzee.wtf
@@ -17,9 +18,12 @@
 `https://www.2embed.online/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
 10. player.videasy.net
 `https://player.videasy.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
- 11. nontongo.win `https://www.nontongo.win/embed/${type}/${id}${seriesSuffix}`; break;
- 12. vidscrme.ru `https://vidsrcme.ru/embed/${type}/${id}${seriesSuffix}`; break;
- 13. vidfast.net `https://vidfast.net/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
+ 11. nontongo.win
+`https://www.nontongo.win/embed/${type}/${id}${seriesSuffix}`; break;
+ 12. vidscrme.ru
+`https://vidsrcme.ru/embed/${type}/${id}${seriesSuffix}`; break;
+ 13. vidfast.net
+`https://vidfast.net/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
  14. 111.movies.net
 `https://111movies.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
 15. player.vidify.top
@@ -33,6 +37,6 @@
  19. 2embed.cc `https://www.2embed.cc/embed/${type}/${id}${seriesSuffix}`; break;
  20. vidsrc. cc
 `https://vidsrc.cc/v2/embed/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
- 20. vidsrc.me
+ 21. vidsrc.me
 `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv'?`&s=${s}&e=${e}`:''}`; break;
- 21. warezcdn.site `https://warezcdn.site/${type==='tv'?'serie':'filme'}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+ 22. warezcdn.site `https://warezcdn.site/${type==='tv'?'serie':'filme'}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
