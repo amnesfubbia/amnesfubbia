@@ -191,22 +191,20 @@
         .ig-hashtags { color: #e0f1ff; display: block; margin-top: 4px; font-size: 13px; line-height: 1.4; }
         .ig-date { color: #a8a8a8; font-size: 11px; text-transform: uppercase; }
         
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #1c1c1c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 9000; }
-        .bottom-nav i { color: #a8a8a8; transition: color 0.3s; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: #000; border-top: 1px solid #1c1c1c; display: flex; justify-content: space-around; align-items: center; padding: 0; height: 52px; z-index: 9000; }
+        .bottom-nav i { color: #a8a8a8; transition: color 0.3s; font-size: 20px; }
         .bottom-nav i.active-nav { color: #fff; }
 
         /* ===== SAFE AREA INSET FIX (Android status bar) ===== */
         /* Semua overlay fixed perlu padding-top agar tidak tertutup status bar */
         .modal-player, #actorModal, #tvModal, #notifModal, #sideMenu, #searchOverlay,
-        #reelsModal, #reelDetailSheet, #soundtrackModal, #actorPhotosModal, #reelsBottomNav {
+        #reelsModal, #reelDetailSheet, #soundtrackModal, #actorPhotosModal {
             padding-top: env(safe-area-inset-top, 0px);
         }
         /* Landscape dan lightbox: inset sudah handle safe area */
         #landscapeOverlay, #lightboxModal { padding-top: 0; }
         /* Bottom nav: padding bottom untuk gesture bar */
-        .bottom-nav, .tv-bottom-nav, .reels-bottom-nav {
-            padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
-        }
+        /* Nav padding seragam - tidak ada extra safe-area */
 
         /* LOADING SPINNER FOR IFRAME */
         .iframe-loader { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; z-index: 5; }
@@ -937,8 +935,8 @@
         .tv-bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: #000; border-top: 1px solid #1c1c1c;
-            display: flex; justify-content: space-around;
-            padding: 12px 0; z-index: 9700;
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 0; height: 52px; z-index: 9700;
             width: 100%;
         }
         .tv-bottom-item {
@@ -1020,13 +1018,13 @@
 
         /* Info teks kiri bawah */
         .reel-info {
-            position: absolute; bottom: 72px; left: 0; right: 72px;
+            position: absolute; bottom: 62px; left: 0; right: 0;
             padding: 0 16px; z-index: 10; pointer-events: none;
         }
         .reel-title {
-            font-size: 15px; font-weight: 800; color: #fff;
+            font-size: 22px; font-weight: 900; color: #fff;
             text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-            margin-bottom: 2px; line-height: 1.3;
+            margin-bottom: 4px; line-height: 1.2; letter-spacing: -0.5px;
             display: -webkit-box; -webkit-line-clamp: 2;
             -webkit-box-orient: vertical; overflow: hidden;
         }
@@ -1048,19 +1046,32 @@
             -webkit-tap-highlight-color: transparent;
         }
         .reel-translate-btn:active { color: rgba(255,255,255,0.9); }
-        .reel-detail-btn {
-            pointer-events: auto; display: inline-block;
-            padding: 0; border-radius: 0;
-            background: transparent; border: none;
-            font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6);
-            cursor: pointer; -webkit-tap-highlight-color: transparent;
-            transition: color 0.15s;
+        .reel-action-buttons {
+            display: flex; gap: 10px; margin-top: 10px;
+            pointer-events: auto;
         }
-        .reel-detail-btn:active { color: #fff; }
+        .reel-btn-watch {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+            background: #fff; color: #000; border: none;
+            border-radius: 30px; padding: 12px 16px;
+            font-size: 14px; font-weight: 800;
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+        }
+        .reel-btn-watch:active { opacity: 0.85; }
+        .reel-btn-detail {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+            background: rgba(255,255,255,0.18); color: #fff; border: none;
+            border-radius: 30px; padding: 12px 16px;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .reel-btn-detail:active { opacity: 0.85; }
 
         /* Tombol aksi kanan bawah (like, bookmark) */
         .reel-actions {
-            position: absolute; bottom: 72px; right: 12px;
+            position: absolute; top: 35%; right: 12px;
+            transform: translateY(-50%);
             display: flex; flex-direction: column; align-items: center; gap: 18px;
             z-index: 10;
         }
@@ -1108,7 +1119,7 @@
         .reels-bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0; z-index: 9810;
             display: flex; justify-content: space-around; align-items: center;
-            padding: 12px 0;
+            padding: 0; height: 52px;
             background: #000; border-top: 1px solid #1c1c1c;
         }
         .reels-bottom-item {
@@ -1171,8 +1182,8 @@
             color: #444; font-size: 20px;
         }
         .rds-title {
-            font-size: 15px; font-weight: 800; color: #fff;
-            line-height: 1.25; margin-bottom: 5px;
+            font-size: 19px; font-weight: 900; color: #fff;
+            line-height: 1.2; margin-bottom: 6px; letter-spacing: -0.3px;
         }
         .rds-meta-row {
             display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px;
@@ -1236,20 +1247,26 @@
             font-size: 11px; font-weight: 600; color: #e0e0e0; line-height: 1.3;
         }
         .rds-btn-row {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 8px; padding: 14px 16px 80px;
+            display: flex; gap: 10px; padding: 14px 16px 80px;
         }
-        .rds-btn {
-            padding: 12px; border-radius: 12px;
-            font-size: 11px; font-weight: 800;
-            text-align: center; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 0.5px;
-            -webkit-tap-highlight-color: transparent;
-            border: none; background: transparent;
-            color: #8e8e8e;
-            transition: color 0.15s;
+        .rds-btn-watch {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: #fff; color: #000; border: none;
+            border-radius: 30px; padding: 14px 16px;
+            font-size: 15px; font-weight: 800;
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+            transition: opacity 0.15s;
         }
-        .rds-btn:active, .rds-btn.pressed { color: #fff; }
+        .rds-btn-watch:active { opacity: 0.8; }
+        .rds-btn-info {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(255,255,255,0.15); color: #fff; border: none;
+            border-radius: 30px; padding: 14px 16px;
+            font-size: 15px; font-weight: 700;
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+            backdrop-filter: blur(4px); transition: opacity 0.15s;
+        }
+        .rds-btn-info:active { opacity: 0.8; }
 
 
         /* ===== MOVIE INFO GRID (2 col, no border) ===== */
@@ -1298,19 +1315,39 @@
         }
         .similar-scroll::-webkit-scrollbar { display: none; }
         .similar-card {
-            flex: 0 0 70px; cursor: pointer;
+            flex: 0 0 110px; cursor: pointer;
             -webkit-tap-highlight-color: transparent;
+            border-radius: 10px; overflow: hidden;
+            position: relative; background: #111;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         .similar-poster {
-            width: 70px; height: 100px; border-radius: 6px;
+            width: 110px; height: 165px;
             object-fit: cover; background: #111;
-            display: block; margin-bottom: 3px;
+            display: block;
             opacity: 0; transition: opacity 0.3s;
         }
         .similar-poster.loaded { opacity: 1; }
         .similar-rating {
             font-size: 9px; color: #555; text-align: center;
         }
+        /* Overlay gradient + info di dalam card */
+        .similar-card-overlay {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
+            padding: 10px 10px 10px;
+        }
+        .similar-card-title {
+            font-size: 13px; font-weight: 800; color: #fff;
+            line-height: 1.3; margin-bottom: 6px;
+            display: -webkit-box; -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .similar-card-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; color: rgba(255,255,255,0.7); font-weight: 600;
+        }
+        .similar-card-star { color: #fff; margin-right: 3px; font-size: 11px; }
 
         /* ===== RECENTLY VIEWED strip ===== */
         #recentlyViewedWrapper {
@@ -1945,12 +1982,15 @@
                         <i class="fa-solid fa-expand interaction-icon" onclick="enterLandscape()"></i>
                         <i class="fa-solid fa-arrow-rotate-left interaction-icon text-[20px]" onclick="replayTrailer()"></i>
                     </div>
-                    <i id="btnBookModal" class="interaction-icon"></i>
                 </div>
                 
                 <div class="px-4 bg-black pb-1 flex justify-between items-end">
                     <span id="mLikeDisplay" class="ig-likes-count"></span>
-                    <span class="text-[11px] font-bold text-white cursor-pointer mb-[5px] uppercase tracking-tighter" onclick="openSoundtrack()">Soundtrack</span>
+                    <div style="display:flex;align-items:center;gap:14px;margin-bottom:5px">
+                        <span class="text-[11px] font-bold text-white cursor-pointer uppercase tracking-tighter" onclick="changeServer(99, this)" id="btnTrailerTop">Trailer</span>
+                        <span class="text-[11px] font-bold text-white cursor-pointer uppercase tracking-tighter" onclick="openSoundtrack()">Soundtrack</span>
+                        <i id="btnBookModal" class="interaction-icon" style="font-size:22px"></i>
+                    </div>
                 </div>
             </div>
             
@@ -1986,8 +2026,8 @@
                 <div id="serverList" class="server-scroll-wrapper mt-4 px-4"></div>
                 
                 <div class="dl-grid">
-                    <button id="btnDownload1" class="dl-link-btn" onclick="handleDownload()">Unduh</button>
-                    <button id="btnTrailerDailymotion" class="dl-link-btn btn-trailer-special" onclick="changeServer(99, this)">Trailer</button>
+                    <button class="dl-link-btn" onclick="handleDownload()"><i class="fa-solid fa-download" style="margin-right:6px;font-size:10px"></i>Vidvault</button>
+                    <button class="dl-link-btn" onclick="handleDownload2()"><i class="fa-solid fa-download" style="margin-right:6px;font-size:10px"></i>02Movie</button>
                 </div>
                 <div id="mSimilarSection" class="similar-section" style="display:none">
                     <span class="similar-label">Film Serupa</span>
@@ -2190,8 +2230,12 @@
             <div class="rds-info-grid" id="rdsInfoGrid"></div>
         </div>
         <div class="rds-btn-row">
-            <div class="rds-btn" id="rdsBtnStream" onclick="openReelStream(this)">Tonton</div>
-            <div class="rds-btn" id="rdsBtnDownload" onclick="openReelDownload(this)">Unduh</div>
+            <button class="rds-btn-watch" id="rdsBtnStream" onclick="openReelStream(this)">
+                <i class="fa-solid fa-play" style="font-size:12px"></i> Tonton
+            </button>
+            <button class="rds-btn-info" id="rdsBtnDownload" onclick="openReelDownload(this)">
+                <i class="fa-solid fa-download" style="font-size:13px"></i> Unduh
+            </button>
         </div>
     </div>
 
@@ -2930,6 +2974,16 @@
         function handleDownload() {
             if(window.currentMediaId && window.currentMediaType) {
                 const downloadUrl = `https://vidvault.ru/${window.currentMediaType}/${window.currentMediaId}`;
+                window.open(downloadUrl, '_blank');
+            } else {
+                alert("ID Media tidak ditemukan.");
+            }
+        }
+
+        function handleDownload2() {
+            if(window.currentMediaId && window.currentMediaType) {
+                const path = window.currentMediaType === 'tv' ? 'series' : 'movie';
+                const downloadUrl = `https://02moviedownloader.site/api/download/${path}/${window.currentMediaId}`;
                 window.open(downloadUrl, '_blank');
             } else {
                 alert("ID Media tidak ditemukan.");
@@ -3730,9 +3784,19 @@
                         if (!best) return null;
 
                         const rawTitle = m.title || m.name || '';
-                        const title = isNonLatin(rawTitle)
-                            ? (await fetchWithCache(`https://api.themoviedb.org/3/${mtype}/${m.id}?api_key=${API_KEY}&language=en-US`).then(r => r.title || r.name || rawTitle).catch(() => rawTitle))
-                            : rawTitle;
+                        let title = rawTitle;
+                        if (isNonLatin(rawTitle)) {
+                            try {
+                                const enData = await fetchWithCache(`https://api.themoviedb.org/3/${mtype}/${m.id}?api_key=${API_KEY}&language=en-US`);
+                                // Coba title EN dulu, fallback ke original_title (biasanya latin)
+                                const enTitle = enData.title || enData.name || '';
+                                const origTitle = enData.original_title || enData.original_name || '';
+                                // Pilih yang latin: EN title > original title > rawTitle
+                                if (enTitle && !isNonLatin(enTitle)) title = enTitle;
+                                else if (origTitle && !isNonLatin(origTitle)) title = origTitle;
+                                else title = enTitle || rawTitle;
+                            } catch { title = rawTitle; }
+                        }
                         const year  = (m.release_date || m.first_air_date || '').split('-')[0];
                         const poster = m.poster_path || '';
                         const synopsis = m.overview || '';
@@ -3773,7 +3837,7 @@
                     // js_api diaktifkan agar bisa pause via postMessage
                     // enablejsapi=1 wajib agar YT.Player onStateChange bekerja
                     // controls=1 dibiarkan agar event state change tidak diblokir
-                    const embedUrl = `https://www.youtube.com/embed/${reel.videoKey}?enablejsapi=1&autoplay=${isNew && _reelsData.length===1?1:0}&rel=0&modestbranding=1&showinfo=0&playsinline=1&iv_load_policy=3&mute=0&origin=${encodeURIComponent(location.origin || location.href.split('/').slice(0,3).join('/'))}`;
+                    const embedUrl = `https://www.youtube.com/embed/${reel.videoKey}?enablejsapi=1&autoplay=${isNew && _reelsData.length===1?1:0}&rel=0&modestbranding=1&showinfo=0&playsinline=1&iv_load_policy=3&mute=0&controls=0&origin=${encodeURIComponent(location.origin || location.href.split('/').slice(0,3).join('/'))}`;
                     const typeLabel = reel.type === 'movie' ? 'Film' : 'Serial';
                     const ratingStr = reel.rating ? `· ★${reel.rating}` : '';
                     const synopsisId = `reel-syn-${reel.movieId}`;
@@ -3782,6 +3846,10 @@
                     slide.innerHTML = `
                         <div class="reel-video-wrap">
                             <iframe src="${embedUrl}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                            <!-- Tutup header YouTube (atas) -->
+                            <div style="position:absolute;top:0;left:0;right:0;height:52px;background:#000;z-index:2;pointer-events:none"></div>
+                            <!-- Tutup UI bawah YouTube (share, thumbnail, logo) -->
+                            <div style="position:absolute;bottom:0;left:0;right:0;height:50px;background:#000;z-index:2;pointer-events:none"></div>
                         </div>
                         <div class="reel-heart-pop" id="heart-${reel.movieId}"><i class="fa-solid fa-heart"></i></div>
                         <div class="reel-gradient"></div>
@@ -3795,7 +3863,14 @@
                                  data-translated="0" data-orig="${encodeURIComponent(reel.synopsis)}" data-trans="">
                                 Lihat terjemahan
                             </div>` : ''}
-                            <div class="reel-detail-btn" onclick="openReelDetail(${reel.movieId}, '${reel.type}')">Detail Film</div>
+                            <div class="reel-action-buttons">
+                            <button class="reel-btn-watch" onclick="openReelStream(null, ${reel.movieId}, '${reel.type}')">
+                                <i class="fa-solid fa-play" style="font-size:11px"></i> Tonton
+                            </button>
+                            <button class="reel-btn-detail" onclick="openReelDetail(${reel.movieId}, '${reel.type}')">
+                                <i class="fa-solid fa-circle-info" style="font-size:12px"></i> Detail
+                            </button>
+                        </div>
                         </div>
                         <div class="reel-actions">
                             <div class="reel-action-btn ${lib.liked ? 'liked' : ''}" 
@@ -4279,10 +4354,13 @@
             }
         }
 
-        function openReelStream(btn) {
-            if (!_rdsCurrentId || !_rdsCurrentType) return;
-            if (btn) { btn.classList.add('pressed'); setTimeout(() => btn.classList.remove('pressed'), 300); }
-            const url = buildEmbedUrl(_rdsCurrentType, _rdsCurrentId, 1, 1, 1);
+        function openReelStream(btn, directId, directType) {
+            // Bisa dipanggil dari sheet (pakai _rdsCurrentId) atau dari slide langsung
+            const id = directId || _rdsCurrentId;
+            const type = directType || _rdsCurrentType;
+            if (!id || !type) return;
+            if (btn && btn.classList) { btn.classList.add('pressed'); setTimeout(() => btn && btn.classList.remove('pressed'), 300); }
+            const url = buildEmbedUrl(type, id, 1, 1, 1);
             window.open(url, '_blank');
         }
 
@@ -4766,7 +4844,7 @@
                 card.onclick = function() { openModal(m.id, mType); }; 
                 const _rd = m.release_date || m.first_air_date || '';
                 const _nb = isNewRelease(_rd) ? '<div class="badge-new">NEW</div>' : '';
-                card.innerHTML = `<div class="badge-rating">${(m.vote_average||0).toFixed(1)}</div><div class="badge-type">${currentType==='short'?'SHORT':(mType==='tv'?'tv':'movie')}</div>${_nb}<img src="https://image.tmdb.org/t/p/w342${m.poster_path}" loading="lazy" onload="this.style.opacity=1" style="opacity:0">`;
+                card.innerHTML = `<div class="badge-rating">${(m.vote_average||0).toFixed(1)}</div><div class="badge-type">${currentType==='short'?'SHORT':(mType==='tv'?'tv':'movie')}</div>${_nb}<img src="https://image.tmdb.org/t/p/w185${m.poster_path}" loading="lazy" onload="this.style.opacity=1" style="opacity:0">`;
                 fragment.appendChild(card); 
             });
             grid.appendChild(fragment);
@@ -5630,7 +5708,16 @@
             const grid = document.getElementById('feedGrid'); 
             grid.innerHTML = ''; 
             if (!items.length) { 
-                grid.innerHTML = '<div class="col-span-3 text-center py-20 text-zinc-500 text-xs">Belum ada konten tersimpan</div>'; 
+                grid.innerHTML = `<div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:20px">
+                    <div style="width:80px;height:80px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center">
+                        <i class="fa-regular fa-square-plus" style="font-size:32px;color:#555"></i>
+                    </div>
+                    <div style="text-align:center">
+                        <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:8px">No items in your list</div>
+                        <div style="font-size:14px;color:#8e8e8e">Start browsing to add movies &amp; shows</div>
+                    </div>
+                    <div onclick="backToHome()" style="background:#1a1a2e;border:1px solid #2a2a4e;border-radius:30px;padding:14px 40px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent">Browse Content</div>
+                </div>`;
                 return; 
             } 
             const promises = items.map(i => 
@@ -6133,10 +6220,18 @@
                 section.style.display = 'block';
                 scroll.innerHTML = items.map(m => {
                     const r = m.vote_average ? m.vote_average.toFixed(1) : '';
+                    const title = m.title || m.name || '';
+                    const year = (m.release_date || m.first_air_date || '').split('-')[0];
                     return `<div class="similar-card" onclick="openModal(${m.id}, '${type}')">
-                        <img class="similar-poster" src="https://image.tmdb.org/t/p/w185${m.poster_path}"
+                        <img class="similar-poster" src="https://image.tmdb.org/t/p/w342${m.poster_path}"
                              loading="lazy" onload="this.classList.add('loaded')">
-                        ${r ? `<div class="similar-rating">${r}</div>` : ''}
+                        <div class="similar-card-overlay">
+                            <div class="similar-card-title">${title}</div>
+                            <div class="similar-card-meta">
+                                <span><i class="fa-solid fa-star similar-card-star"></i>${r || '—'}</span>
+                                <span>${year || ''}</span>
+                            </div>
+                        </div>
                     </div>`;
                 }).join('');
             } catch(e) {}
