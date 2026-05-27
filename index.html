@@ -46,14 +46,27 @@
         @keyframes fadeIn { to { opacity: 1; } }
 
         .profile-header { padding: 15px 15px 0 15px; background: #000; }
-        @media all and (display-mode: standalone) {
-            .profile-header { padding-top: max(44px, calc(env(safe-area-inset-top, 0px) + 15px)); }
-            .modal-player .sticky, #actorModal .actor-topbar,
-            #tvModal .tv-topbar, #notifModal .notif-topbar,
-            #sideMenu .about-topbar, #searchOverlay .search-header {
-                padding-top: max(44px, calc(env(safe-area-inset-top, 0px) + 10px)) !important;
-                height: auto !important;
-            }
+        /* PWA mode - applied via JS detection */
+        body.pwa-mode .profile-header {
+            padding-top: max(48px, calc(env(safe-area-inset-top, 0px) + 18px)) !important;
+        }
+        body.pwa-mode .modal-player > div > div.sticky,
+        body.pwa-mode #actorModal .actor-topbar,
+        body.pwa-mode #tvModal .tv-topbar,
+        body.pwa-mode #notifModal .notif-topbar,
+        body.pwa-mode #sideMenu .about-topbar,
+        body.pwa-mode #searchOverlay .search-header {
+            padding-top: max(44px, env(safe-area-inset-top, 0px)) !important;
+            height: auto !important;
+            min-height: 54px;
+        }
+        /* Fallback: selalu tambah safe-area ke body */
+        body {
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+        /* Tapi profile-header perlu extra padding karena ada di dalam body */
+        .profile-header {
+            padding-top: max(15px, calc(env(safe-area-inset-top, 0px) + 8px));
         }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .ig-logo-wrapper { display: flex; align-items: center; gap: 4px; position: relative; cursor: pointer; }
@@ -2321,6 +2334,15 @@
                 document.getElementById('splashScreen').style.display = 'none';
                 document.getElementById('mainProfile').style.display = 'block';
             }, 1200);
+
+            // PWA detection
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches
+                || window.navigator.standalone === true
+                || document.referrer.includes('android-app://');
+            if (isPWA) document.body.classList.add('pwa-mode');
+            window.matchMedia('(display-mode: standalone)').addEventListener('change', e => {
+                document.body.classList.toggle('pwa-mode', e.matches);
+            });
         });
 
         window.onload = () => {
