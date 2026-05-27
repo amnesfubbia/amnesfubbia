@@ -29,11 +29,7 @@
         }
         body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; -webkit-tap-highlight-color: transparent; }
 
-        /* Safe area inset trick - expose value ke JS via CSS */
-        :root {
-            --sat: env(safe-area-inset-top, 0px);
-            --sab: env(safe-area-inset-bottom, 0px);
-        }
+        :root { --status-bar-height: 28px; }
         /* Fix Horizontal Scroll & Safari Smoothness */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -webkit-overflow-scrolling: touch; }
@@ -51,17 +47,8 @@
         @keyframes fadeIn { to { opacity: 1; } }
 
         .profile-header { padding: 15px 15px 0 15px; background: #000; }
-        /* PWA / Status bar fix */
-        :root { --status-bar-height: 0px; }
-        body { padding-top: var(--status-bar-height); }
-        .profile-header { padding-top: max(15px, calc(var(--status-bar-height) + 8px)); }
-        body.pwa-mode .profile-header { padding-top: max(15px, calc(var(--status-bar-height) + 12px)) !important; }
-        body.pwa-mode #actorModal .actor-topbar,
-        body.pwa-mode #tvModal .tv-topbar,
-        body.pwa-mode #notifModal .notif-topbar,
-        body.pwa-mode #sideMenu .about-topbar { padding-top: calc(var(--status-bar-height) + 8px) !important; height: auto !important; }
-        body.pwa-mode .search-header { top: var(--status-bar-height) !important; }
-        body.pwa-mode #searchOverlay { padding-top: calc(var(--status-bar-height) + 54px) !important; }
+        /* PWA Status Bar Fix */
+        body.pwa-mode { padding-top: var(--status-bar-height); }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .ig-logo-wrapper { display: flex; align-items: center; gap: 4px; position: relative; cursor: pointer; }
         .ig-logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: -1px; }
@@ -2329,35 +2316,18 @@
                 document.getElementById('mainProfile').style.display = 'block';
             }, 1200);
 
-            // PWA / Status bar height detection
-            function applyStatusBarFix() {
+            // PWA Status Bar Fix
+            (function() {
                 const isPWA = window.matchMedia('(display-mode: standalone)').matches
                     || window.navigator.standalone === true
                     || document.referrer.includes('android-app://');
-                
                 if (isPWA) {
                     document.body.classList.add('pwa-mode');
-                    // Baca safe-area dari CSS (jika browser support)
-                    const safeTop = parseInt(getComputedStyle(document.documentElement)
-                        .getPropertyValue('--sat') || '0') || 0;
-                    // Fallback: gunakan selisih screen vs visual viewport
-                    let statusH = safeTop;
-                    if (!statusH && window.screen && window.innerHeight) {
-                        // Di Android TWA, window.screenY biasanya = tinggi status bar
-                        statusH = window.screenY || 0;
-                        // Fallback hard minimum
-                        if (!statusH) statusH = 28;
-                    }
-                    document.documentElement.style.setProperty('--status-bar-height', statusH + 'px');
-                } else {
-                    document.body.classList.remove('pwa-mode');
-                    document.documentElement.style.setProperty('--status-bar-height', '0px');
+                    // Pakai screenY sebagai tinggi status bar di Android
+                    const h = window.screenY > 0 ? window.screenY : 28;
+                    document.documentElement.style.setProperty('--status-bar-height', h + 'px');
                 }
-            }
-            applyStatusBarFix();
-            window.matchMedia('(display-mode: standalone)').addEventListener('change', applyStatusBarFix);
-            // Re-apply saat resize (orientasi berubah)
-            window.addEventListener('resize', applyStatusBarFix);
+            })();
         });
 
         window.onload = () => {
