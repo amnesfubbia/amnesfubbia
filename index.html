@@ -8,6 +8,12 @@
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="amnesfubbia.png">
+    <link rel="preconnect" href="https://api.themoviedb.org">
+    <link rel="preconnect" href="https://image.tmdb.org">
+    <link rel="preconnect" href="https://www.youtube.com">
+    <link rel="dns-prefetch" href="https://www.youtube.com">
+    <link rel="dns-prefetch" href="https://vidrock.net">
+    <link rel="dns-prefetch" href="https://vidlink.pro">
     <meta property="og:title" content="amnesfubbia">
     <meta property="og:description" content="Discover, watch & archive film dan serial favoritmu.">
     <meta property="og:image" content="amnesfubbia.png">
@@ -154,6 +160,7 @@
         .carousel-track { display: flex; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: 100%; }
         .carousel-slide { min-width: 100%; aspect-ratio: 16/9; position: relative; background: #000; overflow: hidden; }
         .carousel-slide iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .carousel-slide::after { content:''; position:absolute; inset:44px 0 44px 0; z-index:6; background:transparent; pointer-events:none; }
         .swipe-overlay { position: absolute; inset: 0; z-index: 10; background: transparent; }
         .interaction-icon { font-size: 24px; cursor: pointer; color: #fff; transition: transform 0.1s; }
         .interaction-icon:active { transform: scale(1.2); }
@@ -987,6 +994,13 @@
             background: #000;
             overflow: hidden;
         }
+        /* Overlay transparan di atas video reel - blokir tap ke kontrol YT */
+        .reel-video-wrap::after {
+            content: '';
+            position: absolute; inset: 0;
+            z-index: 3; background: transparent;
+            pointer-events: auto;
+        }
         .reel-video-wrap iframe {
             width: 100%; height: 100%;
             border: none; pointer-events: none;
@@ -1068,7 +1082,7 @@
 
         /* Tombol aksi kanan bawah (like, bookmark) */
         .reel-actions {
-            position: absolute; top: 35%; right: 12px;
+            position: absolute; top: 42%; right: 12px;
             transform: translateY(-50%);
             display: flex; flex-direction: column; align-items: center; gap: 18px;
             z-index: 10;
@@ -1245,7 +1259,8 @@
             font-size: 11px; font-weight: 600; color: #e0e0e0; line-height: 1.3;
         }
         .rds-btn-row {
-            display: flex; gap: 8px; padding: 14px 16px 80px; flex-wrap: wrap;
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px; padding: 14px 16px 80px;
         }
         .rds-btn-watch, .rds-btn-info {
             flex: 0 0 auto; padding: 8px 16px;
@@ -2029,7 +2044,7 @@
                     <button class="dl-link-btn" onclick="handleDownload2()"><i class="fa-solid fa-download" style="margin-right:6px;font-size:10px"></i>Download 2</button>
                 </div>
                 <div id="mSimilarSection" class="similar-section" style="display:none">
-                    <span class="similar-label">Movie Serupa</span>
+                    <span class="similar-label">Similar Movies</span>
                     <div class="similar-scroll" id="mSimilarScroll"></div>
                 </div>
             </div>
@@ -2166,8 +2181,8 @@
         <!-- Topbar — tombol back + judul Reels -->
         <div class="reels-topbar">
             <div style="display:flex;align-items:center;gap:8px;pointer-events:auto">
-                <i class="fa-solid fa-chevron-left reels-back-btn" onclick="closeReels()" style="pointer-events:auto"></i>
-                <span style="font-size:16px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:-0.3px">Reels</span>
+                <i class="fa-solid fa-chevron-left reels-back-btn" onclick="closeReels()" style="pointer-events:auto;font-size:20px"></i>
+                <span style="font-size:22px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:-0.5px">Reels</span>
             </div>
             <div style="width:32px"></div>
         </div>
@@ -3053,7 +3068,7 @@
                     <button id="btnTrailerDailymotion" class="dl-link-btn btn-trailer-special" onclick="changeServer(99, this)">Trailer</button>
                 </div>
                 <div id="mSimilarSection" class="similar-section" style="display:none">
-                    <span class="similar-label">Movie Serupa</span>
+                    <span class="similar-label">Similar Movies</span>
                     <div class="similar-scroll" id="mSimilarScroll"></div>
                 </div>`;
             }
@@ -5514,7 +5529,7 @@
                     <button id="btnTrailerDailymotion" class="dl-link-btn btn-trailer-special" onclick="changeServer(99, this)">Trailer</button>
                 </div>
                 <div id="mSimilarSection" class="similar-section" style="display:none">
-                    <span class="similar-label">Movie Serupa</span>
+                    <span class="similar-label">Similar Movies</span>
                     <div class="similar-scroll" id="mSimilarScroll"></div>
                 </div>`;
             }
