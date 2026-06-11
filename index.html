@@ -104,33 +104,33 @@
 
         /* PWA Status Bar Fix */
         body.pwa-mode { padding-top: var(--status-bar-height); }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px 14px 0; }
         .ig-logo-wrapper { display: flex; align-items: center; gap: 4px; position: relative; cursor: pointer; }
         .ig-logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: -1px; }
         .dot-notify { width: 7px; height: 7px; background-color: #ff3b30; border-radius: 50%; display: inline-block; margin-left: 2px; }
         
-        .profile-info { display: flex; align-items: center; gap: 28px; margin-bottom: 15px; }
+        .profile-info { display: flex; align-items: center; gap: 28px; margin-bottom: 15px; padding: 0 14px; }
         .profile-pic-container { position: relative; width: 78px; height: 78px; }
         .profile-pic-logo { width: 74px; height: 74px; border-radius: 50%; border: 1px solid #262626; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; padding: 12px; }
         .profile-pic-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
         .add-story-btn { position: absolute; bottom: 2px; right: 2px; width: 22px; height: 22px; background: #0095f6; border: 2.5px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #fff; z-index: 10; }
 
-        .stats { display: flex; flex-grow: 1; justify-content: space-between; text-align: center; padding-right: 10px; }
+        .stats { display: flex; flex-grow: 1; justify-content: space-between; text-align: center; padding-right: 20px; }
         .stat-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; color: #8e8e8e; }
         .stat-val { font-weight: 700; font-size: 16px; color: #fff; line-height: 1; margin-bottom: 2px; }
         .stat-label { font-size: 13px; font-weight: 400; line-height: 1; }
         .stat-item.active-stat { color: #fff; }
         
-        .bio { font-size: 13px; line-height: 1.4; margin-bottom: 15px; margin-top: -8px; }
+        .bio { font-size: 13px; line-height: 1.4; margin-bottom: 15px; margin-top: -8px; padding: 0 14px; }
         .bio-name-wrapper { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
         .bio-name { font-weight: 700; font-size: 13px; display: inline-block; }
 
-        .action-buttons { display: flex; gap: 6px; margin-bottom: 15px; }
+        .action-buttons { display: flex; gap: 6px; margin-bottom: 15px; padding: 0 14px; }
         .btn-ig { flex: 1; background: #262626; border-radius: 8px; padding: 7px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; color: #fff; transition: background 0.2s; }
         .btn-ig.active { background: #363636; border: 1px solid #555; }
         .btn-icon-sq { width: 34px; background: #262626; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        #filterBar { display: none; margin-bottom: 15px; }
+        #filterBar { display: none; margin-bottom: 15px; padding: 0 14px; }
         .pill-grid { display: grid; gap: 6px; }
         .pill { background: transparent; border: 1px solid #1c1c1c; color: #fff; padding: 7px 0; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; text-align: center; cursor: pointer; }
         .pill.active-pill { border: 1px solid #fff; background: rgba(255,255,255,0.05); }
@@ -141,7 +141,7 @@
         #filterOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9400; }
         .filter-item { padding: 16px; font-size: 14px; text-align: center; border-bottom: 1px solid #262626; color: #eee; cursor: pointer; }
 
-        .highlights-wrapper { padding: 0 15px 15px 15px; border-bottom: 1px solid #1c1c1c; }
+        .highlights-wrapper { padding: 0 14px 15px 14px; border-bottom: 1px solid #1c1c1c; }
         .highlights-container { display: flex; gap: 18px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .highlight-item { flex: 0 0 62px; text-align: center; cursor: pointer; }
         .highlight-circle { width: 62px; height: 62px; border-radius: 50%; border: 0.5px solid #333; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; background: #000; transition: transform 0.2s, border 0.3s; overflow: hidden; }
@@ -254,7 +254,7 @@
         /* PENYELARASAN WARNA TOMBOL TRAILER */
         .btn-trailer-special { background: #000; color: #fff; border: 1px solid #333; }
 
-        .cast-wrapper { display: flex; overflow-x: auto; gap: 15px; padding: 15px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .cast-wrapper { display: flex; overflow-x: auto; gap: 15px; padding: 8px 0 10px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .cast-item { flex: 0 0 65px; text-align: center; cursor: pointer; }
         .cast-img-border { 
             width: 64px; height: 64px; border-radius: 50%; padding: 2.5px; 
@@ -394,7 +394,7 @@
         .about-feat-text { flex: 1; }
         .about-feat-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 1px; }
         .about-feat-desc { font-size: 12px; color: #8e8e8e; line-height: 1.3; }
-        .about-feat-chevron { color: #333; font-size: 12px; }
+        .about-feat-chevron { color: #666; font-size: 12px; }
 
         /* Info rows (settings-style) */
         .about-info-list {
@@ -422,7 +422,7 @@
         .about-link-row:last-child { border-radius: 0 0 14px 14px; border-bottom: none; }
         .about-link-row:active { background: #1a1a1a; }
         .about-link-label { font-size: 14px; color: #fff; font-weight: 500; }
-        .about-link-arrow { color: #444; font-size: 12px; }
+        .about-link-arrow { color: #666; font-size: 12px; }
 
         /* About Page hero - solid black, no glow */
         .about-hero {
@@ -624,7 +624,7 @@
 
         /* Cover / backdrop AMOLED hitam — tidak ada blur */
         .actor-cover {
-            position: relative; height: 90px; overflow: hidden; background: #000000;
+            position: relative; height: 60px; overflow: hidden; background: #000000;
         }
         .actor-cover-blur {
             display: none; /* Sembunyikan elemen blur - AMOLED mode */
@@ -1486,15 +1486,15 @@
         .modal-rating-badge.imdb i { color: #f5c518; }
 
         /* ===== SIMILAR FILMS strip ===== */
-        .similar-section { padding: 14px 0 4px; }
+        .similar-section { padding: 10px 0 2px; }
         .similar-label {
-            font-size: 10px; font-weight: 800; color: #555;
+            font-size: 10px; font-weight: 800; color: #666;
             text-transform: uppercase; letter-spacing: 2px;
             padding: 0 15px; margin-bottom: 10px; display: block;
         }
         .similar-scroll {
             display: flex; gap: 8px; overflow-x: auto;
-            padding: 0 15px 4px; scrollbar-width: none;
+            padding: 0 15px 8px; scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
         }
         .similar-scroll::-webkit-scrollbar { display: none; }
@@ -1531,7 +1531,7 @@
             display: flex; justify-content: space-between; align-items: center;
             font-size: 11px; color: rgba(255,255,255,0.7); font-weight: 600;
         }
-        .similar-card-star { color: #fff; margin-right: 3px; font-size: 11px; }
+        .similar-card-star { color: #f5c518; margin-right: 3px; font-size: 11px; }
 
         /* ===== RECENTLY VIEWED strip ===== */
         #recentlyViewedWrapper {
@@ -1539,13 +1539,13 @@
             border-bottom: 1px solid #1c1c1c;
         }
         .recently-label {
-            font-size: 10px; font-weight: 800; color: #555;
+            font-size: 10px; font-weight: 800; color: #666;
             text-transform: uppercase; letter-spacing: 2px;
             margin-bottom: 10px; display: block;
         }
         .recently-scroll {
             display: flex; gap: 8px; overflow-x: auto;
-            scrollbar-width: none; -webkit-overflow-scrolling: touch;
+            padding: 0 14px 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch;
         }
         .recently-scroll::-webkit-scrollbar { display: none; }
         .recently-item {
@@ -1570,10 +1570,10 @@
         /* Recently viewed header row */
         .recently-header {
             display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 10px; padding: 0 14px;
         }
         .recently-clear-btn {
-            font-size: 10px; font-weight: 700; color: #555;
+            font-size: 10px; font-weight: 700; color: #666;
             cursor: pointer; -webkit-tap-highlight-color: transparent;
             padding: 2px 0;
         }
@@ -2441,6 +2441,10 @@
                     <button class="dl-link-btn" onclick="handleDownload4()">Down4</button>
                     <button class="dl-link-btn" onclick="handleDownload5()">Down5</button>
                 </div>
+                <div id="mCollectionSection" class="similar-section" style="display:none">
+                    <span class="similar-label" id="mCollectionLabel">Part of Collection</span>
+                    <div class="similar-scroll" id="mCollectionScroll" style="padding:4px 4px 4px 0"></div>
+                </div>
                 <div id="mSimilarSection" class="similar-section" style="display:none">
                     <span class="similar-label">Similar Movies</span>
                     <div class="similar-scroll" id="mSimilarScroll"></div>
@@ -2619,7 +2623,7 @@
         <div class="rds-header">
             <div id="rdsPosterWrap" style="flex-shrink:0;width:56px;height:82px;position:relative;">
                 <div id="rdsPosterSkeleton" class="rds-poster-skeleton" style="position:absolute;inset:0;width:100%;height:100%"></div>
-                <img id="rdsPoster" class="rds-poster" src="" alt=""
+                <img id="rdsPoster" class="rds-poster" src="" alt="Movie poster"
                      style="display:none;position:absolute;inset:0;width:100%;height:100%"
                      onload="this.style.display='block';document.getElementById('rdsPosterSkeleton').style.display='none';"
                      onerror="this.style.display='none';document.getElementById('rdsPosterSkeleton').style.display='none';document.getElementById('rdsPosterFallback').style.display='flex';">
@@ -3462,6 +3466,14 @@
             } else { showToast('Media tidak ditemukan.'); }
         }
 
+        // Download per episode — konsisten dengan Down1, pakai activeSeason global
+        function handleEpDownload(epNum) {
+            const id = window.currentMediaId;
+            const s = activeSeason || 1;
+            if (!id) { showToast('Media tidak ditemukan.'); return; }
+            window.open(`https://vidvault.ru/tv/${id}/${s}/${epNum}`, '_blank');
+        }
+
         // ===== BACK BUTTON LOGIC (diperbaiki) =====
         // Fungsi close "silent" - tidak mengubah nav aktif, tidak push history baru
         function _closeModalSilent() {
@@ -4051,7 +4063,7 @@
                 const filmGrid = document.getElementById('actorMovieGrid');
                 filmGrid.innerHTML = '';
                 if (movieMovies.length === 0) {
-                    filmGrid.innerHTML = '<div style="padding:40px;text-align:center;color:#333;font-size:12px">No movie data.</div>';
+                    filmGrid.innerHTML = '<div style="padding:40px;text-align:center;color:#666;font-size:12px">No movie data.</div>';
                 } else {
                     movieMovies.forEach(m => {
                         const rawT = m.title || m.name || '';
@@ -4102,7 +4114,7 @@
                 const tvGrid = document.getElementById('actorTvGrid');
                 tvGrid.innerHTML = '';
                 if (tvMovies.length === 0) {
-                    tvGrid.innerHTML = '<div style="padding:40px;text-align:center;color:#333;font-size:12px">No series data.</div>';
+                    tvGrid.innerHTML = '<div style="padding:40px;text-align:center;color:#666;font-size:12px">No series data.</div>';
                 } else {
                     tvMovies.forEach(m => {
                         const rawT = m.title || m.name || '';
@@ -4409,9 +4421,9 @@
                 if (newReels.length === 0 && isNew) {
                     container.innerHTML = `
                         <div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
-                            <i class="fa-regular fa-circle-play" style="font-size:48px;color:#333"></i>
+                            <i class="fa-regular fa-circle-play" style="font-size:48px;color:#555"></i>
                             <div style="font-size:14px;font-weight:700;color:#555">Tidak Ada Konten</div>
-                            <div style="font-size:12px;color:#333;text-align:center;padding:0 40px">Gagal memuat trailer</div>
+                            <div style="font-size:12px;color:#666;text-align:center;padding:0 40px">Gagal memuat trailer</div>
                         </div>`;
                     _reelsLoading = false;
                     return;
@@ -6147,6 +6159,11 @@
             const _genreIds = (dId.genres || []).map(g => g.id);
             loadSimilarMovies(id, type, _genreIds);
 
+            // Collection/Franchise (movie only)
+            if (type === 'movie' && dId.belongs_to_collection) {
+                loadCollection(dId.belongs_to_collection.id, id);
+            }
+
             // Poster gallery (non-blocking)
             loadPosterGallery(id, type);
         }
@@ -6208,6 +6225,7 @@
                 track.innerHTML = ''; 
             } 
             const _rb = document.getElementById('mRatingBar'); if(_rb){ _rb.style.display='none'; _rb.innerHTML=''; }
+            const _cs = document.getElementById('mCollectionSection'); if(_cs) { _cs.style.display='none'; document.getElementById('mCollectionScroll').innerHTML=''; }
             const _ss = document.getElementById('mSimilarSection'); if(_ss) _ss.style.display='none';
             const _pg = document.getElementById('mPosterGallery'); if(_pg){ _pg.style.display='none'; document.getElementById('mPosterScroll').innerHTML=''; }
             const _ig2 = document.getElementById('mInfoGrid'); if(_ig2){ _ig2.style.display='none'; _ig2.innerHTML=''; }
@@ -6465,7 +6483,7 @@
                 // Tombol terjemahkan hanya tampil jika ada sinopsis
                 const synopsisHTML = epOverview
                     ? `<div class="ep-synopsis" id="syn-${epId}">${epOverview}</div>`
-                    : `<div class="ep-synopsis" style="color:#333;font-style:italic">No synopsis available.</div>`;
+                    : `<div class="ep-synopsis" style="color:#555;font-style:italic">No synopsis available.</div>`;
 
                 const actionRowHTML = '';
 
@@ -6489,7 +6507,7 @@
                         <button class="ep-action-btn ep-btn-watch" onclick="changeEpisode(${epNum}, this.closest('.ep-card')); document.getElementById('movieModal').scrollTo({top:0,behavior:'smooth'})">
                             <i class="fa-solid fa-play" style="font-size:8px"></i> Watch
                         </button>
-                        <button class="ep-action-btn ep-btn-download" onclick="(function(){const id=window.currentMediaId,s=document.getElementById('seasonSel').value||1;window.open('https://vidvault.ru/tv/'+id+'/'+s+'/${epNum}','_blank')})()">
+                        <button class="ep-action-btn ep-btn-download" onclick="handleEpDownload(${epNum})">
                             <i class="fa-solid fa-download" style="font-size:8px"></i> Download
                         </button>
                         ${epOverview ? `<button class="ep-action-btn ep-btn-translate" id="transbtn-${epId}" onclick="translateEpSynopsis('${epId}', this, event)">See Translation</button>` : ''}
@@ -7344,13 +7362,13 @@
             _exploreLoading = true;
             const grid = document.getElementById('exploreGrid');
             if (!grid) { _exploreLoading = false; return; }
-            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#333;font-size:11px">Loading...</div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Loading...</div>`;
             try {
                 const data = await fetchWithCache(`https://api.themoviedb.org/3/trending/all/week?api_key=${API_KEY}&language=en-US`);
                 const items = (data.results || []).filter(m => m.backdrop_path && (m.media_type === 'movie' || m.media_type === 'tv'));
                 renderExploreGrid(grid, items.slice(0, 12));
             } catch(e) {
-                grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#333;font-size:11px">Failed to load.</div>`;
+                grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Failed to load.</div>`;
             }
             _exploreLoading = false;
         }
@@ -7360,13 +7378,13 @@
             _exploreLoading = true;
             const grid = document.getElementById('exploreGrid');
             if (!grid) { _exploreLoading = false; return; }
-            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#333;font-size:11px">Loading...</div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Loading...</div>`;
             try {
                 const data = await fetchWithCache(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&with_genres=${gid}&page=1`);
                 const items = (data.results || []).filter(m => m.backdrop_path);
                 renderExploreGrid(grid, items.slice(0, 12), 'movie');
             } catch(e) {
-                grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#333;font-size:11px">Failed to load.</div>`;
+                grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Failed to load.</div>`;
             }
             _exploreLoading = false;
         }
@@ -7376,7 +7394,7 @@
             _exploreLoading = true;
             const grid = document.getElementById('exploreGrid');
             if (!grid) { _exploreLoading = false; return; }
-            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#333;font-size:11px">Loading...</div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Loading...</div>`;
             try {
                 const today = new Date();
                 const y = today.getFullYear();
@@ -7393,14 +7411,14 @@
                 ].sort((a,b) => b.popularity - a.popularity).slice(0, 12);
                 renderExploreGrid(grid, combined);
             } catch(e) {
-                grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#333;font-size:11px">Failed to load.</div>`;
+                grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Failed to load.</div>`;
             }
             _exploreLoading = false;
         }
 
         function renderExploreGrid(grid, items, forceType) {
             if (!items.length) {
-                grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#333;font-size:11px">No results.</div>`;
+                grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">No results.</div>`;
                 return;
             }
             grid.innerHTML = items.map(m => {
@@ -7483,7 +7501,7 @@
         async function loadDecadeGrid() {
             const grid = document.getElementById('decadeGrid');
             if (!grid) return;
-            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#333;font-size:11px">Loading...</div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Loading...</div>`;
             const decade = DECADES.find(d => d.label === _decadeSelected);
             if (!decade) return;
             const dateParam = _decadeType === 'movie'
@@ -7495,7 +7513,7 @@
                 );
                 const items = (data.results || []).filter(m => m.backdrop_path).slice(0, 12);
                 if (!items.length) {
-                    grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#333;font-size:11px">No results.</div>`;
+                    grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">No results.</div>`;
                     return;
                 }
                 grid.innerHTML = items.map(m => {
@@ -7517,7 +7535,7 @@
                     </div>`;
                 }).join('');
             } catch(e) {
-                grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#333;font-size:11px">Failed to load.</div>`;
+                grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Failed to load.</div>`;
             }
         }
 
@@ -7527,6 +7545,49 @@
         function switchAwardTab() {}
 
         const AWARD_CONFIG = {};
+
+        // ===== COLLECTION / FRANCHISE =====
+        async function loadCollection(collectionId, currentMovieId) {
+            const section = document.getElementById('mCollectionSection');
+            const scroll = document.getElementById('mCollectionScroll');
+            const label = document.getElementById('mCollectionLabel');
+            if (!section || !scroll) return;
+            try {
+                const data = await fetchWithCache(`https://api.themoviedb.org/3/collection/${collectionId}?api_key=${API_KEY}&language=en-US`);
+                const parts = (data.parts || [])
+                    .filter(m => m.backdrop_path || m.poster_path)
+                    .sort((a, b) => (a.release_date || '').localeCompare(b.release_date || ''));
+                if (!parts.length) return;
+                if (label) label.textContent = data.name || 'Part of Collection';
+                scroll.innerHTML = parts.map(m => {
+                    const isCurrent = m.id == currentMovieId;
+                    const img = m.backdrop_path || m.poster_path;
+                    const title = m.title || m.name || '';
+                    const year = (m.release_date || '').split('-')[0];
+                    const rating = m.vote_average ? m.vote_average.toFixed(1) : '';
+                    return `<div onclick="openModal(${m.id},'movie')"
+                        style="flex-shrink:0;width:160px;border-radius:10px;overflow:hidden;cursor:pointer;
+                               position:relative;aspect-ratio:16/9;background:#111;
+                               ${isCurrent ? 'box-shadow:0 0 0 2px #fff' : ''}">
+                        <img src="https://image.tmdb.org/t/p/w300${img}" loading="lazy"
+                             onload="this.style.opacity=1"
+                             style="opacity:0;width:100%;height:100%;object-fit:cover;transition:opacity 0.3s">
+                        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.88) 0%,transparent 60%)"></div>
+                        <div style="position:absolute;bottom:0;left:0;right:0;padding:6px 8px">
+                            <div style="font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</div>
+                            <div style="font-size:9px;color:#aaa;margin-top:1px;display:flex;gap:5px">
+                                ${rating ? `<span style="color:#f5c518;font-weight:700">★ ${rating}</span>` : ''}
+                                ${year ? `<span>${year}</span>` : ''}
+                            </div>
+                        </div>
+                        ${isCurrent ? `<div style="position:absolute;top:5px;left:5px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border-radius:4px;font-size:8px;font-weight:700;color:#fff;padding:2px 6px">Now</div>` : ''}
+                    </div>`;
+                }).join('');
+                section.style.display = 'block';
+            } catch(e) {
+                if (section) section.style.display = 'none';
+            }
+        }
 
         // ===== PULL TO REFRESH =====
         (function initPullToRefresh() {
