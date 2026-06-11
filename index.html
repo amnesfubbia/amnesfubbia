@@ -2748,26 +2748,6 @@
             initFilters(); initHighlights(); loadFeed(); setupSwipe(); initSmartSearch(); initTvChannels();
             // Pre-load YouTube IFrame API agar sudah siap saat reels dibuka
             loadYTApi();
-            // Isi popular chips dari trending TMDb
-            const container = document.getElementById('popularChips');
-            if (container) {
-                // Tampilkan fallback dulu selagi fetch
-                const fallbackChips = ['Avengers','One Piece','Interstellar','Squid Game','Parasite','Dune','Breaking Bad','Inception'];
-                const renderChips = (list) => {
-                    container.innerHTML = list.map(t =>
-                        `<span onclick="quickSearch('${t.replace(/'/g,"\\\'")}')" style="background:#111;border:1px solid #1c1c1c;border-radius:20px;padding:6px 14px;font-size:12px;color:#ccc;cursor:pointer;-webkit-tap-highlight-color:transparent">${t}</span>`
-                    ).join('');
-                };
-                renderChips(fallbackChips);
-                // Fetch trending untuk chips yang selalu relevan
-                fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&language=en-US`)
-                    .then(r => r.json())
-                    .then(data => {
-                        const trendChips = (data.results || []).slice(0, 8).map(m => m.title || m.name).filter(Boolean);
-                        if (trendChips.length >= 4) renderChips(trendChips);
-                    })
-                    .catch(() => {}); // fallback tetap tampil jika fetch gagal
-            }
             window.addEventListener('scroll', () => { 
                 document.getElementById('backToTop').style.display = window.scrollY > 500 ? 'flex' : 'none'; 
             }); 
@@ -3415,6 +3395,21 @@
             }
         }
 
+        // ===== TOAST NOTIFICATION =====
+        function showToast(msg, duration = 2500) {
+            let toast = document.getElementById('_appToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = '_appToast';
+                toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;padding:10px 20px;border-radius:20px;border:1px solid #2a2a2a;z-index:99999;pointer-events:none;opacity:0;transition:opacity 0.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.5)';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, duration);
+        }
+
         function handleDownload() {
             if(window.currentMediaId && window.currentMediaType) {
                 const isTV = window.currentMediaType === 'tv';
@@ -3423,7 +3418,7 @@
                     : `https://vidvault.ru/movie/${window.currentMediaId}`;
                 window.open(downloadUrl, '_blank');
             } else {
-                alert("Media ID not found.");
+                showToast('Media tidak ditemukan.');
             }
         }
 
@@ -3434,7 +3429,7 @@
                     ? `https://02moviedownloader.site/api/download/tv/${window.currentMediaId}/${activeSeason || 1}/${activeEpisode || 1}`
                     : `https://02moviedownloader.site/api/download/movie/${window.currentMediaId}`;
                 window.open(downloadUrl, '_blank');
-            } else { alert("Media ID not found."); }
+            } else { showToast('Media tidak ditemukan.'); }
         }
 
         function handleDownload3() {
@@ -3444,7 +3439,7 @@
                     ? `https://rivestream.ru/download?type=tv&id=${window.currentMediaId}`
                     : `https://dl.peachify.top/movie/${window.currentMediaId}`;
                 window.open(url, '_blank');
-            } else { alert("Media ID not found."); }
+            } else { showToast('Media tidak ditemukan.'); }
         }
 
         function handleDownload4() {
@@ -3454,7 +3449,7 @@
                     ? `https://rivestream.ru/download?type=tv&id=${window.currentMediaId}`
                     : `https://rivestream.ru/download?type=movie&id=${window.currentMediaId}`;
                 window.open(url, '_blank');
-            } else { alert("Media ID not found."); }
+            } else { showToast('Media tidak ditemukan.'); }
         }
 
         function handleDownload5() {
@@ -3464,7 +3459,7 @@
                     ? `https://cinesrc.st/download/tv/${window.currentMediaId}`
                     : `https://cinesrc.st/download/movie/${window.currentMediaId}`;
                 window.open(url, '_blank');
-            } else { alert("Media ID not found."); }
+            } else { showToast('Media tidak ditemukan.'); }
         }
 
         // ===== BACK BUTTON LOGIC (diperbaiki) =====
@@ -5585,6 +5580,7 @@
             document.getElementById('searchEmptyState').style.display = 'block';
             document.getElementById('searchContent').style.display = 'none';
             document.getElementById('searchTypeTabs').style.display = 'none';
+            window._isSearchMode = false;
             searchQuery = '';
         }
 
@@ -5592,6 +5588,7 @@
             document.getElementById('searchEmptyState').style.display = 'none';
             document.getElementById('searchContent').style.display = 'flex';
             document.getElementById('searchTypeTabs').style.display = 'flex';
+            window._isSearchMode = true;
         }
 
         function quickSearch(term) {
