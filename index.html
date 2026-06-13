@@ -234,8 +234,8 @@
         .modal-player { display: none; position: fixed; inset: 0; z-index: 8000; background: #000; overflow-y: auto; }
         .carousel-track { display: flex; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: 100%; }
         .carousel-slide { min-width: 100%; aspect-ratio: 16/9; position: relative; background: #000; overflow: hidden; }
-        .carousel-slide iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .carousel-slide::after { content:''; position:absolute; inset:44px 0 44px 0; z-index:6; background:transparent; pointer-events:none; }
+        .carousel-slide iframe { position: absolute; top: -60px; left: 0; width: 100%; height: calc(100% + 120px); border: none; }
+        .carousel-slide::after { content:''; position:absolute; inset:0; z-index:6; background:transparent; pointer-events:none; }
         .swipe-overlay { position: absolute; inset: 0; z-index: 10; background: transparent; }
         .interaction-icon { font-size: 24px; cursor: pointer; color: #fff; transition: transform 0.1s; }
         .interaction-icon:active { transform: scale(1.2); }
@@ -826,6 +826,17 @@
             border-radius: 4px;
         }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        /* Reusable skeleton classes */
+        .sk { background: linear-gradient(90deg, #1a1a1a 25%, #252525 50%, #1a1a1a 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+        .sk-poster { width: 100%; aspect-ratio: 2/3; border-radius: 8px; }
+        .sk-landscape { width: 100%; aspect-ratio: 16/9; border-radius: 10px; }
+        .sk-card-c { width: 100%; aspect-ratio: 2/3; border-radius: 8px; display: flex; flex-direction: column; gap: 5px; }
+        .sk-line { height: 10px; border-radius: 4px; }
+        .sk-line-short { height: 10px; width: 60%; border-radius: 4px; }
+        .sk-circle { border-radius: 50%; }
+        .sk-ep { width: 100%; height: 100px; border-radius: 10px; }
+        .skeleton-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 3px; }
+        .skeleton-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px; }
 
         /* --- SOUNDTRACK --- */
         @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -3932,7 +3943,7 @@
             document.getElementById('statAge').innerText = '—';
             document.getElementById('actorPic').src = '';
             document.getElementById('actorCoverBlur').style.backgroundImage = '';
-            document.getElementById('actorMovieGrid').innerHTML = '<div class="col-span-3 py-16 text-center text-zinc-600 text-xs">Loading...</div>';
+            document.getElementById('actorMovieGrid').innerHTML = skeletonListCard(4);
             document.getElementById('actorTvGrid').innerHTML = '';
             document.getElementById('actorKnownForWrapper').style.display = 'none';
             document.getElementById('actorKnownFor').innerHTML = '';
@@ -4699,7 +4710,7 @@
             _rdsCurrentType = type;
 
             // Reset — show skeletons
-            document.getElementById('rdsTitle').innerText = 'Loading...';
+            document.getElementById('rdsTitle').innerHTML = `<div class="sk sk-line" style="width:70%;height:13px;display:inline-block"></div>`;
             document.getElementById('rdsMeta').innerHTML = '';
             document.getElementById('rdsRatings').innerHTML = '';
             document.getElementById('rdsSynopsis').style.display = 'none';
@@ -4782,8 +4793,17 @@
                 // Director
                 const crew = (d.credits && d.credits.crew) || [];
                 const director = crew.find(c => c.job === 'Director');
-                const dirName = director ? director.name
+                let dirName = director ? director.name
                     : (type === 'tv' ? (d.created_by && d.created_by[0] ? d.created_by[0].name : '—') : '—');
+                if (dirName !== '—' && isNonLatin(dirName) && director) {
+                    try {
+                        const pd = await fetchWithCache(`https://api.themoviedb.org/3/person/${director.id}?api_key=${API_KEY}&language=en-US`);
+                        const aka = pd.also_known_as || [];
+                        const latin = aka.find(n => n && !isNonLatin(n));
+                        if (latin) dirName = latin;
+                        else if (pd.name && !isNonLatin(pd.name)) dirName = pd.name;
+                    } catch {}
+                }
 
                 const countries = (d.production_countries || []).map(c => c.name).join(', ') || '—';
                 const studios   = (d.production_companies || []).slice(0,2).map(c => c.name).join(', ') || '—';
@@ -5206,7 +5226,7 @@
         async function filterByDate(dateStr, el) {
             if(el) { document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active-date')); el.classList.add('active-date'); }
             const list = document.getElementById('calendarList');
-            list.innerHTML = '<div class="text-center py-10 text-zinc-500 text-xs animate-pulse">Loading...</div>';
+            list.innerHTML = skeletonListCard(4);
             try {
                 const mediaType = calendarMediaType || 'movie';
                 let apiUrl;
@@ -5247,12 +5267,17 @@
                     const year = releaseDate.split('-')[0];
                     const rating = (m.vote_average || 0).toFixed(1);
                     const genres = (m.genre_ids || []).slice(0, 2).map(id => `<span class="cal-genre-pill">${genreMap[id] || ''}</span>`).join('');
-                    const posterSrc = m.poster_path ? `https://image.tmdb.org/t/p/w185${m.poster_path}` : '';
+                    const posterContent = m.poster_path
+                        ? `<img src="https://image.tmdb.org/t/p/w185${m.poster_path}" class="w-full h-full object-cover" loading="lazy" onload="this.style.opacity=1" style="opacity:0;transition:opacity 0.3s">`
+                        : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a 0%,#111 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+                            <i class="fa-solid fa-film" style="font-size:20px;color:#2a2a2a"></i>
+                            <div style="font-size:9px;font-weight:700;color:#2a2a2a;text-align:center;padding:0 4px;line-height:1.3;word-break:break-word">${title.slice(0,20)}</div>
+                           </div>`;
                     const item = document.createElement('div');
                     item.className = 'calendar-item active:bg-zinc-900';
                     item.onclick = () => openModal(m.id, mediaType);
                     item.innerHTML = `
-                        <div class="calendar-poster"><img src="${posterSrc}" onerror="this.parentElement.style.background='#111'" class="w-full h-full object-cover" loading="lazy"></div>
+                        <div class="calendar-poster">${posterContent}</div>
                         <div class="calendar-info">
                             <div class="cal-title">${title}</div>
                             <div class="cal-meta">
@@ -5529,25 +5554,28 @@
 
         function renderGrid(items, grid) { 
             const fragment = document.createDocumentFragment();
+            // Dedup: kumpulkan ID yang sudah ada di grid
+            const existingIds = new Set();
+            grid.querySelectorAll('.post-card[data-id]').forEach(c => existingIds.add(c.dataset.id));
             items.forEach(m => { 
-                if(!m.poster_path || m.media_type === 'person') return; 
+                if(!m.poster_path || m.media_type === 'person') return;
+                if(existingIds.has(String(m.id))) return; // skip duplikat
+                existingIds.add(String(m.id));
                 let mType = m.media_type;
                 if(!mType) { if(currentType === 'tv') mType = 'tv'; else mType = 'movie'; }
                 const card = document.createElement('div'); 
                 card.className = 'post-card'; 
+                card.dataset.id = m.id;
                 card.onclick = function() { openModal(m.id, mType); }; 
                 const _rd = m.release_date || m.first_air_date || '';
                 const _nb = isNewRelease(_rd) ? '<div class="badge-new">NEW</div>' : '';
                 let _title = m.title || m.name || '';
-                // Selalu coba resolve ke EN title
                 {
                     const origT = m.original_title || m.original_name || '';
-                    // Jika title non-latin, coba original_title dulu
                     if (isNonLatin(_title)) {
                         if (origT && !isNonLatin(origT)) {
                             _title = origT;
                         } else {
-                            // Fetch EN dari API async, update card setelah render
                             fetchWithCache(`https://api.themoviedb.org/3/${mType}/${m.id}?api_key=${API_KEY}&language=en-US`).then(d => {
                                 const enT = d.title || d.name || '';
                                 const origEN = d.original_title || d.original_name || '';
@@ -5559,8 +5587,6 @@
                             }).catch(()=>{});
                         }
                     }
-                    // Juga cek jika title masih dalam bahasa lain (terjemahan Indonesia dll)
-                    // Kita tidak bisa deteksi bahasa secara pasti, tapi original_title lebih aman
                 }
                 const _year = (m.release_date || m.first_air_date || '').split('-')[0];
                 const _rating = m.vote_average ? m.vote_average.toFixed(1) : '';
@@ -5844,7 +5870,7 @@
                 }
 
                 vidsToDisplay.forEach((v, i) => {
-                    const embedUrl = `https://www.youtube.com/embed/${v.key}?enablejsapi=1&autoplay=${i===0?1:0}&rel=0&modestbranding=1&mute=0&playsinline=1`;
+                    const embedUrl = `https://www.youtube.com/embed/${v.key}?enablejsapi=1&autoplay=${i===0?1:0}&rel=0&modestbranding=1&mute=0&playsinline=1&controls=0&showinfo=0&iv_load_policy=3`;
                     const slideDiv = document.createElement('div');
                     slideDiv.className = 'carousel-slide';
                     slideDiv.innerHTML = `<iframe id="vid-${i}" src="${embedUrl}" class="w-full h-full" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe><div class="yt-overlay-mask" onclick="void(0)"></div>`;
@@ -5872,12 +5898,12 @@
             activeEpisode = 1;
             activeSeason = 1;
             
-            document.getElementById('mTitle').innerText = "Loading...";
-            document.getElementById('mDesc').innerText = "";
+            document.getElementById('mTitle').innerHTML = `<div class="sk sk-line" style="width:60%;height:14px;display:inline-block"></div>`;
+            document.getElementById('mDesc').innerHTML = "";
             document.getElementById('mLikeDisplay').innerText = "";
             document.getElementById('mDateDisplay').innerText = "";
             document.getElementById('mHashtags').innerHTML = "";
-            document.getElementById('castContainer').innerHTML = "";
+            document.getElementById('castContainer').innerHTML = `<div style="display:flex;gap:15px;padding:8px 16px">${Array(5).fill(`<div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0"><div class="sk sk-circle" style="width:60px;height:60px"></div><div class="sk sk-line" style="width:50px;height:8px"></div></div>`).join('')}</div>`;
             
             const track = document.getElementById('carouselTrack');
             if(track) { 
@@ -6029,7 +6055,7 @@
                 const embeddable = await filterEmbeddableVideos(allVideos.slice(0, 10));
                 let vidsToDisplay = embeddable.slice(0, 6);
                 vidsToDisplay.forEach((v, i) => { 
-                    const embedUrl = `https://www.youtube.com/embed/${v.key}?enablejsapi=1&autoplay=${i===0?1:0}&rel=0&modestbranding=1&mute=0&playsinline=1`;
+                    const embedUrl = `https://www.youtube.com/embed/${v.key}?enablejsapi=1&autoplay=${i===0?1:0}&rel=0&modestbranding=1&mute=0&playsinline=1&controls=0&showinfo=0&iv_load_policy=3`;
                     const slideDiv = document.createElement('div');
                     slideDiv.className = 'carousel-slide';
                     slideDiv.innerHTML = `<iframe id="vid-${i}" src="${embedUrl}" class="w-full h-full" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe><div class="yt-overlay-mask" onclick="void(0)"></div>`;
@@ -6122,13 +6148,31 @@
             const miReleaseStr = rel2 ? new Date(rel2).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}) : '—';
             const infoGridEl = document.getElementById('mInfoGrid');
             if (infoGridEl) {
-                // Director & Writer
+                // Director & Writer — resolve Latin name via person API if needed
                 const miCrew = (dCast.crew || []);
                 const miDir = miCrew.find(c => c.job === 'Director');
-                const miDirName = miDir ? miDir.name : (type === 'tv' ? ((dId.created_by && dId.created_by[0]) ? dId.created_by[0].name : '—') : '—');
+                let miDirName = miDir ? miDir.name : (type === 'tv' ? ((dId.created_by && dId.created_by[0]) ? dId.created_by[0].name : '—') : '—');
+                if (miDirName !== '—' && isNonLatin(miDirName) && miDir) {
+                    try {
+                        const pd = await fetchWithCache(`https://api.themoviedb.org/3/person/${miDir.id}?api_key=${API_KEY}&language=en-US`);
+                        const aka = pd.also_known_as || [];
+                        const latin = aka.find(n => n && !isNonLatin(n));
+                        if (latin) miDirName = latin;
+                        else if (pd.name && !isNonLatin(pd.name)) miDirName = pd.name;
+                    } catch {}
+                }
                 // Writer: cari dari crew (Screenplay, Story, Writer)
                 const miWriters = miCrew.filter(c => ['Writer','Screenplay','Story','Script','Creator'].includes(c.job));
-                const miWriterNames = miWriters.length ? [...new Set(miWriters.map(w => w.name))].slice(0,2).join(', ') : (type === 'tv' && dId.created_by && dId.created_by.length ? dId.created_by.map(c=>c.name).join(', ') : '—');
+                let miWriterNames = miWriters.length ? [...new Set(miWriters.map(w => w.name))].slice(0,2).join(', ') : (type === 'tv' && dId.created_by && dId.created_by.length ? dId.created_by.map(c=>c.name).join(', ') : '—');
+                if (miWriterNames !== '—' && isNonLatin(miWriterNames) && miWriters[0]) {
+                    try {
+                        const pw = await fetchWithCache(`https://api.themoviedb.org/3/person/${miWriters[0].id}?api_key=${API_KEY}&language=en-US`);
+                        const aka = pw.also_known_as || [];
+                        const latin = aka.find(n => n && !isNonLatin(n));
+                        if (latin) miWriterNames = latin + (miWriters.length > 1 ? ', ...' : '');
+                        else if (pw.name && !isNonLatin(pw.name)) miWriterNames = pw.name + (miWriters.length > 1 ? ', ...' : '');
+                    } catch {}
+                }
                 // Budget & Revenue (hanya untuk movie)
                 const miBudget = (type === 'movie' && dId.budget && dId.budget > 0) ? '$' + dId.budget.toLocaleString('en-US') : (type === 'tv' ? '—' : '—');
                 const miRevenue = (type === 'movie' && dId.revenue && dId.revenue > 0) ? '$' + dId.revenue.toLocaleString('en-US') : (type === 'tv' ? '—' : '—');
@@ -7185,7 +7229,8 @@
             const section = document.getElementById('mSimilarSection');
             const scroll = document.getElementById('mSimilarScroll');
             if (!section || !scroll) return;
-            section.style.display = 'none'; scroll.innerHTML = '';
+            section.style.display = 'block';
+            scroll.innerHTML = skeletonSimilarScroll(4);
             try {
                 let items = [];
                 const existIds = new Set([parseInt(id)]);
@@ -7370,7 +7415,7 @@
             _exploreLoading = true;
             const grid = document.getElementById('exploreGrid');
             if (!grid) { _exploreLoading = false; return; }
-            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Loading...</div>`;
+            grid.innerHTML = skeletonLandscape2(6);
             try {
                 const data = await fetchWithCache(`https://api.themoviedb.org/3/trending/all/week?api_key=${API_KEY}&language=en-US`);
                 const items = (data.results || []).filter(m => m.backdrop_path && (m.media_type === 'movie' || m.media_type === 'tv'));
@@ -7386,7 +7431,7 @@
             _exploreLoading = true;
             const grid = document.getElementById('exploreGrid');
             if (!grid) { _exploreLoading = false; return; }
-            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Loading...</div>`;
+            grid.innerHTML = skeletonLandscape2(6);
             try {
                 const data = await fetchWithCache(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&with_genres=${gid}&page=1`);
                 const items = (data.results || []).filter(m => m.backdrop_path);
@@ -7402,7 +7447,7 @@
             _exploreLoading = true;
             const grid = document.getElementById('exploreGrid');
             if (!grid) { _exploreLoading = false; return; }
-            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Loading...</div>`;
+            grid.innerHTML = skeletonLandscape2(6);
             try {
                 const today = new Date();
                 const y = today.getFullYear();
@@ -7524,7 +7569,7 @@
         async function loadDecadeGrid() {
             const grid = document.getElementById('decadeGrid');
             if (!grid) return;
-            grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Loading...</div>`;
+            grid.innerHTML = skeletonLandscape2(6);
             const decade = DECADES.find(d => d.label === _decadeSelected);
             if (!decade) return;
             const dateParam = _decadeType === 'movie'
@@ -7610,6 +7655,38 @@
             } catch(e) {
                 if (section) section.style.display = 'none';
             }
+        }
+
+        // ===== SKELETON HELPERS =====
+        function skeletonPoster3(count = 6) {
+            return `<div class="skeleton-grid-3">${Array(count).fill(`
+                <div style="display:flex;flex-direction:column;gap:5px;padding:2px">
+                    <div class="sk sk-poster"></div>
+                    <div class="sk sk-line" style="width:80%"></div>
+                    <div class="sk sk-line-short"></div>
+                </div>`).join('')}</div>`;
+        }
+        function skeletonLandscape2(count = 6) {
+            return `<div class="skeleton-grid-2">${Array(count).fill(`<div class="sk sk-landscape"></div>`).join('')}</div>`;
+        }
+        function skeletonListCard(count = 4) {
+            return Array(count).fill(`
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #0f0f0f">
+                    <div class="sk" style="width:54px;height:80px;border-radius:6px;flex-shrink:0"></div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+                        <div class="sk sk-line" style="width:75%"></div>
+                        <div class="sk sk-line-short"></div>
+                        <div class="sk sk-line" style="width:50%"></div>
+                    </div>
+                </div>`).join('');
+        }
+        function skeletonSimilarScroll(count = 4) {
+            return `<div style="display:flex;gap:8px;padding:0 15px 8px;overflow:hidden">${
+                Array(count).fill(`<div style="flex-shrink:0;width:110px">
+                    <div class="sk" style="width:110px;height:160px;border-radius:8px;margin-bottom:5px"></div>
+                    <div class="sk sk-line" style="width:80%"></div>
+                </div>`).join('')
+            }</div>`;
         }
 
         // ===== PULL TO REFRESH =====
