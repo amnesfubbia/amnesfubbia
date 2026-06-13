@@ -3759,7 +3759,7 @@
                 html += `<div class="ls-srv-btn ${active}" onclick="event.stopPropagation(); lsChangeServer(${i}, this)">Server ${i}</div>`;
             }
             if (currentDailymotionId) {
-                html += `<div class="ls-srv-btn ${activeServerIdx === 21 ? 'active-link' : ''}" onclick="event.stopPropagation(); lsChangeServer(21, this)">Trailer</div>`;
+                html += `<div class="ls-srv-btn ${activeServerIdx === 99 ? 'active-link' : ''}" onclick="event.stopPropagation(); lsChangeServer(99, this)">Trailer</div>`;
             }
             scroll.innerHTML = html;
         }
@@ -3789,7 +3789,7 @@
             document.querySelectorAll('.ls-srv-btn').forEach(b => b.classList.remove('active-link'));
             el.classList.add('active-link');
             // update pill text
-            document.getElementById('lsServerPill').innerText = srvIdx === 21 ? 'Trailer' : `Server ${srvIdx}`;
+            document.getElementById('lsServerPill').innerText = srvIdx === 99 ? 'Trailer' : `Server ${srvIdx}`;
             // update subtitle
             document.getElementById('lsSubtitle').innerText = `Server ${srvIdx} · amnesfubbia`;
             // play
@@ -3943,15 +3943,23 @@
             try {
                 const [details, credits] = await Promise.all([
                     fetchWithCache(`https://api.themoviedb.org/3/person/${actorId}?api_key=${API_KEY}&language=id-ID`),
-                    fetchWithCache(`https://api.themoviedb.org/3/person/${actorId}/combined_credits?api_key=${API_KEY}&language=id-ID`)
+                    fetchWithCache(`https://api.themoviedb.org/3/person/${actorId}/combined_credits?api_key=${API_KEY}&language=en-US`)
                 ]);
 
                 const imgPath = details.profile_path ? `https://image.tmdb.org/t/p/w500${details.profile_path}` : 'amnesfubbia.png';
                 document.getElementById('actorPic').src = imgPath;
                 document.getElementById('actorCoverBlur').style.backgroundImage = `url('${imgPath}')`;
-                document.getElementById('actorHeaderTitle').innerText = details.name;
-                document.getElementById('actorName').innerText = details.name;
-                document.getElementById('actorNameBio').innerText = details.name;
+
+                // Nama aktor — gunakan Latin dari also_known_as jika nama asli non-Latin
+                let actorDisplayName = details.name;
+                if (isNonLatin(details.name)) {
+                    const aka = details.also_known_as || [];
+                    const latinName = aka.find(n => n && !isNonLatin(n));
+                    if (latinName) actorDisplayName = latinName;
+                }
+                document.getElementById('actorHeaderTitle').innerText = actorDisplayName;
+                document.getElementById('actorName').innerText = actorDisplayName;
+                document.getElementById('actorNameBio').innerText = actorDisplayName;
                 document.getElementById('actorDept').innerText = details.known_for_department || 'Pemeran';
 
                 // Age
@@ -5433,7 +5441,7 @@
             const grid = document.getElementById('searchOverlay').style.display === 'block' ? document.getElementById('searchGrid') : document.getElementById('feedGrid');
             if(isNew) { page = 1; grid.innerHTML = ''; }
             let url;
-            if(currentCastId) { url = `https://api.themoviedb.org/3/person/${currentCastId}/combined_credits?api_key=${API_KEY}&language=id-ID`; }
+            if(currentCastId) { url = `https://api.themoviedb.org/3/person/${currentCastId}/combined_credits?api_key=${API_KEY}&language=en-US`; }
             else if(searchQuery) { 
                 if (searchTabType === 'multi' || searchTabType === 'person') {
                     url = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(searchQuery)}&api_key=${API_KEY}&page=${page}&include_adult=false`;
@@ -5444,7 +5452,7 @@
             else if(currentType === 'multi') { url = `https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&language=en-US&page=${page}`; }
             else {
                 let endpoint = (currentType === 'tv') ? 'discover/tv' : 'discover/movie';
-                url = `https://api.themoviedb.org/3/${endpoint}?api_key=${API_KEY}&language=id-ID&page=${page}&include_adult=false&sort_by=popularity.desc`;
+                url = `https://api.themoviedb.org/3/${endpoint}?api_key=${API_KEY}&language=en-US&page=${page}&include_adult=false&sort_by=popularity.desc`;
                 if(currentCountry) url += `&with_origin_country=${currentCountry}`;
                 if(currentRating) {
                     const rMin = parseFloat(currentRating);
@@ -6384,7 +6392,7 @@
         function changeServer(srvIdx, el) {
             activeServerIdx = srvIdx;
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active-link'));
-            if(srvIdx !== 21) el.classList.add('active-link');
+            if(srvIdx !== 99) el.classList.add('active-link');
             const url = buildEmbedUrl(window.currentMediaType, window.currentMediaId, activeSeason, activeEpisode, activeServerIdx);
             playVid(url);
         }
@@ -6402,38 +6410,38 @@
             
             let url = "";
             switch(srv) {
-                case 1:  url = `https://vidrock.net/embed/${type}/${id}${seriesSuffix}`; break;
+                case 1:  url = `https://player.videasy.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoplay=1${type==='tv'?'&autoNext=true':''}`; break;
                 case 2:  url = `https://vidlink.pro/${type}/${id}${seriesSuffix}`; break;
-                case 3:  url = `https://vidnest.fun/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 4:  url = `https://vidfast.pro/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 5:  url = `https://player.videasy.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 6:  url = `https://111movies.com/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 3:  url = `https://vidfast.pro/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 4:  url = `https://vidrock.net/embed/${type}/${id}${seriesSuffix}`; break;
+                case 5:  url = `https://vidup.to/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true`; break;
+                case 6:  url = `https://vidcore.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true`; break;
                 case 7:  url = `https://player.vidzee.wtf/embed/${type}/${id}${seriesSuffix}`; break;
                 case 8:  url = `https://vidstorm.ru/embed/${type}/${id}${seriesSuffix}`; break;
-                case 9:  url = `https://vidsrc.wtf/1/${type}/${id}${seriesSuffix}`; break;
-                case 10: url = `https://vidsync.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true${type==='tv'?'&autoNext=true':''}`; break;
-                case 11: url = `https://vidup.to/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true`; break;
-                case 12: url = `https://vidcore.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true`; break;
-                case 13: url = `https://vixsrc.to/${type}/${id}${type==='tv'?`/${s}/${e}`:''}/`; break;
-                case 14: url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 15: url = `https://vidlux.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 9:  url = `https://vidsync.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true${type==='tv'?'&autoNext=true':''}`; break;
+                case 10: url = `https://vixsrc.to/${type}/${id}${type==='tv'?`/${s}/${e}`:''}/`; break;
+                case 11: url = `https://vidking.net/embed/${type}/${id}${seriesSuffix}`; break;
+                case 12: url = `https://vidlux.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 13: url = `https://111movies.com/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 14: url = `https://vidnest.fun/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 15: url = `https://vidsrc.wtf/1/${type}/${id}${seriesSuffix}`; break;
                 case 16: url = `https://nontongo.win/embed/${type}/${id}${seriesSuffix}`; break;
-                case 17: url = `https://111movies.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 18: url = `https://vidfast.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 19: url = `https://vidsrcme.ru/embed/${type}/${id}${seriesSuffix}`; break;
-                case 20: url = `https://vidking.net/embed/${type}/${id}${seriesSuffix}`; break;
+                case 17: url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 18: url = `https://111movies.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 19: url = `https://vidfast.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 20: url = `https://vidsrcme.ru/embed/${type}/${id}${seriesSuffix}`; break;
                 case 21: url = `https://multiembed.mov/?video_id=${id}&tmdb=1${type==='tv'?`&s=${s}&e=${e}`:''}`; break;
                 case 22: url = `https://2embed.cc/embed/${type}/${id}${seriesSuffix}`; break;
                 case 23: url = `https://vidsrc.ru/${type}/${currentImdbId || id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
                 case 24: url = `https://player.vidify.top/embed/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
-                case 25: url = `https://player.vidplus.to/embed/${type}/${id}${seriesSuffix}`; break;
-                case 26: url = `https://warezcdn.site/${type==='tv'?'serie':'filme'}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 27: url = `https://player.cinezo.live/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 28: url = `https://mgeb.top/embed/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 29: url = `https://vidsrc.cc/v2/embed/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
-                case 30: url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv'?`&s=${s}&e=${e}`:''}`; break;
-                case 31: url = `https://moviesmod.club/embed/${type}/${id}${seriesSuffix}`; break;
-                case 99: url = `https://www.dailymotion.com/embed/video/${currentDailymotionId}`; break;     default: url = `https://vidrock.net/embed/${type}/${id}${seriesSuffix}`;
+                case 25: url = `https://warezcdn.site/${type==='tv'?'serie':'filme'}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 26: url = `https://player.cinezo.live/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 27: url = `https://mgeb.top/embed/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 28: url = `https://vidsrc.cc/v2/embed/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
+                case 29: url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv'?`&s=${s}&e=${e}`:''}`; break;
+                case 30: url = `https://embed.smashystream.com/playere.php?tmdb=${id}${type==='tv'?`&season=${s}&episode=${e}`:''}`; break;
+                case 31: url = `https://anyembed.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 99: url = `https://www.dailymotion.com/embed/video/${currentDailymotionId}`; break;     default: url = `https://player.videasy.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`;
             }
             return url.replace("http://", "https://");
         }
@@ -6674,7 +6682,7 @@
                 return; 
             } 
             const promises = items.map(i => 
-                fetchWithCache(`https://api.themoviedb.org/3/${i.type}/${i.id}?api_key=${API_KEY}&language=id-ID`)
+                fetchWithCache(`https://api.themoviedb.org/3/${i.type}/${i.id}?api_key=${API_KEY}&language=en-US`)
                     .then(r => ({ ...r, _savedType: i.type }))
             ); 
             const results = await Promise.all(promises); 
@@ -7416,25 +7424,40 @@
             _exploreLoading = false;
         }
 
-        function renderExploreGrid(grid, items, forceType) {
+        async function renderExploreGrid(grid, items, forceType) {
             if (!items.length) {
                 grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">No results.</div>`;
                 return;
             }
-            grid.innerHTML = items.map(m => {
+            // Resolve Latin titles first
+            const resolved = await Promise.all(items.map(async m => {
                 const type = forceType || m.media_type || 'movie';
-                const title = m.title || m.name || '';
+                let title = m.title || m.name || '';
+                const origTitle = m.original_title || m.original_name || '';
+                if (isNonLatin(title)) {
+                    if (!isNonLatin(origTitle)) { title = origTitle; }
+                    else {
+                        try {
+                            const en = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${m.id}?api_key=${API_KEY}&language=en-US`);
+                            const enT = en.title || en.name || '';
+                            if (enT && !isNonLatin(enT)) title = enT;
+                        } catch {}
+                    }
+                }
+                return { ...m, _latinTitle: title, _type: type };
+            }));
+            grid.innerHTML = resolved.map(m => {
                 const rating = m.vote_average ? m.vote_average.toFixed(1) : '';
-                return `<div onclick="openModal(${m.id},'${type}');closeSearch()" style="position:relative;border-radius:10px;overflow:hidden;cursor:pointer;background:#111;aspect-ratio:16/9">
+                return `<div onclick="openModal(${m.id},'${m._type}');closeSearch()" style="position:relative;border-radius:10px;overflow:hidden;cursor:pointer;background:#111;aspect-ratio:16/9">
                     <img src="https://image.tmdb.org/t/p/w300${m.backdrop_path}" loading="lazy"
                          onload="this.style.opacity=1"
                          style="opacity:0;width:100%;height:100%;object-fit:cover;transition:opacity 0.3s">
                     <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.1) 55%,transparent 100%)"></div>
                     <div style="position:absolute;bottom:0;left:0;right:0;padding:7px 8px">
-                        <div style="font-size:10px;font-weight:700;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</div>
+                        <div style="font-size:10px;font-weight:700;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m._latinTitle}</div>
                         ${rating ? `<div style="font-size:9px;color:#f5c518;font-weight:700;margin-top:2px">★ ${rating}</div>` : ''}
                     </div>
-                    ${type === 'tv' ? `<div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.55);border-radius:4px;font-size:8px;font-weight:700;color:#aaa;padding:2px 5px;backdrop-filter:blur(4px)">TV</div>` : ''}
+                    ${m._type === 'tv' ? `<div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.55);border-radius:4px;font-size:8px;font-weight:700;color:#aaa;padding:2px 5px;backdrop-filter:blur(4px)">TV</div>` : ''}
                 </div>`;
             }).join('');
         }
