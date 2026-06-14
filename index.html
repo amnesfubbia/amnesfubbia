@@ -2315,12 +2315,10 @@
                 <div id="decadeGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
             </div>
         </div>
-        <!-- Search filter pills -->
-        <div id="searchFilterBar" style="display:none;padding:10px 16px;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:#000;border-bottom:1px solid #1c1c1c;position:sticky;top:54px;z-index:89;" class="flex no-scrollbar">
-            <select id="searchYearFilter" onchange="applySearchFilters()" style="flex:0 0 auto;background:#1a1a1a;border:1px solid #2a2a2a;color:#fff;font-size:11px;padding:6px 10px;border-radius:8px;outline:none;cursor:pointer">
-                <option value="">All Years</option>
-            </select>
-            <select id="searchGenreFilter" onchange="applySearchFilters()" style="flex:0 0 auto;background:#1a1a1a;border:1px solid #2a2a2a;color:#fff;font-size:11px;padding:6px 10px;border-radius:8px;outline:none;cursor:pointer">
+        <!-- Search filter pills (hidden selects kept for JS compatibility) -->
+        <div id="searchFilterBar" style="display:none;">
+            <select id="searchYearFilter" onchange="applySearchFilters()" style="display:none"><option value="">All Years</option></select>
+            <select id="searchGenreFilter" onchange="applySearchFilters()" style="display:none">
                 <option value="">All Genres</option>
                 <option value="28">Action</option><option value="12">Adventure</option>
                 <option value="16">Animation</option><option value="35">Comedy</option>
@@ -2329,7 +2327,7 @@
                 <option value="10749">Romance</option><option value="878">Sci-Fi</option>
                 <option value="53">Thriller</option>
             </select>
-            <select id="searchTypeFilter" onchange="applySearchFilters()" style="flex:0 0 auto;background:#1a1a1a;border:1px solid #2a2a2a;color:#fff;font-size:11px;padding:6px 10px;border-radius:8px;outline:none;cursor:pointer">
+            <select id="searchTypeFilter" onchange="applySearchFilters()" style="display:none">
                 <option value="">All Types</option>
                 <option value="movie">Movie</option>
                 <option value="tv">Series</option>
@@ -2761,12 +2759,128 @@
 
         window.onload = () => {
             initFilters(); initHighlights(); loadFeed(); setupSwipe(); initSmartSearch(); initTvChannels();
-            // Pre-load YouTube IFrame API agar sudah siap saat reels dibuka
             loadYTApi();
             window.addEventListener('scroll', () => { 
                 document.getElementById('backToTop').style.display = window.scrollY > 500 ? 'flex' : 'none'; 
-            }); 
+            });
+            initModalSwipeGestures();
         };
+
+        // ===== SWIPE GESTURES FOR MODALS =====
+        // Swipe helper — threshold 25px, ratio 2.0
+        function addSwipe(el, onLeft, onRight, onUp, onDown, minDist = 25, maxRatio = 2.0) {
+            if (!el) return;
+            let sx = 0, sy = 0;
+            el.addEventListener('touchstart', e => {
+                if (e.touches.length !== 1) return;
+                sx = e.touches[0].clientX;
+                sy = e.touches[0].clientY;
+            }, { passive: true });
+            el.addEventListener('touchend', e => {
+                const dx = e.changedTouches[0].clientX - sx;
+                const dy = e.changedTouches[0].clientY - sy;
+                const adx = Math.abs(dx), ady = Math.abs(dy);
+                if (adx >= minDist && adx >= ady * maxRatio) {
+                    if (dx < 0 && onLeft) onLeft();
+                    else if (dx > 0 && onRight) onRight();
+                } else if (ady >= minDist && ady >= adx * maxRatio) {
+                    if (dy < 0 && onUp) onUp();
+                    else if (dy > 0 && onDown) onDown();
+                }
+            }, { passive: true });
+        }
+
+        // ── HOME TAB STATE ────────────────────────────────────────────────
+        const HOME_TABS = ['grid','likes','bookmarks'];
+        const HOME_IDS  = ['tabGrid','tabLikes','tabBookmark'];
+        let _curHomeTab = 'grid';
+
+        function setHomeTab(mode) {
+            if (!HOME_TABS.includes(mode)) return;
+            _curHomeTab = mode;
+            // update tab indicator
+            HOME_IDS.forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el) el.classList.toggle('active', HOME_TABS[i] === mode);
+            });
+            // selalu matikan semua highlight border
+            document.querySelectorAll('.highlight-item').forEach(i => i.classList.remove('active-hl'));
+        }
+
+        function initModalSwipeGestures() {
+            // Calendar: di-attach setelah render — lihat openCalendarModal()
+
+            // ── DECADE ────────────────────────────────────────────────────
+            const dcSwL = () => { const b = document.getElementById('dcTypeTV');    if (b && !b.classList.contains('active')) b.click(); };
+            const dcSwR = () => { const b = document.getElementById('dcTypeMovie'); if (b && !b.classList.contains('active')) b.click(); };
+            addSwipe(document.getElementById('dcTypeMovie')?.parentElement, dcSwL, dcSwR);
+            addSwipe(document.getElementById('decadeGrid'), dcSwL, dcSwR);
+
+            // ── SEARCH EXPLORE ────────────────────────────────────────────
+            const ETABS = ['trending','genres','new'];
+            const exL = () => { const c=ETABS.indexOf(_currentExploreTab||'trending'); if(c<ETABS.length-1){const n=ETABS[c+1];switchExploreTab(n,document.getElementById('exploreTab-'+n));} };
+            const exR = () => { const c=ETABS.indexOf(_currentExploreTab||'trending'); if(c>0){const p=ETABS[c-1];switchExploreTab(p,document.getElementById('exploreTab-'+p));} };
+            addSwipe(document.getElementById('exploreGrid'), exL, exR);
+            addSwipe(document.querySelector('#searchEmptyState .search-tabs'), exL, exR);
+
+            // ── ACTOR ─────────────────────────────────────────────────────
+            const acSwL = () => { if (!document.getElementById('actorTabReels').classList.contains('active')) switchActorTab('tv'); };
+            const acSwR = () => { if (!document.getElementById('actorTabGrid').classList.contains('active'))  switchActorTab('grid'); };
+            const actorModal = document.getElementById('actorModal');
+            let _acExclude = false;
+            actorModal.addEventListener('touchstart', e => {
+                _acExclude = !!e.target.closest('#actorKnownForWrapper');
+            }, { passive: true });
+            addSwipe(actorModal,
+                () => { if (!_acExclude) acSwL(); },
+                () => { if (!_acExclude) acSwR(); }
+            );
+
+            // ── HOME ──────────────────────────────────────────────────────
+            // Satu touchstart listener, satu touchend listener, di mainProfile
+            const mainProfile = document.getElementById('mainProfile');
+            let _hsx = 0, _hsy = 0, _hSkip = false;
+
+            mainProfile.addEventListener('touchstart', e => {
+                if (e.touches.length !== 1) { _hSkip = true; return; }
+                _hsx = e.touches[0].clientX;
+                _hsy = e.touches[0].clientY;
+                // skip jika touch di area yang tidak relevan
+                _hSkip =
+                    !!e.target.closest('#highlightList') ||
+                    !!e.target.closest('#recentlyViewedWrapper') ||
+                    !!e.target.closest('#filterBar') ||
+                    document.getElementById('movieModal').style.display === 'block' ||
+                    document.getElementById('searchOverlay').style.display === 'block' ||
+                    document.getElementById('actorModal').classList.contains('open');
+            }, { passive: true });
+
+            mainProfile.addEventListener('touchend', e => {
+                if (_hSkip) return;
+                const dx = e.changedTouches[0].clientX - _hsx;
+                const dy = e.changedTouches[0].clientY - _hsy;
+                const adx = Math.abs(dx), ady = Math.abs(dy);
+                if (adx >= 25 && adx >= ady * 2.0) {
+                    const c = HOME_TABS.indexOf(_curHomeTab);
+                    if (dx < 0 && c < HOME_TABS.length - 1) {
+                        document.getElementById(HOME_IDS[c + 1]).click();
+                    } else if (dx > 0 && c > 0) {
+                        document.getElementById(HOME_IDS[c - 1]).click();
+                    }
+                }
+            }, { passive: true });
+
+            // highlight diklik → matikan tab indicator saja, swipe TETAP aktif
+            document.getElementById('highlightList').addEventListener('click', e => {
+                if (!e.target.closest('.highlight-item')) return;
+                HOME_IDS.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.remove('active');
+                });
+                // reset _curHomeTab ke grid agar swipe berikutnya mulai dari awal
+                _curHomeTab = 'grid';
+            });
+        }
 
         // --- TV MODAL LOGIC ---
         const tvCategories = [
@@ -3663,6 +3777,12 @@
             // Landscape overlay
             if (document.getElementById('landscapeOverlay').style.display === 'block') {
                 closeLandscapeSilently();
+                // pastikan modal film tetap visible setelah keluar landscape
+                const movieModal = document.getElementById('movieModal');
+                if (movieModal && movieModal.style.display !== 'block') {
+                    movieModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                }
                 return;
             }
 
@@ -4110,12 +4230,21 @@
                             </div>`;
 
                         if (isNonLatin(_fTitle)) {
-                            fetchWithCache(`https://api.themoviedb.org/3/movie/${m.id}?api_key=${API_KEY}&language=en-US`)
+                            fetchWithCache(`https://api.themoviedb.org/3/movie/${m.id}?api_key=${API_KEY}&language=en-US&append_to_response=translations`)
                                 .then(d => {
                                     const enT = d.title || d.name || '';
-                                    if (enT && !isNonLatin(enT)) {
+                                    const origT = d.original_title || d.original_name || '';
+                                    let resolved = '';
+                                    if (enT && !isNonLatin(enT)) resolved = enT;
+                                    else if (origT && !isNonLatin(origT)) resolved = origT;
+                                    else if (d.translations && d.translations.translations) {
+                                        const en = d.translations.translations.find(t => t.iso_639_1 === 'en');
+                                        const enName = en && (en.data.title || en.data.name);
+                                        if (enName && !isNonLatin(enName)) resolved = enName;
+                                    }
+                                    if (resolved) {
                                         const el = card.querySelector(`#aft-${m.id}-movie`);
-                                        if (el) el.textContent = enT;
+                                        if (el) el.textContent = resolved;
                                     }
                                 }).catch(()=>{});
                         }
@@ -4161,12 +4290,21 @@
                             </div>`;
 
                         if (isNonLatin(_tTitle)) {
-                            fetchWithCache(`https://api.themoviedb.org/3/tv/${m.id}?api_key=${API_KEY}&language=en-US`)
+                            fetchWithCache(`https://api.themoviedb.org/3/tv/${m.id}?api_key=${API_KEY}&language=en-US&append_to_response=translations`)
                                 .then(d => {
                                     const enT = d.name || d.title || '';
-                                    if (enT && !isNonLatin(enT)) {
+                                    const origT = d.original_name || d.original_title || '';
+                                    let resolved = '';
+                                    if (enT && !isNonLatin(enT)) resolved = enT;
+                                    else if (origT && !isNonLatin(origT)) resolved = origT;
+                                    else if (d.translations && d.translations.translations) {
+                                        const en = d.translations.translations.find(t => t.iso_639_1 === 'en');
+                                        const enName = en && (en.data.name || en.data.title);
+                                        if (enName && !isNonLatin(enName)) resolved = enName;
+                                    }
+                                    if (resolved) {
                                         const el = card.querySelector(`#aft-${m.id}-tv`);
-                                        if (el) el.textContent = enT;
+                                        if (el) el.textContent = resolved;
                                     }
                                 }).catch(()=>{});
                         }
@@ -5211,6 +5349,41 @@
             headerHTML += '</div>';
             calendarHeader.innerHTML = headerHTML;
             filterByDate(new Date().toISOString().split('T')[0]);
+            // Swipe pada TAB BAR (Movie/Series) → ganti tab
+            const _calTabParent = document.getElementById('calTabMovie')?.parentElement;
+            addSwipe(_calTabParent,
+                () => { const tv = document.getElementById('calTabTv'); if (tv && !tv.classList.contains('active')) tv.click(); },
+                () => { const mv = document.getElementById('calTabMovie'); if (mv && !mv.classList.contains('active')) mv.click(); }
+            );
+            // Swipe pada AREA KONTEN (bawah date strip) → ganti tab juga
+            const _calList = document.getElementById('calendarList');
+            addSwipe(_calList,
+                () => { const tv = document.getElementById('calTabTv'); if (tv && !tv.classList.contains('active')) tv.click(); },
+                () => { const mv = document.getElementById('calTabMovie'); if (mv && !mv.classList.contains('active')) mv.click(); }
+            );
+            // Swipe pada DATE STRIP → hanya geser highlight chip, TIDAK load konten
+            // Konten baru load saat chip di-TAP
+            const _calDateStrip = document.getElementById('calDateStrip');
+            addSwipe(_calDateStrip,
+                () => { // kiri → highlight chip berikutnya (tanpa load)
+                    const chips = [...document.querySelectorAll('.date-chip')];
+                    const cur = chips.findIndex(c => c.classList.contains('active-date'));
+                    if (cur < chips.length - 1) {
+                        chips.forEach(c => c.classList.remove('active-date'));
+                        chips[cur + 1].classList.add('active-date');
+                        chips[cur + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                },
+                () => { // kanan → highlight chip sebelumnya (tanpa load)
+                    const chips = [...document.querySelectorAll('.date-chip')];
+                    const cur = chips.findIndex(c => c.classList.contains('active-date'));
+                    if (cur > 0) {
+                        chips.forEach(c => c.classList.remove('active-date'));
+                        chips[cur - 1].classList.add('active-date');
+                        chips[cur - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                }
+            );
         }
 
         function switchCalTab(type, el) {
@@ -5257,11 +5430,20 @@
                 // Untuk setiap item, pastikan judul Latin
                 const renderItems = data.results.map(async m => {
                     let title = m.title || m.name || '';
+                    const origLocal = m.original_title || m.original_name || '';
                     if (isNonLatin(title)) {
-                        try {
-                            const enM = await fetchWithCache(`https://api.themoviedb.org/3/${mediaType}/${m.id}?api_key=${API_KEY}&language=en-US`);
-                            title = enM.title || enM.name || title;
-                        } catch {}
+                        // cek original_title dari objek lokal dulu
+                        if (origLocal && !isNonLatin(origLocal)) {
+                            title = origLocal;
+                        } else {
+                            try {
+                                const enM = await fetchWithCache(`https://api.themoviedb.org/3/${mediaType}/${m.id}?api_key=${API_KEY}&language=en-US`);
+                                const enT = enM.title || enM.name || '';
+                                const origT = enM.original_title || enM.original_name || '';
+                                if (enT && !isNonLatin(enT)) title = enT;
+                                else if (origT && !isNonLatin(origT)) title = origT;
+                            } catch {}
+                        }
                     }
                     const releaseDate = m.release_date || m.first_air_date || '';
                     const year = releaseDate.split('-')[0];
@@ -6694,8 +6876,13 @@
         function toggleLib(k) { let items = JSON.parse(localStorage.getItem(k) || '[]'); const idx = items.findIndex(x => x.id == window.currentMediaId); idx > -1 ? items.splice(idx,1) : items.push({id: window.currentMediaId, type: window.currentMediaType}); localStorage.setItem(k, JSON.stringify(items)); updateLibButtons(window.currentMediaId); }
         async function switchTab(mode, el) { 
             closeModal(); closeSearch(); closeActorModal(); closeTvModal(); 
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active')); 
-            if(el) el.classList.add('active'); 
+            // setHomeTab handles tab indicator + highlight border clear
+            if (typeof setHomeTab === 'function' && HOME_TABS.includes(mode)) {
+                setHomeTab(mode);
+            } else {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                if (el) el.classList.add('active');
+            }
             if(mode === 'bookmarks') updateActiveNav(document.getElementById('bookmarkBtnNav')); 
             else updateActiveNav(document.getElementById('homeBtnNav'));
             const grid = document.getElementById('feedGrid'); grid.innerHTML = ''; 
@@ -6996,14 +7183,20 @@
                 // Resolve latin titles async
                 const resolveTitle = async (m) => {
                     let title = m.title || m.name || '';
+                    const origLocal = m.original_title || m.original_name || '';
                     if (isNonLatin(title)) {
-                        try {
-                            const en = await fetchWithCache(`https://api.themoviedb.org/3/${m._mtype}/${m.id}?api_key=${API_KEY}&language=en-US`);
-                            const enT = en.title || en.name || '';
-                            const origT = en.original_title || en.original_name || '';
-                            if (enT && !isNonLatin(enT)) title = enT;
-                            else if (origT && !isNonLatin(origT)) title = origT;
-                        } catch {}
+                        // cek original dari objek lokal dulu
+                        if (origLocal && !isNonLatin(origLocal)) {
+                            title = origLocal;
+                        } else {
+                            try {
+                                const en = await fetchWithCache(`https://api.themoviedb.org/3/${m._mtype}/${m.id}?api_key=${API_KEY}&language=en-US`);
+                                const enT = en.title || en.name || '';
+                                const origT = en.original_title || en.original_name || '';
+                                if (enT && !isNonLatin(enT)) title = enT;
+                                else if (origT && !isNonLatin(origT)) title = origT;
+                            } catch {}
+                        }
                     }
                     return { ...m, _resolvedTitle: title };
                 };
@@ -7569,7 +7762,8 @@
         async function loadDecadeGrid() {
             const grid = document.getElementById('decadeGrid');
             if (!grid) return;
-            grid.innerHTML = skeletonLandscape2(6);
+            // skeleton inline tanpa padding extra
+            grid.innerHTML = Array(6).fill(`<div class="sk" style="width:100%;aspect-ratio:16/9;border-radius:10px"></div>`).join('');
             const decade = DECADES.find(d => d.label === _decadeSelected);
             if (!decade) return;
             const dateParam = _decadeType === 'movie'
@@ -7667,7 +7861,7 @@
                 </div>`).join('')}</div>`;
         }
         function skeletonLandscape2(count = 6) {
-            return `<div class="skeleton-grid-2">${Array(count).fill(`<div class="sk sk-landscape"></div>`).join('')}</div>`;
+            return Array(count).fill(`<div class="sk sk-landscape"></div>`).join('');
         }
         function skeletonListCard(count = 4) {
             return Array(count).fill(`
