@@ -941,7 +941,7 @@
             flex: 1; font-size: 14px; font-weight: 800; color: #fff; letter-spacing: -0.3px;
         }
         .tv-live-dot {
-            width: 7px; height: 7px; border-radius: 50%; background: #ff3b30;
+            width: 7px; height: 7px; border-radius: 50%; background: #1a73e8;
             animation: livePulse 1.5s ease-in-out infinite; flex-shrink: 0;
         }
         @keyframes livePulse {
@@ -989,18 +989,63 @@
         /* LIVE badge on active channel */
         .tv-ch-live-badge {
             position: absolute; top: 5px; right: 5px;
-            background: #ff3b30; color: #fff;
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: #fff;
             font-size: 6px; font-weight: 900; letter-spacing: 0.5px;
             padding: 1px 4px; border-radius: 3px;
             display: none;
         }
         .tv-ch-card.active-ch .tv-ch-live-badge { display: block; }
 
-        /* TV Player - full fit iframe, no clip hack */
-        .tv-mode #mainVideoArea { 
-            overflow: hidden; background: #000; 
-            aspect-ratio: 16/9; 
-            position: relative;
+        /* Sembunyikan modal controls saat landscape aktif — landscape punya controls sendiri */
+        .landscape-active #modalVideoControls { display: none !important; }
+        .tv-tab-bar {
+            display: flex; background: #000;
+            border-bottom: 1px solid #1a1a1a;
+            position: sticky; top: 54px; z-index: 199;
+        }
+        .tv-tab-item {
+            flex: 1; text-align: center; padding: 10px 4px;
+            font-size: 11px; font-weight: 700; color: #555;
+            cursor: pointer; border-bottom: 2px solid transparent;
+            transition: all 0.2s; letter-spacing: 0.2px;
+        }
+        .tv-tab-item.active-tv-tab {
+            color: #fff; border-bottom-color: #fff;
+        }
+        /* LiveSport full embed */
+        #tvLiveSportPane {
+            display: none;
+            position: fixed;
+            top: 108px;
+            left: 0; right: 0;
+            bottom: 64px;
+            background: #0a0a0a;
+            z-index: 9601;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        /* Channel pane wrapper */
+        #tvChannelPane {
+            display: block;
+        }
+        /* Sticky video player */
+        #tvPlayerArea {
+            display: none;
+            position: sticky;
+            top: 108px; /* topbar + tabbar */
+            z-index: 150;
+            background: #000;
+            width: 100%;
+            aspect-ratio: 16/9;
+        }
+        #tvPlayerArea iframe {
+            width: 100%; height: 100%; border: none; display: block;
+        }
+        /* Channel list scrolls independently below player */
+        #tvChannelList {
+            padding-bottom: 80px;
         }
         .tv-mode .carousel-slide { 
             overflow: hidden; position: relative; 
@@ -1767,8 +1812,8 @@
             position: absolute; top: 6px; right: 6px;
             padding: 3px 8px; border-radius: 6px;
             font-size: 8px; font-weight: 900; z-index: 5; letter-spacing: 0.5px;
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-            color: #fff; box-shadow: 0 2px 8px rgba(255,65,108,0.5);
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: #fff; box-shadow: 0 2px 8px rgba(26,115,232,0.5);
             animation: pulse-new 2s infinite;
         }
         @keyframes pulse-new {
@@ -2025,16 +2070,35 @@
                 </div>
             </div>
 
-            <!-- BOTTOM: controls + server -->
+            <!-- BOTTOM: progress + controls -->
             <div class="ls-bottom-area">
-                <div class="ls-controls-row">
-                    <div class="ls-controls-left">
-                        <i class="fa-solid fa-rotate-right ls-btn ls-btn-sm" onclick="event.stopPropagation(); replayTrailerLs()" title="Replay"></i>
-                        <span class="ls-server-pill" id="lsServerPill" onclick="event.stopPropagation(); toggleLsServerPanel()">Server 1</span>
+                <!-- progress bar -->
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                    <span id="lsTime" style="font-size:11px;color:#fff;min-width:40px">0:00</span>
+                    <div style="flex:1;height:3px;background:rgba(255,255,255,0.25);border-radius:2px;cursor:pointer" onclick="event.stopPropagation()">
+                        <div id="lsProgress" style="width:0%;height:100%;background:#fff;border-radius:2px;transition:width 0.5s linear"></div>
                     </div>
-                    <div class="ls-controls-right">
-                        <i class="fa-solid fa-expand ls-btn ls-btn-sm" onclick="event.stopPropagation(); tryFullscreen()" title="Fullscreen"></i>
+                    <span id="lsDuration" style="font-size:11px;color:#aaa;min-width:40px;text-align:right">0:00</span>
+                </div>
+                <!-- controls row -->
+                <div class="ls-controls-row" style="justify-content:space-around;align-items:center">
+                    <i class="fa-solid fa-lock-open ls-btn ls-btn-sm" onclick="event.stopPropagation(); lockScreen()" title="Lock"></i>
+                    <i class="fa-solid fa-backward-step ls-btn ls-btn-sm" onclick="event.stopPropagation(); lsCarouselNav(-1)" title="Prev"></i>
+                    <div style="position:relative;display:inline-flex;align-items:center">
+                        <i class="fa-solid fa-rotate-left ls-btn ls-btn-sm" onclick="event.stopPropagation(); lsSeek(-10)" title="-10s"></i>
+                        <span style="font-size:8px;color:#fff;font-weight:700;position:absolute;bottom:2px;right:-2px">10</span>
                     </div>
+                    <i id="lsPlayBtn" class="fa-solid fa-pause ls-btn" style="font-size:26px;border:2px solid #fff;border-radius:50%;padding:10px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;box-sizing:border-box" onclick="event.stopPropagation(); lsPlayPause()" title="Play/Pause"></i>
+                    <div style="position:relative;display:inline-flex;align-items:center">
+                        <i class="fa-solid fa-rotate-right ls-btn ls-btn-sm" onclick="event.stopPropagation(); lsSeek(10)" title="+10s"></i>
+                        <span style="font-size:8px;color:#fff;font-weight:700;position:absolute;bottom:2px;right:-2px">10</span>
+                    </div>
+                    <i class="fa-solid fa-forward-step ls-btn ls-btn-sm" onclick="event.stopPropagation(); lsCarouselNav(1)" title="Next"></i>
+                    <i class="fa-solid fa-expand ls-btn ls-btn-sm" onclick="event.stopPropagation(); tryFullscreen()" title="Fullscreen"></i>
+                </div>
+                <!-- server pill -->
+                <div style="display:flex;justify-content:center;margin-top:8px">
+                    <span class="ls-server-pill" id="lsServerPill" onclick="event.stopPropagation(); toggleLsServerPanel()">Server 1</span>
                 </div>
                 <div class="ls-hint">Tap screen to hide controls</div>
             </div>
@@ -2355,6 +2419,7 @@
             <div class="search-tab active" id="stab-all" onclick="setSearchTab('multi',this)">All</div>
             <div class="search-tab" id="stab-movie" onclick="setSearchTab('movie',this)">Movie</div>
             <div class="search-tab" id="stab-tv" onclick="setSearchTab('tv',this)">Series</div>
+            <div class="search-tab" id="stab-person" onclick="setSearchTab('person',this)">Actor</div>
         </div>
         <!-- Empty/idle state -->
         <div id="searchEmptyState" style="padding:0 0 40px;">
@@ -2478,8 +2543,54 @@
                     <div class="reel-heart-pop" id="modalHeartPop"><i class="fa-solid fa-heart"></i></div>
                     <div class="swipe-overlay" id="swipeOverlay"></div>
                     <div class="carousel-track" id="carouselTrack"></div>
-                    <div id="carouselDots" class="flex justify-center gap-2 py-2"></div>
+                    <!-- Video controls overlay -->
+                    <div id="modalVideoControls" onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.9));padding:6px 0 8px;z-index:50;opacity:0;pointer-events:none;transition:opacity 0.3s">
+                        <!-- progress bar -->
+                        <div style="display:flex;align-items:center;gap:8px;padding:0 14px;margin-bottom:10px">
+                            <span id="mvcTime" style="font-size:11px;color:#fff;min-width:38px;font-weight:600">0:00</span>
+                            <div id="mvcTrack" style="flex:1;height:3px;background:rgba(255,255,255,0.25);border-radius:2px;cursor:pointer;position:relative">
+                                <div id="mvcProgress" style="width:0%;height:100%;background:#fff;border-radius:2px;transition:width 0.5s linear"></div>
+                                <div id="mvcThumb" style="position:absolute;top:50%;left:0%;transform:translate(-50%,-50%);width:12px;height:12px;background:#1a73e8;border-radius:50%;transition:left 0.5s linear"></div>
+                            </div>
+                            <span id="mvcDuration" style="font-size:11px;color:#aaa;min-width:38px;text-align:right">0:00</span>
+                        </div>
+                        <!-- controls row -->
+                        <div style="display:flex;align-items:center;justify-content:space-around;padding:0 6px">
+                            <!-- lock -->
+                            <button onclick="lockScreen()" style="background:none;border:none;color:#fff;font-size:18px;padding:4px 8px;cursor:pointer" title="Lock">
+                                <i class="fa-solid fa-lock-open"></i>
+                            </button>
+                            <!-- prev slide -->
+                            <button onclick="modalVideoCmd('prev')" style="background:none;border:none;color:#fff;font-size:20px;padding:4px 8px;cursor:pointer" title="Prev">
+                                <i class="fa-solid fa-backward-step"></i>
+                            </button>
+                            <!-- rewind 10s -->
+                            <button onclick="modalVideoCmd('back10')" style="background:none;border:none;color:#fff;font-size:20px;padding:4px 8px;cursor:pointer;position:relative" title="-10s">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <span style="font-size:8px;font-weight:800;position:absolute;bottom:2px;right:4px">10</span>
+                            </button>
+                            <!-- play/pause utama -->
+                            <button id="mvPlayBtn" onclick="modalVideoCmd('playpause')" style="background:none;border:2px solid #fff;border-radius:50%;color:#fff;font-size:22px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" title="Play/Pause">
+                                <i class="fa-solid fa-pause"></i>
+                            </button>
+                            <!-- forward 10s -->
+                            <button onclick="modalVideoCmd('fwd10')" style="background:none;border:none;color:#fff;font-size:20px;padding:4px 8px;cursor:pointer;position:relative" title="+10s">
+                                <i class="fa-solid fa-rotate-right"></i>
+                                <span style="font-size:8px;font-weight:800;position:absolute;bottom:2px;right:4px">10</span>
+                            </button>
+                            <!-- next slide -->
+                            <button onclick="modalVideoCmd('next')" style="background:none;border:none;color:#fff;font-size:20px;padding:4px 8px;cursor:pointer" title="Next">
+                                <i class="fa-solid fa-forward-step"></i>
+                            </button>
+                            <!-- fullscreen / landscape -->
+                            <button onclick="enterLandscape()" style="background:none;border:none;color:#fff;font-size:18px;padding:4px 8px;cursor:pointer" title="Fullscreen">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
+                <!-- Dots indicator slide trailer — di luar mainVideoArea agar tidak tertutup controls -->
+                <div id="carouselDots" style="display:flex;justify-content:center;gap:6px;padding:6px 0 2px;background:#000"></div>
 
                 <div class="px-4 py-3 flex justify-between items-center bg-black">
                     <div class="flex gap-4 items-center">
@@ -2652,17 +2763,41 @@
         <div class="tv-topbar">
             <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer;padding:6px" onclick="closeTvModal()"></i>
             <div class="tv-live-dot"></div>
-            <div class="tv-topbar-title">Live TV Indonesia</div>
-            <i class="fa-solid fa-magnifying-glass" style="font-size:16px;color:#8e8e8e;cursor:pointer;padding:6px" onclick="focusTvSearch()"></i>
+            <div class="tv-topbar-title" id="tvTopbarTitle">Nasional</div>
+            <i class="fa-solid fa-magnifying-glass" style="font-size:16px;color:#8e8e8e;cursor:pointer;padding:6px" id="tvSearchIcon" onclick="focusTvSearch()"></i>
         </div>
+
+        <!-- Tab bar — 3 tab -->
+        <div class="tv-tab-bar" id="tvTabBar">
+            <div class="tv-tab-item active-tv-tab" id="tvTabNasional" onclick="switchTvTab('nasional')">Nasional</div>
+            <div class="tv-tab-item" id="tvTabLokal" onclick="switchTvTab('lokal')">Lokal</div>
+            <div class="tv-tab-item" id="tvTabBerita" onclick="switchTvTab('berita')">Berita</div>
+        </div>
+
+        <!-- Search box -->
         <div class="tv-search-box" id="tvSearchBox" style="display:none">
             <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
             <input type="text" id="tvSearchInp" placeholder="Search TV channels..." autocomplete="off" oninput="filterTvChannels(this.value)">
             <i class="fa-solid fa-xmark" style="color:#8e8e8e;font-size:14px;cursor:pointer;padding:2px 0 2px 4px" onclick="closeTvSearch()"></i>
         </div>
-        <div id="tvChannelList" style="padding-bottom:70px"></div>
 
-        <!-- Bottom nav khusus TV - selaras ukuran & posisi dengan nav utama -->
+        <!-- Channel pane -->
+        <div id="tvChannelPane">
+            <!-- sticky video player -->
+            <div id="tvPlayerArea">
+                <iframe id="tvPlayerFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            </div>
+            <!-- tombol LiveSport di antara video dan channel list -->
+            <div style="padding:10px 16px 4px">
+                <button onclick="window.open('https://timstreams.net/','_blank')" style="width:100%;background:linear-gradient(135deg,#1a73e8,#0d47a1);border:none;color:#fff;font-size:13px;font-weight:700;padding:11px 0;border-radius:12px;cursor:pointer;letter-spacing:0.3px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 12px rgba(26,115,232,0.35)">
+                    <i class="fa-solid fa-signal-stream"></i> Live Sport — TimStreams
+                </button>
+            </div>
+            <!-- scrollable channel list -->
+            <div id="tvChannelList"></div>
+        </div>
+
+        <!-- Bottom nav khusus TV -->
         <nav class="tv-bottom-nav">
             <div class="tv-bottom-item" onclick="closeTvModal(); updateActiveNav(document.getElementById('homeBtnNav')); backToHome()">
                 <i class="fa-solid fa-house cursor-pointer"></i>
@@ -2860,9 +2995,69 @@
                 document.getElementById('backToTop').style.display = window.scrollY > 500 ? 'flex' : 'none'; 
             });
             initModalSwipeGestures();
+            initTvModalSwipe();
         };
 
-        // ===== SWIPE GESTURES FOR MODALS =====
+        // Video controls modal film
+        let _modalPlaying = true;
+        let _modalMuted = false;
+        function modalVideoCmd(cmd) {
+            const slides = document.querySelectorAll('.carousel-slide');
+            const iframe = document.getElementById(`vid-${currentIdx}`);
+            function postMsg(fn, args) {
+                try { iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:fn,args:args||''}), '*'); } catch(e) {}
+            }
+            if (cmd === 'playpause') {
+                if (_modalPlaying) {
+                    postMsg('pauseVideo');
+                    _modalPlaying = false;
+                    document.querySelector('#mvPlayBtn i').className = 'fa-solid fa-play';
+                    document.getElementById('lsPlayBtn').className = 'fa-solid fa-play ls-btn';
+                } else {
+                    postMsg('playVideo');
+                    _modalPlaying = true;
+                    document.querySelector('#mvPlayBtn i').className = 'fa-solid fa-pause';
+                    document.getElementById('lsPlayBtn').className = 'fa-solid fa-pause ls-btn';
+                }
+            } else if (cmd === 'back10') {
+                postMsg('seekBy', [-10]);
+            } else if (cmd === 'fwd10') {
+                postMsg('seekBy', [10]);
+            } else if (cmd === 'prev' || cmd === 'next') {
+                const dir = cmd === 'next' ? 1 : -1;
+                const newIdx = currentIdx + dir;
+                if (newIdx < 0 || newIdx >= slides.length) return;
+                // pause current
+                slides.forEach(s => {
+                    const f = s.querySelector('iframe');
+                    if (f) try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                    s.classList.remove('playing');
+                });
+                currentIdx = newIdx;
+                document.getElementById('carouselTrack').style.transform = `translateX(-${currentIdx * 100}%)`;
+                document.querySelectorAll('.dot').forEach((d,i) => { d.className = `dot w-1.5 h-1.5 rounded-full ${i===currentIdx?'bg-blue-500':'bg-zinc-700'}`; });
+                const newVid = document.getElementById(`vid-${currentIdx}`);
+                if (newVid) {
+                    try { newVid.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch(e) {}
+                    newVid.closest('.carousel-slide')?.classList.add('playing');
+                }
+                _modalPlaying = true;
+                document.querySelector('#mvPlayBtn i').className = 'fa-solid fa-pause';
+            }
+        }
+
+        // Landscape play/pause
+        function lsPlayPause() {
+            modalVideoCmd('playpause');
+            const icon = document.getElementById('lsPlayBtn');
+            icon.className = _modalPlaying ? 'fa-solid fa-pause ls-btn' : 'fa-solid fa-play ls-btn';
+            icon.style.cssText = 'font-size:26px;border:2px solid #fff;border-radius:50%;padding:10px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;box-sizing:border-box';
+        }
+        function lsSeek(sec) {
+            const iframe = document.getElementById(`vid-${currentIdx}`);
+            try { iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'seekBy',args:[sec]}), '*'); } catch(e) {}
+        }
+        function lsCarouselNav(dir) { modalVideoCmd(dir > 0 ? 'next' : 'prev'); }
         // Swipe helper — threshold 25px, ratio 2.0
         function addSwipe(el, onLeft, onRight, onUp, onDown, minDist = 25, maxRatio = 2.0) {
             if (!el) return;
@@ -2933,6 +3128,30 @@
             const exR = () => { const c=ETABS.indexOf(_currentExploreTab||'trending'); if(c>0){const p=ETABS[c-1];switchExploreTab(p,document.getElementById('exploreTab-'+p));} };
             addSwipe(document.getElementById('exploreGrid'), exL, exR);
             addSwipe(document.querySelector('#searchEmptyState .search-tabs'), exL, exR);
+
+            // ── SEARCH TYPE TABS swipe (All/Movie/Series/Actor) ──────────────
+            const STAB_IDS    = ['stab-all','stab-movie','stab-tv','stab-person'];
+            const STAB_TYPES  = ['multi','movie','tv','person'];
+            let _stabSx = 0, _stabSy = 0;
+            const searchTypeTabs = document.getElementById('searchTypeTabs');
+            const searchOverlay  = document.getElementById('searchOverlay');
+            searchOverlay.addEventListener('touchstart', e => {
+                if (!window._isSearchMode) return;
+                _stabSx = e.touches[0].clientX;
+                _stabSy = e.touches[0].clientY;
+            }, { passive: true });
+            searchOverlay.addEventListener('touchend', e => {
+                if (!window._isSearchMode) return;
+                const dx = e.changedTouches[0].clientX - _stabSx;
+                const dy = e.changedTouches[0].clientY - _stabSy;
+                const adx = Math.abs(dx), ady = Math.abs(dy);
+                if (adx < 20 || adx < ady * 1.2) return;
+                const cur = STAB_TYPES.indexOf(searchTabType);
+                let next = dx < 0 ? cur + 1 : cur - 1;
+                if (next < 0 || next >= STAB_TYPES.length) return;
+                const el = document.getElementById(STAB_IDS[next]);
+                if (el) setSearchTab(STAB_TYPES[next], el);
+            }, { passive: true });
 
             // ── ACTOR ─────────────────────────────────────────────────────
             const acSwL = () => { if (!document.getElementById('actorTabReels').classList.contains('active')) switchActorTab('tv'); };
@@ -3152,6 +3371,12 @@
                     { name: 'TVRI SULSEL', url: 'https://m.vidio.com/live/6459-tvri-sulawesi-selatan', logo: 'SLS' },
                     { name: 'TVRI SUMUT', url: 'https://m.vidio.com/live/6447-tvri-sumatera-utara', logo: 'SMU' },
                     { name: 'TVRI KALTIM', url: 'https://m.vidio.com/live/6457-tvri-kalimantan-timur', logo: 'KLT' },
+                ]
+            },
+            {
+                label: 'Sports',
+                channels: [
+                    { name: 'Sports Live', url: 'https://timstreams.net/', logo: '⚽' },
                 ]
             }
         ];
@@ -3419,16 +3644,110 @@
             return nowBarHTML + schedHTML;
         }
 
-        function renderTvList(filter) {
+        let _currentTvTab = 'nasional';
+        let _tvMuted = false;
+
+        function switchTvTab(tab) {
+            _currentTvTab = tab;
+            document.querySelectorAll('.tv-tab-item').forEach(t => t.classList.remove('active-tv-tab'));
+            const tabEl = document.getElementById('tvTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+            if (tabEl) tabEl.classList.add('active-tv-tab');
+
+            const tvTitle = document.getElementById('tvTopbarTitle');
+            const frame   = document.getElementById('tvPlayerFrame');
+            const tvModal = document.getElementById('tvModal');
+
+            // Stop audio channel sebelumnya
+            if (frame && frame.src) frame.src = '';
+            document.getElementById('tvPlayerArea').style.display = 'none';
+
+            const labels = { nasional: 'Nasional', lokal: 'Lokal & Regional', berita: 'Berita' };
+            tvTitle.textContent = labels[tab] || 'Live TV';
+            tvModal.scrollTop = 0;
+            renderTvList('', tab);
+
+            // auto-play channel pertama
+            const tabMap = { nasional: 'Nasional', lokal: 'Lokal & Regional', berita: 'Berita' };
+            const cat = tvCategories.find(c => c.label === tabMap[tab]);
+            if (cat && cat.channels.length > 0) {
+                setTimeout(() => playTvChannelInPane(cat.channels[0].name, cat.channels[0].url), 150);
+            }
+        }
+
+        // ── VIDEO CONTROLS AUTO-HIDE ──────────────────────────────────────
+        let _ctrlHideTimer = null;
+        function showVideoControls() {
+            const ctrl = document.getElementById('modalVideoControls');
+            if (!ctrl) return;
+            ctrl.style.opacity = '1';
+            ctrl.style.pointerEvents = 'auto';
+            clearTimeout(_ctrlHideTimer);
+            _ctrlHideTimer = setTimeout(() => {
+                ctrl.style.opacity = '0';
+                ctrl.style.pointerEvents = 'none';
+            }, 3000);
+        }
+        // tap di mainVideoArea → toggle controls
+        document.addEventListener('DOMContentLoaded', () => {
+            const area = document.getElementById('mainVideoArea');
+            if (area) {
+                area.addEventListener('click', e => {
+                    if (e.target.closest('#modalVideoControls')) return;
+                    const ctrl = document.getElementById('modalVideoControls');
+                    if (!ctrl) return;
+                    if (ctrl.style.opacity === '0' || ctrl.style.opacity === '') {
+                        showVideoControls();
+                    } else {
+                        ctrl.style.opacity = '0';
+                        ctrl.style.pointerEvents = 'none';
+                        clearTimeout(_ctrlHideTimer);
+                    }
+                });
+            }
+        });
+
+        // ── TV MODAL SWIPE — reliable, attach ke tvModal + sportPane ─────────
+        function initTvModalSwipe() {
+            const TV_TABS = ['nasional', 'lokal', 'berita'];
+            const tvModal = document.getElementById('tvModal');
+            if (!tvModal) return;
+
+            let sx = 0, sy = 0, skip = false;
+
+            tvModal.addEventListener('touchstart', e => {
+                if (e.touches.length !== 1) return;
+                sx = e.touches[0].clientX;
+                sy = e.touches[0].clientY;
+                skip = !!e.target.closest('#tvSearchInp');
+            }, { passive: true });
+
+            tvModal.addEventListener('touchend', e => {
+                if (skip) return;
+                const dx = e.changedTouches[0].clientX - sx;
+                const dy = e.changedTouches[0].clientY - sy;
+                const adx = Math.abs(dx), ady = Math.abs(dy);
+                if (adx >= 30 && adx > ady) {
+                    const c = TV_TABS.indexOf(_currentTvTab);
+                    if (dx < 0 && c < TV_TABS.length - 1) switchTvTab(TV_TABS[c + 1]);
+                    else if (dx > 0 && c > 0) switchTvTab(TV_TABS[c - 1]);
+                }
+            }, { passive: true });
+        }
+        function renderTvList(filter, tab) {
             const cont = document.getElementById('tvChannelList');
             const q = (filter || '').toLowerCase();
+            const activeTab = tab || _currentTvTab;
+            const tabMap = { nasional: 'Nasional', lokal: 'Lokal & Regional', berita: 'Berita' };
+            const catLabel = tabMap[activeTab];
             let html = '';
             tvCategories.forEach(cat => {
+                if (catLabel && cat.label !== catLabel) return;
+                if (cat.label === 'Sports') return; // Sports hanya di tab LiveSport
                 const filtered = cat.channels.filter(ch => ch.name.toLowerCase().includes(q));
                 if (filtered.length === 0) return;
                 html += `<div class="tv-category-label">${cat.label}</div><div class="tv-channel-grid">`;
                 filtered.forEach(ch => {
-                    html += `<div class="tv-ch-card" onclick="playTvChannel('${ch.name}', '${ch.url}')">
+                    html += `<div class="tv-ch-card" id="tvch-${ch.name.replace(/\s/g,'_')}" onclick="playTvChannelInPane('${ch.name}', '${ch.url}')">
                         <div class="tv-ch-live-badge">LIVE</div>
                         <div class="tv-ch-logo-box">${ch.logo}</div>
                         <div class="tv-ch-name">${ch.name}</div>
@@ -3440,50 +3759,57 @@
             cont.innerHTML = html;
         }
 
-        function initTvChannels() { renderTvList(''); }
-        function filterTvChannels(q) { renderTvList(q); }
+        function playTvChannelInPane(name, url) {
+            // highlight active channel card
+            document.querySelectorAll('.tv-ch-card').forEach(c => c.classList.remove('active-ch'));
+            const card = document.getElementById('tvch-' + name.replace(/\s/g,'_'));
+            if (card) {
+                card.classList.add('active-ch');
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+            // load player — sticky di atas, tidak perlu scroll
+            const playerArea = document.getElementById('tvPlayerArea');
+            const frame = document.getElementById('tvPlayerFrame');
+            playerArea.style.display = 'block';
+            frame.src = url;
+        }
+
+        function initTvChannels() { /* channels di-render saat switchTvTab dipanggil */ }
+        function filterTvChannels(q) { renderTvList(q, _currentTvTab); }
 
         function focusTvSearch() {
+            if (_currentTvTab === 'sport') return;
             const box = document.getElementById('tvSearchBox');
-            const inp = document.getElementById('tvSearchInp');
             box.style.display = 'flex';
-            inp.focus();
-            // highlight search icon in bottom nav
-            document.querySelectorAll('.tv-bottom-item').forEach(el => el.classList.remove('tv-bottom-active'));
-            document.querySelector('.tv-bottom-search').classList.add('tv-bottom-active');
+            document.getElementById('tvSearchInp').focus();
         }
 
         function closeTvSearch() {
             const box = document.getElementById('tvSearchBox');
-            const inp = document.getElementById('tvSearchInp');
             box.style.display = 'none';
-            inp.value = '';
-            renderTvList('');
-            // restore TV active
-            document.querySelectorAll('.tv-bottom-item').forEach(el => el.classList.remove('tv-bottom-active'));
-            document.querySelector('.tv-bottom-item:nth-child(3)').classList.add('tv-bottom-active');
+            document.getElementById('tvSearchInp').value = '';
+            renderTvList('', _currentTvTab);
         }
 
         function openTvModal() {
             closeModal(); closeSearch();
-            // Tutup reels jika aktif
-            if (document.getElementById('reelsModal').style.display === 'block') {
-                _closeReelsSilent();
-            }
+            if (document.getElementById('reelsModal').style.display === 'block') _closeReelsSilent();
             document.getElementById('tvSearchInp').value = '';
             document.getElementById('tvSearchBox').style.display = 'none';
-            renderTvList('');
+            document.getElementById('tvPlayerArea').style.display = 'none';
+            document.getElementById('tvPlayerFrame').src = '';
             document.getElementById('tvModal').style.display = 'block';
             document.getElementById('tvModal').scrollTop = 0;
             document.body.style.overflow = 'hidden';
             history.pushState({view: 'tv'}, "");
+            switchTvTab('nasional');
         }
 
         function closeTvModal() {
+            document.getElementById('tvPlayerFrame').src = '';
             document.getElementById('tvModal').style.display = 'none';
             document.body.style.overflow = 'auto';
             updateActiveNav(document.getElementById('homeBtnNav'));
-            // Ganti state ke home tanpa push (agar back tidak loop)
             history.replaceState({view: 'home'}, '');
         }
 
@@ -4033,7 +4359,7 @@
                 return;
             }
 
-            // Movie modal biasa
+            // Movie modal biasa (hardware back)
             if (document.getElementById('movieModal').style.display === 'block') {
                 _closeModalSilent();
                 // Jika film dibuka dari movieografi → kembalikan ke movieografi
@@ -4115,7 +4441,7 @@
         function buildLsServerList() {
             const scroll = document.getElementById('lsServerScroll');
             let html = '';
-            for (let i = 1; i <= 31; i++) {
+            for (let i = 1; i <= 28; i++) {
                 const active = (i === activeServerIdx) ? 'active-link' : '';
                 html += `<div class="ls-srv-btn ${active}" onclick="event.stopPropagation(); lsChangeServer(${i}, this)">Server ${i}</div>`;
             }
@@ -4597,7 +4923,7 @@
                         track.appendChild(slide);
                     }
                 });
-                // body tetap hidden karena movieModal masih buka
+                document.body.style.overflow = 'hidden';
                 history.replaceState({view: 'modal'}, '');
             } else {
                 document.body.style.overflow = 'auto';
@@ -4819,18 +5145,15 @@
                 _reelsData.push(...newReels);
                 _reelsLoaded = true;
 
-                newReels.forEach(reel => {
+                newReels.forEach((reel, reelIdx) => {
                     const lib = getReelLibStatus(reel.movieId);
                     const slide = document.createElement('div');
                     slide.className = 'reel-slide';
                     slide.dataset.movieId = reel.movieId;
                     slide.dataset.type = reel.type;
 
-                    // autoplay=1 agar langsung main saat slide pertama dimuat
-                    // js_api diaktifkan agar bisa pause via postMessage
-                    // enablejsapi=1 wajib agar YT.Player onStateChange bekerja
-                    // controls=1 dibiarkan agar event state change tidak diblokir
-                    const isFirstReel = isNew && _reelsData.length === 1;
+                    // autoplay=1 hanya untuk reel pertama saat load awal
+                    const isFirstReel = isNew && reelIdx === 0;
                     const embedUrl = `https://www.youtube.com/embed/${reel.videoKey}?enablejsapi=1&autoplay=${isFirstReel?1:0}&rel=0&modestbranding=1&showinfo=0&playsinline=1&iv_load_policy=3&mute=0&controls=0&origin=${encodeURIComponent(location.origin || location.href.split('/').slice(0,3).join('/'))}`;
                     const typeLabel = reel.type === 'movie' ? 'Movie' : 'Series';
                     const ratingStr = reel.rating ? `· ★${reel.rating}` : '';
@@ -5035,7 +5358,33 @@
             }
         }
 
-        // Stop semua video saat tab/app ditutup atau disembunyikan
+        // YouTube postMessage → update progress bar modal & landscape
+        window.addEventListener('message', e => {
+            try {
+                const d = JSON.parse(e.data);
+                if (d.event !== 'infoDelivery' || !d.info) return;
+                const cur = d.info.currentTime, dur = d.info.duration;
+                if (!dur || dur <= 0) return;
+                const pct = (cur / dur * 100).toFixed(2);
+                const fmt = t => { const m=Math.floor(t/60),s=Math.floor(t%60); return `${m}:${s<10?'0':''}${s}`; };
+                // modal controls
+                const mp = document.getElementById('mvcProgress');
+                const mt = document.getElementById('mvcThumb');
+                const mTime = document.getElementById('mvcTime');
+                const mDur = document.getElementById('mvcDuration');
+                if (mp) mp.style.width = pct + '%';
+                if (mt) mt.style.left = pct + '%';
+                if (mTime) mTime.textContent = fmt(cur);
+                if (mDur) mDur.textContent = fmt(dur);
+                // landscape controls
+                const lp = document.getElementById('lsProgress');
+                const lTime = document.getElementById('lsTime');
+                const lDur = document.getElementById('lsDuration');
+                if (lp) lp.style.width = pct + '%';
+                if (lTime) lTime.textContent = fmt(cur);
+                if (lDur) lDur.textContent = fmt(dur);
+            } catch(e2) {}
+        });
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 // Pause semua iframe YouTube yang aktif
@@ -6050,7 +6399,9 @@
             let url;
             if(currentCastId) { url = `https://api.themoviedb.org/3/person/${currentCastId}/combined_credits?api_key=${API_KEY}&language=en-US`; }
             else if(searchQuery) { 
-                if (searchTabType === 'multi' || searchTabType === 'person') {
+                if (searchTabType === 'person') {
+                    url = `https://api.themoviedb.org/3/search/person?query=${encodeURIComponent(searchQuery)}&api_key=${API_KEY}&page=${page}&include_adult=false`;
+                } else if (searchTabType === 'multi') {
                     url = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(searchQuery)}&api_key=${API_KEY}&page=${page}&include_adult=false`;
                 } else {
                     url = `https://api.themoviedb.org/3/search/${searchTabType}?query=${encodeURIComponent(searchQuery)}&api_key=${API_KEY}&page=${page}&include_adult=false`;
@@ -6139,7 +6490,33 @@
             // Dedup: kumpulkan ID yang sudah ada di grid
             const existingIds = new Set();
             grid.querySelectorAll('.post-card[data-id]').forEach(c => existingIds.add(c.dataset.id));
-            items.forEach(m => { 
+            items.forEach(m => {
+                // Tab Actor (HANYA saat search mode aktif & tab person & ada query)
+                if (window._isSearchMode && searchTabType === 'person' && searchQuery) {
+                    if (!m.profile_path && !m.poster_path) return;
+                    if (existingIds.has(String(m.id))) return;
+                    existingIds.add(String(m.id));
+                    const card = document.createElement('div');
+                    card.className = 'post-card';
+                    card.dataset.id = m.id;
+                    card.onclick = function() { openActorProfile(m.id); };
+                    const imgSrc = m.profile_path
+                        ? `https://image.tmdb.org/t/p/w185${m.profile_path}`
+                        : `https://image.tmdb.org/t/p/w185${m.poster_path}`;
+                    const dept = m.known_for_department || 'Acting';
+                    let knownFor = '';
+                    if (m.known_for && m.known_for.length) {
+                        knownFor = m.known_for.map(k => k.title || k.name || '').filter(Boolean).slice(0,2).join(', ');
+                    }
+                    card.innerHTML = `<img src="${imgSrc}" loading="lazy" onload="this.style.opacity=1" style="opacity:0">
+                        <div class="card-title-overlay">
+                            <div class="card-title-text">${m.name || ''}</div>
+                            <div class="card-meta-row"><span class="card-type-label">${dept}</span></div>
+                            ${knownFor ? `<div style="font-size:9px;color:#aaa;margin-top:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${knownFor}</div>` : ''}
+                        </div>`;
+                    fragment.appendChild(card);
+                    return;
+                }
                 if(!m.poster_path || m.media_type === 'person') return;
                 if(existingIds.has(String(m.id))) return; // skip duplikat
                 existingIds.add(String(m.id));
@@ -6172,8 +6549,13 @@
                 }
                 const _year = (m.release_date || m.first_air_date || '').split('-')[0];
                 const _rating = m.vote_average ? m.vote_average.toFixed(1) : '';
-                const _typeLabel = currentType==='short' ? 'SHORT' : (mType==='tv' ? 'TV' : 'MOVIE');
-                card.innerHTML = `${_nb ? _nb.replace('badge-new', 'badge-new" style="position:absolute;top:6px;right:6px;bottom:auto;left:auto') : ''}<img src="https://image.tmdb.org/t/p/w185${m.poster_path}" loading="lazy" onload="this.style.opacity=1" style="opacity:0"><div class="card-title-overlay"><div class="card-title-text">${_title}</div><div class="card-meta-row">${_rating ? `<span class="card-star">★ ${_rating}</span>` : ''}<span class="card-type-label">${_typeLabel}</span>${_year ? `<span class="card-year">${_year}</span>` : ''}</div></div>`;
+                // Type label: pakai searchTabType saat search agar Series/Movie akurat
+                let _typeLabel;
+                if (currentType === 'short') _typeLabel = 'SHORT';
+                else if (window._isSearchMode && searchTabType === 'tv') _typeLabel = 'SERIES';
+                else if (window._isSearchMode && searchTabType === 'movie') _typeLabel = 'MOVIE';
+                else _typeLabel = mType === 'tv' ? 'SERIES' : 'MOVIE';
+                card.innerHTML = `${_nb ? `<div class="badge-new" style="position:absolute;top:6px;right:6px;z-index:2">NEW</div>` : ''}<img src="https://image.tmdb.org/t/p/w185${m.poster_path}" loading="lazy" onload="this.style.opacity=1" style="opacity:0"><div class="card-title-overlay"><div class="card-title-text">${_title}</div><div class="card-meta-row">${_rating ? `<span class="card-star">★ ${_rating}</span>` : ''}<span class="card-type-label">${_typeLabel}</span>${_year ? `<span class="card-year">${_year}</span>` : ''}</div></div>`;
                 fragment.appendChild(card); 
             });
             grid.appendChild(fragment);
@@ -6210,6 +6592,11 @@
             document.getElementById('searchTypeTabs').style.display = 'none';
             window._isSearchMode = false;
             searchQuery = '';
+            // Reset tab ke All agar tidak persist ke home
+            searchTabType = 'multi';
+            document.querySelectorAll('#searchTypeTabs .search-tab').forEach(t => t.classList.remove('active'));
+            const stabAll = document.getElementById('stab-all');
+            if (stabAll) stabAll.classList.add('active');
         }
 
         function showSearchResults() {
@@ -6252,9 +6639,16 @@
             document.getElementById('calendarHeader').classList.add('hidden');
             document.body.style.overflow = 'auto'; 
             searchQuery = ''; currentCastId = '';
+            window._isSearchMode = false;
+            searchTabType = 'multi';
             document.getElementById('searchInp').value = '';
             document.getElementById('searchClearBtn').style.display = 'none';
             document.getElementById('smartSearchDropdown').style.display = 'none';
+            // Reset tab pencarian ke All
+            document.querySelectorAll('#searchTypeTabs .search-tab').forEach(t => t.classList.remove('active'));
+            const stabAll = document.getElementById('stab-all');
+            if (stabAll) stabAll.classList.add('active');
+            document.getElementById('searchTypeTabs').style.display = 'none';
             // Reset filter bar
             const filterBar = document.getElementById('searchFilterBar');
             if (filterBar) filterBar.style.display = 'none';
@@ -6285,6 +6679,11 @@
             if(isActive) { currentSchedule = 'trending'; } 
             else { el.classList.add('active'); currentSchedule = v; }
             if(currentType === 'multi') currentType = 'movie';
+            // Sync stat-item agar konsisten dengan currentType
+            document.querySelectorAll('.stat-item').forEach(s => s.classList.remove('active-stat'));
+            const statMap = { movie: 'stat-movie', tv: 'stat-tv', short: 'stat-short' };
+            const statEl = document.getElementById(statMap[currentType]);
+            if (statEl) statEl.classList.add('active-stat');
             loadFeed(true); 
         }
 
@@ -6499,11 +6898,23 @@
             document.getElementById('mToggleBtn').classList.add('hidden');
             document.getElementById('mTranslateBtn').style.display = 'none';
             document.getElementById('seriesControl').classList.add('hidden');
+
+            // ── Clear semua section async agar tidak tampil data film sebelumnya ──
+            const _cs2 = document.getElementById('mCollectionSection'); if (_cs2) { _cs2.style.display='none'; const _csc=document.getElementById('mCollectionScroll'); if(_csc) _csc.innerHTML=''; }
+            const _ss2 = document.getElementById('mSimilarSection');    if (_ss2) _ss2.style.display='none';
+            const _pg2 = document.getElementById('mPosterGallery');     if (_pg2) { _pg2.style.display='none'; const _ps=document.getElementById('mPosterScroll'); if(_ps) _ps.innerHTML=''; }
+            const _rb2 = document.getElementById('mRatingBar');         if (_rb2) { _rb2.style.display='none'; _rb2.innerHTML=''; }
+            const _ig2 = document.getElementById('mInfoGrid');          if (_ig2) { _ig2.style.display='none'; _ig2.innerHTML=''; }
+            const _eg2 = document.getElementById('episodeGrid');        if (_eg2) _eg2.innerHTML='';
+            const _ep2 = document.getElementById('episodePagination'); if (_ep2) _ep2.innerHTML='';
+
             document.getElementById('movieModal').style.display = 'block'; 
             document.getElementById('movieModal').scrollTop = 0;
             document.getElementById('smartSearchDropdown').style.display = 'none'; 
             document.body.style.overflow = 'hidden'; 
             currentIdx = 0; isTranslated = false;
+            // tampilkan controls sebentar lalu auto-hide
+            setTimeout(() => showVideoControls(), 500);
             
             history.pushState({view: 'modal'}, "");
 
@@ -6776,7 +7187,7 @@
             // tanggal dihapus dari modal (sudah ada di info grid)
             
             let serverButtonsHTML = '';
-            for(let i=1; i<=31; i++) {
+            for(let i=1; i<=28; i++) {
                 serverButtonsHTML += `<button class="server-btn" onclick="changeServer(${i}, this)">Server ${i}</button>`;
             }
             document.getElementById('serverList').innerHTML = serverButtonsHTML;
@@ -6794,7 +7205,11 @@
             const _genreIds = (dId.genres || []).map(g => g.id);
             loadSimilarMovies(id, type, _genreIds);
 
-            // Collection/Franchise (movie only) — gunakan dEn karena belongs_to_collection hanya ada di en-US
+            // Collection/Franchise (movie only) — clear dulu sebelum load baru
+            const _csSec = document.getElementById('mCollectionSection');
+            const _csScr = document.getElementById('mCollectionScroll');
+            if (_csSec) { _csSec.style.display = 'none'; }
+            if (_csScr) { _csScr.innerHTML = ''; }
             if (type === 'movie' && (dEn.belongs_to_collection || dId.belongs_to_collection)) {
                 const collData = dEn.belongs_to_collection || dId.belongs_to_collection;
                 loadCollection(collData.id, id);
@@ -6850,11 +7265,27 @@
                 document.body.style.overflow = 'hidden';
                 history.replaceState({view: 'tv'}, '');
             } else {
-                closeModal();
+                // Tombol ← layar: sembunyikan modal dulu, lalu pop state
+                _closeModalSilent();
+                // Restore actor/movieografi jika film dibuka dari sana
+                if (window._fromMovieografi) {
+                    window._fromMovieografi = false;
+                    document.getElementById('movieografiModal').style.display = 'block';
+                    document.getElementById('movieografiModal').scrollTop = 0;
+                    document.body.style.overflow = 'hidden';
+                } else if (window._actorModalPendingReopen) {
+                    window._actorModalPendingReopen = null;
+                    document.getElementById('actorModal').style.display = 'block';
+                    document.getElementById('actorModal').scrollTop = 0;
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = 'auto';
+                }
+                history.back(); // pop state 'modal' — AMAN, hanya dari tombol ←
             }
         }
 
-        function closeModal() { 
+        function closeModal() {
             const track = document.getElementById('carouselTrack'); 
             if(track) { 
                 track.querySelectorAll('iframe').forEach(f => { f.src = ""; f.remove(); }); 
@@ -6867,7 +7298,8 @@
             const _ig2 = document.getElementById('mInfoGrid'); if(_ig2){ _ig2.style.display='none'; _ig2.innerHTML=''; }
             const modal = document.getElementById('movieModal');
             modal.classList.remove('tv-mode');
-            modal.style.display = 'none'; 
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
             // Restore ig-post-content ke struktur asli jika sebelumnya TV mode
             const postContent = document.querySelector('#movieModal .ig-post-content');
             if (postContent && document.getElementById('tvChannelSwitcher')) {
@@ -7044,31 +7476,28 @@
                 case 4:  url = `https://vidrock.net/embed/${type}/${id}${seriesSuffix}`; break;
                 case 5:  url = `https://vidup.to/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true`; break;
                 case 6:  url = `https://vidcore.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true`; break;
-                case 7:  url = `https://player.vidzee.wtf/embed/${type}/${id}${seriesSuffix}`; break;
-                case 8:  url = `https://vidstorm.ru/embed/${type}/${id}${seriesSuffix}`; break;
-                case 9:  url = `https://vidsync.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true${type==='tv'?'&autoNext=true':''}`; break;
-                case 10: url = `https://vixsrc.to/${type}/${id}${type==='tv'?`/${s}/${e}`:''}/`; break;
-                case 11: url = `https://vidking.net/embed/${type}/${id}${seriesSuffix}`; break;
-                case 12: url = `https://vidlux.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 13: url = `https://111movies.com/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 14: url = `https://vidnest.fun/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 15: url = `https://vidsrc.wtf/1/${type}/${id}${seriesSuffix}`; break;
-                case 16: url = `https://nontongo.win/embed/${type}/${id}${seriesSuffix}`; break;
-                case 17: url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 18: url = `https://111movies.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 19: url = `https://vidfast.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 20: url = `https://vidsrcme.ru/embed/${type}/${id}${seriesSuffix}`; break;
-                case 21: url = `https://multiembed.mov/?video_id=${id}&tmdb=1${type==='tv'?`&s=${s}&e=${e}`:''}`; break;
-                case 22: url = `https://2embed.cc/embed/${type}/${id}${seriesSuffix}`; break;
-                case 23: url = `https://vidsrc.ru/${type}/${currentImdbId || id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
-                case 24: url = `https://player.vidify.top/embed/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
-                case 25: url = `https://warezcdn.site/${type==='tv'?'serie':'filme'}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 26: url = `https://player.cinezo.live/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 27: url = `https://mgeb.top/embed/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 28: url = `https://vidsrc.cc/v2/embed/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
-                case 29: url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv'?`&s=${s}&e=${e}`:''}`; break;
-                case 30: url = `https://embed.smashystream.com/playere.php?tmdb=${id}${type==='tv'?`&season=${s}&episode=${e}`:''}`; break;
-                case 31: url = `https://anyembed.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 7:  url = `https://vidstorm.ru/embed/${type}/${id}${seriesSuffix}`; break;
+                case 8:  url = `https://vidsync.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true${type==='tv'?'&autoNext=true':''}`; break;
+                case 9:  url = `https://vixsrc.to/${type}/${id}${type==='tv'?`/${s}/${e}`:''}/`; break;
+                case 10: url = `https://vidfast.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 11: url = `https://mgeb.top/embed/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 12: url = `https://embed.smashystream.com/playere.php?tmdb=${id}${type==='tv'?`&season=${s}&episode=${e}`:''}`; break;
+                case 13: url = `https://vidsrcme.ru/embed/${type}/${id}${seriesSuffix}`; break;
+                case 14: url = `https://111movies.com/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 15: url = `https://111movies.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 16: url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv'?`&s=${s}&e=${e}`:''}`; break;
+                case 17: url = `https://player.vidzee.wtf/embed/${type}/${id}${seriesSuffix}`; break;
+                case 18: url = `https://vidnest.fun/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 19: url = `https://vidlux.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 20: url = `https://nontongo.win/embed/${type}/${id}${seriesSuffix}`; break;
+                case 21: url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 22: url = `https://player.vidify.top/embed/${type}/${id}${type==='tv'?`?s=${s}&e=${e}`:''}`; break;
+                case 23: url = `https://vidking.net/embed/${type}/${id}${seriesSuffix}`; break;
+                case 24: url = `https://2embed.cc/embed/${type}/${id}${seriesSuffix}`; break;
+                case 25: url = `https://streamrip.fun/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 26: url = `https://warezcdn.site/${type==='tv'?'serie':'filme'}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 27: url = `https://vidsrc.wtf/1/${type}/${id}${seriesSuffix}`; break;
+                case 28: url = `https://player.cinezo.live/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
                 case 99: url = `https://www.dailymotion.com/embed/video/${currentDailymotionId}`; break;     default: url = `https://player.videasy.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`;
             }
             return url.replace("http://", "https://");
@@ -7347,7 +7776,14 @@
                 card.className = 'post-card';
                 const mType = m._savedType || m.media_type || 'movie';
                 card.onclick = function() { openModal(m.id, mType); };
-                card.innerHTML = `<div class="badge-rating">${(m.vote_average||0).toFixed(1)}</div><div class="badge-type">${mType === 'tv' ? 'tv' : 'movie'}</div><img src="https://image.tmdb.org/t/p/w342${m.poster_path}" loading="lazy" onload="this.style.opacity=1" style="opacity:0">`;
+                let _libTitle = m.title || m.name || '';
+                const _libOrigT = m.original_title || m.original_name || '';
+                if (isNonLatin(_libTitle) && _libOrigT && !isNonLatin(_libOrigT)) _libTitle = _libOrigT;
+                const _libYear   = (m.release_date || m.first_air_date || '').split('-')[0];
+                const _libRating = m.vote_average ? m.vote_average.toFixed(1) : '';
+                const _libType   = mType === 'tv' ? 'SERIES' : 'MOVIE';
+                const _libNb     = isNewRelease(m.release_date || m.first_air_date || '') ? `<div class="badge-new" style="position:absolute;top:6px;right:6px;z-index:2">NEW</div>` : '';
+                card.innerHTML = `${_libNb}<img src="https://image.tmdb.org/t/p/w342${m.poster_path}" loading="lazy" onload="this.style.opacity=1" style="opacity:0"><div class="card-title-overlay"><div class="card-title-text">${_libTitle}</div><div class="card-meta-row">${_libRating ? `<span class="card-star">★ ${_libRating}</span>` : ''}<span class="card-type-label">${_libType}</span>${_libYear ? `<span class="card-year">${_libYear}</span>` : ''}</div></div>`;
                 grid.appendChild(card);
             });
         }
@@ -7761,33 +8197,7 @@
         }
 
         // ===== THEME TOGGLE (disabled - UI removed) =====
-        function toggleTheme() {
-            const isLight = document.body.classList.toggle('light-theme');
-            localStorage.setItem('amnesTheme', isLight ? 'light' : 'dark');
-            _applyThemeUI(isLight);
-        }
 
-        function _applyThemeUI(isLight) {
-            const lbl = document.getElementById('themeLabel');
-            const thumb = document.getElementById('themeToggleThumb');
-            const sw = document.getElementById('themeToggleSwitch');
-            const icon = document.getElementById('themeIcon');
-            if (lbl) lbl.innerText = isLight ? 'Terang' : 'Gelap';
-            if (thumb) { thumb.style.left = isLight ? '22px' : '4px'; thumb.style.background = isLight ? '#fff' : '#555'; }
-            if (sw) sw.style.background = isLight ? '#4caf7d' : '#1a1a1a';
-            if (icon) { icon.className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; icon.style.color = isLight ? '#ffca28' : '#aaa'; }
-            // Update meta theme-color
-            const metaTheme = document.querySelector('meta[name="theme-color"]');
-            if (metaTheme) metaTheme.content = isLight ? '#f0f0f0' : '#000000';
-        }
-
-        // Apply saved theme on load
-        (function() {
-            const saved = localStorage.getItem('amnesTheme');
-            const isLight = saved === 'light';
-            if (isLight) document.body.classList.add('light-theme');
-            _applyThemeUI(isLight);
-        })();
 
 
         // ===== RECENTLY VIEWED =====
@@ -8169,12 +8579,7 @@
         ];
 
         function handleSearchFilterBtn() {
-            // Jika sedang mode search hasil → toggle filter bar biasa
-            if (window._isSearchMode) {
-                toggleSearchFilterBar();
-                return;
-            }
-            // Jika idle → buka decade modal
+            // Selalu buka decade modal (baik saat idle maupun saat ada hasil search)
             openDecadeModal();
         }
 
@@ -8237,7 +8642,7 @@
                     const title = m.title || m.name || '';
                     const rating = m.vote_average ? m.vote_average.toFixed(1) : '';
                     const year = (m.release_date || m.first_air_date || '').split('-')[0];
-                    return `<div onclick="closeDecadeModal(); openModal(${m.id},'${_decadeType}'); closeSearch()" style="position:relative;border-radius:10px;overflow:hidden;cursor:pointer;background:#111;aspect-ratio:16/9">
+                    return `<div onclick="closeDecadeModal(); openModal(${m.id},'${_decadeType}')" style="position:relative;border-radius:10px;overflow:hidden;cursor:pointer;background:#111;aspect-ratio:16/9">
                         <img src="https://image.tmdb.org/t/p/w300${m.backdrop_path}" loading="lazy"
                              onload="this.style.opacity=1"
                              style="opacity:0;width:100%;height:100%;object-fit:cover;transition:opacity 0.3s">
