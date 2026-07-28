@@ -194,14 +194,13 @@
         .interaction-icon:active { transform: scale(1.2); }
         
         /* SERVER LIST SCROLL HORIZONTAL - DIPERKECIL */
-        .server-scroll-wrapper { display: flex; overflow-x: auto; gap: 8px; padding: 10px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-        .server-scroll-wrapper::-webkit-scrollbar { display: none; }
-        .server-btn { flex: 0 0 auto; min-width: 75px; padding: 7px 12px; border-radius: 8px; font-size: 9px; font-weight: 800; text-transform: uppercase; border: 1px solid #1c1c1c; text-align: center; cursor: pointer; background: #000000; color: #fff; transition: all 0.2s; }
+        .server-scroll-wrapper { display: flex; gap: 8px; padding: 10px 0; }
+        .server-btn { flex: 1; min-width: 0; padding: 7px 6px; border-radius: 8px; font-size: 9px; font-weight: 800; text-transform: uppercase; border: 1px solid #1c1c1c; text-align: center; cursor: pointer; background: #000000; color: #fff; transition: all 0.2s; }
         .server-btn:active { background: #1c1c1c; }
         .server-btn.active-link { border: 1.5px solid #fff !important; background: rgba(255,255,255,0.1); }
         
         /* DOWNLOAD & TRAILER GRID - DIPERKECIL */
-        .dl-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 8px; margin-bottom: 2px; }
+        .dl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; margin-bottom: 2px; }
         .dl-link-btn { width: 100%; padding: 8px 2px; border-radius: 10px; background: #000; color: #fff; font-size: 9.5px; font-weight: 800; text-transform: uppercase; text-align: center; border: 1px solid #333; cursor: pointer; }
         
         /* PENYELARASAN WARNA TOMBOL TRAILER */
@@ -1090,79 +1089,93 @@
 
         /* Tiap slide = 1 layar penuh, video 4:5 di tengah */
         .reel-slide {
-            width: 100%; height: 100svh;
+            width: 100%; height: calc(100svh - 52px); /* 52px = tinggi .reels-bottom-nav fixed di bawah, biar konten (termasuk tombol) nggak ketutup */
             scroll-snap-align: start; scroll-snap-stop: always;
             position: relative; background: #000000;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; flex-direction: column;
             overflow: hidden;
         }
 
-        /* Video wrapper 4:5 — posisi agak ke atas agar beri ruang sinopsis */
-        /* Background AMOLED hitam pekat, tanpa blur gambar */
-        .reel-blur-bg {
-            position: absolute; inset: 0; z-index: 0;
-            overflow: hidden; background: #000000;
+        /* Judul + info (rating, tahun, genre) — di ATAS video (bukan overlay lagi).
+           Karena ini elemen alur normal (bukan position:absolute), video di bawahnya
+           otomatis "terdorong" turun sesuai tinggi teks ini — jadi teks TIDAK PERNAH
+           menutupi video, seberapa pun ukurannya berubah. */
+        .reel-header-text {
+            flex-shrink: 0;
+            padding: 90px 16px 16px; /* 90px atas = kasih ruang buat .reels-topbar yang fixed + jarak lebih */
         }
-        /* Sembunyikan gambar blur background - AMOLED mode */
-        .reel-blur-bg img {
-            display: none;
+        .reel-title {
+            font-size: 22px; font-weight: 900; color: #fff;
+            margin-bottom: 6px; line-height: 1.15; letter-spacing: -0.6px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        /* Overlay hitam atas dan bawah untuk menutup sisa area terang */
-        .reel-blur-bg::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0;
-            height: 35%; background: #000000; z-index: 2; pointer-events: none;
+        .reel-meta-inline {
+            display: flex; align-items: center; flex-wrap: nowrap; gap: 0;
+            font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .reel-blur-bg::after {
-            content: '';
-            position: absolute; bottom: 0; left: 0; right: 0;
-            height: 35%; background: #000000; z-index: 2; pointer-events: none;
-        }
+        .reel-meta-inline .rmi-rating { color: #f5c518; font-weight: 700; margin-right: 8px; }
+        .reel-meta-inline .rmi-dot { color: rgba(255,255,255,0.4); margin: 0 6px; }
+        .reel-meta-inline .rmi-item { color: rgba(255,255,255,0.75); }
+        .reel-year { display: none; }
+
+        /* Video — lebar penuh, tinggi ikut rasio, di TENGAH alur normal (bukan lagi
+           full-screen absolute). Kalau rasio video beda/lebih lebar, tinggi kotak ini
+           otomatis berubah — dan karena teks atas & bawah ada di alur normal juga,
+           keduanya otomatis ikut geser menyesuaikan, tidak pernah tumpang tindih. */
         .reel-video-wrap {
-            position: absolute;
-            top: 40%; left: 50%;
-            transform: translate(-50%, -50%);
+            position: relative;
             width: 100%;
-            aspect-ratio: 9/16;
-            max-height: 72svh;
+            aspect-ratio: 16/9;
+            flex-shrink: 0;
             background: #000000;
             overflow: hidden;
-            z-index: 1;
         }
-        /* Overlay transparan di atas video reel - blokir tap ke kontrol YT */
         .reel-video-wrap::after {
             content: '';
             position: absolute; inset: 0;
             z-index: 3; background: transparent;
             pointer-events: auto;
         }
-        /* Iframe diperbesar + di-crop untuk menyembunyikan tombol bawaan YouTube */
-        /* Scale up + negatif margin memotong area kontrol YT di atas & bawah */
+        /* Begitu tombol Watch ditekan dan streaming asli mulai main, matikan overlay
+           penghalang ini supaya user bisa berinteraksi langsung dengan player-nya */
+        .reel-video-wrap.streaming::after { pointer-events: none; }
         .reel-video-wrap iframe {
             width: 100%;
-            height: calc(100% + 100px);
-            margin-top: -50px;
+            height: 100%;
             border: none; pointer-events: none;
             display: block;
         }
-        /* Strip hitam penutup tombol YouTube atas (judul, tombol back, dll) */
-        .reel-yt-mask-top {
-            position: absolute; top: 0; left: 0; right: 0;
-            height: 52px; background: #000000;
-            z-index: 4; pointer-events: none;
-        }
-        /* Strip hitam penutup tombol YouTube bawah (progress bar, tombol, dll) */
-        .reel-yt-mask-bottom {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            height: 52px; background: #000000;
-            z-index: 4; pointer-events: none;
-        }
 
-        /* Double-tap heart animation */
+        /* Like/Save sekarang nempel di sisi kanan VIDEO saja (bukan melayang di seluruh layar) */
+        .reel-actions {
+            position: absolute; top: 50%; right: 12px;
+            transform: translateY(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 16px;
+            z-index: 10;
+        }
+        .reel-action-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+        }
+        .reel-action-btn i {
+            font-size: 24px; color: #fff;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.7));
+            transition: transform 0.15s;
+        }
+        .reel-action-btn:active i { transform: scale(1.25); }
+        .reel-action-label {
+            font-size: 10px; color: rgba(255,255,255,0.85); font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        }
+        .reel-action-btn.liked i { color: #ff3b30; }
+        .reel-action-btn.bookmarked i { color: #fff; }
+
+        /* Double-tap heart animation — sekarang di tengah VIDEO saja */
         .reel-heart-pop {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            font-size: 80px; color: #ff3b30;
+            font-size: 70px; color: #ff3b30;
             z-index: 20; pointer-events: none;
             filter: drop-shadow(0 2px 12px rgba(255,59,48,0.5));
             transition: none;
@@ -1177,113 +1190,44 @@
             100% { transform: translate(-50%,-50%) scale(1.1); opacity: 0; }
         }
 
-        /* Gradient bawah lebih tinggi untuk sinopsis */
-        .reel-gradient {
-            position: absolute; bottom: 0; left: 0; right: 0; height: 45%;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
-            pointer-events: none; z-index: 5;
+        /* Sinopsis — di BAWAH video. Tinggi teksnya DIBATASI (line-clamp) supaya nggak
+           pernah bisa "mendorong" baris tombol Watch/Download/Detail sampai keluar layar,
+           walau sinopsisnya panjang. */
+        .reel-desc-block {
+            flex: 1; min-height: 0; overflow-y: auto;
+            padding: 32px 16px 8px;
         }
-
-        /* Info teks kiri bawah */
-        .reel-info {
-            position: absolute; bottom: 58px; left: 0; right: 0;
-            padding: 0 16px; z-index: 10; pointer-events: none;
-        }
-        /* Meta pills row */
-        .reel-meta-pills {
-            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
-        }
-        .reel-pill {
-            padding: 5px 14px; border-radius: 20px;
-            font-size: 13px; font-weight: 700;
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        }
-        .reel-pill-type { background: rgba(20,30,60,0.85); color: #fff; }
-        .reel-pill-year { background: rgba(60,50,10,0.85); color: #e8c84a; border: 1px solid rgba(232,200,74,0.3); }
-        .reel-pill-rating { background: rgba(60,50,10,0.85); color: #f5c518; border: 1px solid rgba(245,197,24,0.3); }
-        .reel-pill-runtime { background: rgba(40,40,40,0.85); color: #ccc; }
-        .reel-title {
-            font-size: 28px; font-weight: 900; color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-            margin-bottom: 10px; line-height: 1.1; letter-spacing: -0.8px;
-            display: -webkit-box; -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical; overflow: hidden;
-        }
-        .reel-genre-pills {
-            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;
-        }
-        .reel-genre-pill {
-            padding: 6px 16px; border-radius: 20px;
-            background: rgba(40,40,40,0.75); color: #fff;
-            font-size: 13px; font-weight: 600;
-            border: 1px solid rgba(255,255,255,0.15);
-            backdrop-filter: blur(6px);
-        }
-        .reel-year { display: none; }
-        .reel-meta-inline {
-            display: flex; align-items: center; flex-wrap: wrap; gap: 0;
-            font-size: 16px; font-weight: 500; color: rgba(255,255,255,0.85);
-            margin-bottom: 10px; text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-        }
-        .reel-meta-inline .rmi-rating { color: #f5c518; font-weight: 700; margin-right: 8px; }
-        .reel-meta-inline .rmi-dot { color: rgba(255,255,255,0.4); margin: 0 6px; }
-        .reel-meta-inline .rmi-item { color: rgba(255,255,255,0.85); }
         .reel-synopsis-overlay {
-            font-size: 11px; color: rgba(255,255,255,0.75);
-            line-height: 1.5; margin-bottom: 6px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-            pointer-events: none;
+            font-size: 13px; color: rgba(255,255,255,0.8);
+            line-height: 1.45;
         }
         .reel-translate-btn {
-            pointer-events: auto;
             display: block;
-            font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.55);
-            cursor: pointer; margin-bottom: 8px;
+            font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.55);
+            cursor: pointer; margin-bottom: 6px;
             -webkit-tap-highlight-color: transparent;
         }
         .reel-translate-btn:active { color: rgba(255,255,255,0.9); }
+
+        /* Tombol Watch / Download / Detail — baris normal di paling bawah slide */
         .reel-action-buttons {
             display: grid; grid-template-columns: 1fr 1fr 1fr;
-            gap: 6px; margin-top: 10px; pointer-events: auto;
+            gap: 8px; flex-shrink: 0;
+            padding: 8px 16px calc(14px + env(safe-area-inset-bottom, 0px));
         }
         .reel-btn-watch, .reel-btn-detail {
-            padding: 7px 4px; border-radius: 10px;
+            padding: 10px 4px; border-radius: 10px;
             background: rgba(255,255,255,0.08);
             border: 1px solid rgba(255,255,255,0.25); color: #fff;
-            font-size: 9px; font-weight: 800; text-transform: uppercase;
+            font-size: 11px; font-weight: 800; text-transform: uppercase;
             letter-spacing: 0.3px; cursor: pointer; text-align: center;
             -webkit-tap-highlight-color: transparent;
-            transition: all 0.2s; backdrop-filter: blur(4px);
-            display: flex; align-items: center; justify-content: center; gap: 5px;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
         }
         .reel-btn-watch:active, .reel-btn-detail:active {
             background: rgba(255,255,255,0.2); transform: scale(0.95);
         }
-
-        /* Tombol aksi kanan bawah (like, bookmark) */
-        .reel-actions {
-            position: absolute; top: 40%; right: 12px;
-            transform: translateY(-50%);
-            display: flex; flex-direction: column; align-items: center; gap: 18px;
-            z-index: 10;
-        }
-        .reel-action-btn {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            cursor: pointer; -webkit-tap-highlight-color: transparent;
-        }
-        .reel-action-btn i {
-            font-size: 26px; color: #fff;
-            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.7));
-            transition: transform 0.15s;
-        }
-        .reel-action-btn:active i { transform: scale(1.25); }
-        .reel-action-label {
-            font-size: 10px; color: rgba(255,255,255,0.7); font-weight: 700;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
-        }
-        .reel-action-btn.liked i { color: #ff3b30; }
-
-        .reel-action-btn.bookmarked i { color: #fff; }
 
         /* Topbar reels */
         .reels-topbar {
@@ -1477,14 +1421,16 @@
         .modal-rating-bar {
             display: flex; align-items: center; gap: 8px;
             padding: 6px 15px 2px; flex-wrap: wrap;
+            margin-bottom: 5px; /* samakan dgn margin-bottom tombol Trailer/Soundtrack di sebelahnya */
         }
         .modal-rating-badge {
             display: inline-flex; align-items: center; gap: 5px;
             padding: 4px 10px; border-radius: 8px;
-            font-size: 12px; font-weight: 700; line-height: 1;
+            font-size: 11px; font-weight: 700; line-height: 1;
+            text-transform: uppercase; letter-spacing: -0.3px;
             color: #fff;
         }
-        .modal-rating-badge i { font-size: 12px; }
+        .modal-rating-badge i { font-size: 11px; }
         .modal-rating-badge.tmdb i { color: #01b4e4; }
         .modal-rating-badge.imdb i { color: #f5c518; }
 
@@ -1863,7 +1809,7 @@
             position: relative;
         }
         .lb-slide {
-            min-width: 100%; height: 100%;
+            height: 100%;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
@@ -1874,7 +1820,6 @@
         }
         .lb-track {
             display: flex; height: 100%;
-            width: max-content;
             will-change: transform;
         }
         /* Dots */
@@ -2033,7 +1978,7 @@
                 <span class="about-stat-lbl">Series</span>
             </div>
             <div class="about-stat-card">
-                <span class="about-stat-num">18</span>
+                <span class="about-stat-num">4</span>
                 <span class="about-stat-lbl">Server</span>
             </div>
             <div class="about-stat-card">
@@ -2087,7 +2032,7 @@
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Multi-Server Streaming</div>
-                    <div class="about-feat-desc">18 server streaming pilihan untuk movie & series. Auto-skip otomatis ke server berikutnya kalau satu server gagal dimuat, dan otomatis ingat server terakhir yang berhasil untuk judul yang sama.</div>
+                    <div class="about-feat-desc">4 server streaming terpilih yang sudah diuji aman dari redirect iklan (pakai sandbox browser). Auto-skip otomatis ke server berikutnya kalau satu server gagal dimuat.</div>
                 </div>
             </div>
             <div class="about-feature-row">
@@ -2162,7 +2107,7 @@
             </div>
             <div class="about-info-row">
                 <span class="about-info-label">Streaming Server</span>
-                <span class="about-info-value">18 Provider</span>
+                <span class="about-info-value">4 Provider</span>
             </div>
             <div class="about-info-row">
                 <span class="about-info-label">Download Server</span>
@@ -2467,10 +2412,6 @@
                                 <i class="fa-solid fa-rotate-left"></i>
                                 <span style="font-size:8px;font-weight:800;position:absolute;bottom:2px;right:4px">10</span>
                             </button>
-                            <!-- play/pause utama -->
-                            <button id="mvPlayBtn" onclick="modalVideoCmd('playpause')" style="background:none;border:2px solid #fff;border-radius:50%;color:#fff;font-size:22px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" title="Play/Pause">
-                                <i class="fa-solid fa-pause"></i>
-                            </button>
                             <!-- forward 10s -->
                             <button onclick="modalVideoCmd('fwd10')" style="background:none;border:none;color:#fff;font-size:20px;padding:4px 8px;cursor:pointer;position:relative" title="+10s">
                                 <i class="fa-solid fa-rotate-right"></i>
@@ -2500,7 +2441,7 @@
                 </div>
                 
                 <div class="px-4 bg-black pb-1 flex justify-between items-end">
-                    <span id="mLikeDisplay" class="ig-likes-count"></span>
+                    <div id="mRatingBar" class="modal-rating-bar" style="padding:0;display:none"></div>
                     <div style="display:flex;align-items:center;gap:14px;margin-bottom:5px">
                         <span class="text-[11px] font-bold text-white cursor-pointer uppercase tracking-tighter" onclick="changeServer(99, this)" id="btnTrailerTop">Trailer</span>
                         <span class="text-[11px] font-bold text-white cursor-pointer uppercase tracking-tighter" onclick="openSoundtrack()">Soundtrack</span>
@@ -2508,7 +2449,6 @@
                 </div>
             </div>
             
-            <div id="mRatingBar" class="modal-rating-bar" style="display:none"></div>
             <div class="ig-post-content">
                 <div class="mb-1">
                     <span class="ig-username" id="mModalTitle"></span>
@@ -2552,13 +2492,11 @@
 
                 <div id="serverList" class="server-scroll-wrapper mt-4 px-4"></div>
                 
-                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:8px;margin-bottom:2px;">
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;margin-bottom:2px;">
                     <button class="dl-link-btn" onclick="handleDownload()">Down1</button>
                     <button class="dl-link-btn" onclick="handleDownload2()">Down2</button>
                     <button class="dl-link-btn" onclick="handleDownload3()">Down3</button>
-                    <button class="dl-link-btn" onclick="handleDownload4()">Down4</button>
-                    <button class="dl-link-btn" onclick="handleDownload5()">Down5</button>
-                    <button class="dl-link-btn" onclick="handleDownload6()">Down6</button>
+                    <button class="dl-link-btn" onclick="handleDownload5()">Down4</button>
                 </div>
                 <div id="mCollectionSection" class="similar-section" style="display:none">
                     <span class="similar-label" id="mCollectionLabel">Part of Collection</span>
@@ -3152,7 +3090,7 @@
         let activeServerIdx = 1;
         let activeEpisode = 1;
         let activeSeason = 1;
-        const TOTAL_SERVERS = 18; // sinkron dengan jumlah tombol server yang ditampilkan
+        const TOTAL_SERVERS = 4; // sinkron dengan jumlah tombol server yang ditampilkan
         let _autoAdvanceCount = 0;
         let _isAutoAdvancing = false;
 
@@ -4267,6 +4205,13 @@
             if (!el) return;
             el.innerHTML = NAV_ITEMS.map(item => {
                 const isActive = item.action === activeAction;
+                // Khusus nav bawah modal TV: ikon cari harus buka pencarian channel TV
+                // (di dalam modal), BUKAN pencarian film/series global.
+                if (containerId === 'tvBottomNav' && item.action === 'search') {
+                    return `<div id="${containerId}-${item.id}" class="nav-item-wrap" onclick="focusTvSearch()">
+                        <i class="${item.icon} cursor-pointer" style="font-size:20px"></i>
+                    </div>`;
+                }
                 // Active item: tidak perlu closeFunc (sudah di sini)
                 const onclick = (closeFunc && !isActive)
                     ? `${closeFunc}(); _navAction('${item.action}')`
@@ -4318,12 +4263,10 @@
                 if (_modalPlaying) {
                     postMsg('pauseVideo');
                     _modalPlaying = false;
-                    document.querySelector('#mvPlayBtn i').className = 'fa-solid fa-play';
                     document.getElementById('lsPlayBtn').className = 'fa-solid fa-play ls-btn';
                 } else {
                     postMsg('playVideo');
                     _modalPlaying = true;
-                    document.querySelector('#mvPlayBtn i').className = 'fa-solid fa-pause';
                     document.getElementById('lsPlayBtn').className = 'fa-solid fa-pause ls-btn';
                 }
             } else if (cmd === 'back10') {
@@ -4349,7 +4292,6 @@
                     newVid.closest('.carousel-slide')?.classList.add('playing');
                 }
                 _modalPlaying = true;
-                document.querySelector('#mvPlayBtn i').className = 'fa-solid fa-pause';
             }
         }
 
@@ -4886,6 +4828,7 @@
         function parseM3U(text) {
             const lines = text.split(/\r?\n/);
             const channels = [];
+            const seenNames = new Set(); // buat buang channel yang namanya sama persis (duplikat dari playlist)
             let cur = null;
             for (const line of lines) {
                 if (line.startsWith('#EXTINF')) {
@@ -4902,7 +4845,11 @@
                     };
                 } else if (line && !line.startsWith('#') && cur) {
                     cur.url = line.trim();
-                    if (!_isJunkIptvName(cur.name)) channels.push(cur);
+                    const nameKey = cur.name.toLowerCase().trim();
+                    if (!_isJunkIptvName(cur.name) && !seenNames.has(nameKey)) {
+                        seenNames.add(nameKey);
+                        channels.push(cur);
+                    }
                     cur = null;
                 }
             }
@@ -5022,6 +4969,7 @@
             document.getElementById('tvModal').style.display = 'block';
             document.getElementById('tvModal').scrollTop = 0;
             document.body.style.overflow = 'hidden';
+            const _gbn = document.getElementById('globalBottomNav'); if (_gbn) _gbn.style.display = 'none';
             history.pushState({view: 'tv'}, "");
             switchTvTab('embed');
         }
@@ -5034,6 +4982,7 @@
             if (video) { video.pause(); video.removeAttribute('src'); video.load(); }
             document.getElementById('tvModal').style.display = 'none';
             document.body.style.overflow = 'auto';
+            const _gbn = document.getElementById('globalBottomNav'); if (_gbn) _gbn.style.display = 'flex';
             updateActiveNav('home');
             history.replaceState({view: 'home'}, '');
         }
@@ -5322,9 +5271,7 @@
                     <button class="dl-link-btn" onclick="handleDownload()">Down1</button>
                     <button class="dl-link-btn" onclick="handleDownload2()">Down2</button>
                     <button class="dl-link-btn" onclick="handleDownload3()">Down3</button>
-                    <button class="dl-link-btn" onclick="handleDownload4()">Down4</button>
-                    <button class="dl-link-btn" onclick="handleDownload5()">Down5</button>
-                    <button class="dl-link-btn" onclick="handleDownload6()">Down6</button>
+                    <button class="dl-link-btn" onclick="handleDownload5()">Down4</button>
                 </div>
                 <div id="mSimilarSection" class="similar-section" style="display:none">
                     <span class="similar-label">Similar Movies</span>
@@ -5648,7 +5595,7 @@
         function buildLsServerList() {
             const scroll = document.getElementById('lsServerScroll');
             let html = '';
-            for (let i = 1; i <= 18; i++) {
+            for (let i = 1; i <= 4; i++) {
                 const active = (i === activeServerIdx) ? 'active-link' : '';
                 html += `<div class="ls-srv-btn ${active}" onclick="event.stopPropagation(); lsChangeServer(${i}, this)">Server ${i}</div>`;
             }
@@ -6337,18 +6284,7 @@
                     const synTransId = `reel-trans-${reel.movieId}`;
 
                     slide.innerHTML = `
-                        <!-- Background AMOLED hitam pekat -->
-                        <div class="reel-blur-bg"></div>
-                        <div class="reel-video-wrap">
-                            <iframe src="${embedUrl}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-                            <!-- Masker hitam solid tutup tombol header YouTube (judul, share, dll) -->
-                            <div class="reel-yt-mask-top"></div>
-                            <!-- Masker hitam solid tutup tombol footer YouTube (progress bar, play, volume, dll) -->
-                            <div class="reel-yt-mask-bottom"></div>
-                        </div>
-                        <div class="reel-heart-pop" id="heart-${reel.movieId}"><i class="fa-solid fa-heart"></i></div>
-                        <div class="reel-gradient"></div>
-                        <div class="reel-info">
+                        <div class="reel-header-text">
                             <div class="reel-title">${reel.title}</div>
                             <div class="reel-meta-inline">
                                 ${reel.rating ? `<span class="rmi-rating">★ ${reel.rating}</span><span class="rmi-dot">·</span>` : ''}
@@ -6356,15 +6292,35 @@
                                 ${reel.year ? `<span class="rmi-dot">·</span><span class="rmi-item">${reel.year}</span>` : ''}
                                 ${reel.genres && reel.genres.length ? reel.genres.map(g=>`<span class="rmi-dot">·</span><span class="rmi-item">${g}</span>`).join('') : ''}
                             </div>
-                            <div class="reel-year">${reel.year || ''} · ${typeLabel} ${ratingStr}</div>
+                        </div>
+                        <div class="reel-video-wrap">
+                            <iframe src="${embedUrl}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                            <div class="reel-heart-pop" id="heart-${reel.movieId}"><i class="fa-solid fa-heart"></i></div>
+                            <div class="reel-actions">
+                                <div class="reel-action-btn ${lib.liked ? 'liked' : ''}" 
+                                     id="reel-like-${reel.movieId}"
+                                     onclick="toggleReelLib('likes', ${reel.movieId}, '${reel.type}', this)">
+                                    <i class="fa-${lib.liked ? 'solid' : 'regular'} fa-heart"></i>
+                                    <span class="reel-action-label">Like</span>
+                                </div>
+                                <div class="reel-action-btn ${lib.bookmarked ? 'bookmarked' : ''}"
+                                     id="reel-bm-${reel.movieId}"
+                                     onclick="toggleReelLib('bookmarks', ${reel.movieId}, '${reel.type}', this)">
+                                    <i class="fa-${lib.bookmarked ? 'solid' : 'regular'} fa-bookmark"></i>
+                                    <span class="reel-action-label">Save</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="reel-desc-block">
                             ${reel.synopsis ? `
-                            <div class="reel-synopsis-overlay" id="${synopsisId}">${reel.synopsis}</div>
                             <div class="reel-translate-btn" id="${synTransId}"
                                  onclick="toggleReelSynTranslate(${reel.movieId}, '${reel.type}', this)"
                                  data-translated="0" data-orig="${encodeURIComponent(reel.synopsis)}" data-trans="">
                                 See translation
-                            </div>` : ''}
-                            <div class="reel-action-buttons">
+                            </div>
+                            <div class="reel-synopsis-overlay" id="${synopsisId}">${reel.synopsis}</div>` : ''}
+                        </div>
+                        <div class="reel-action-buttons">
                             <button class="reel-btn-watch" onclick="openReelStream(null, ${reel.movieId}, '${reel.type}')">
                                 <i class="fa-solid fa-play" style="font-size:9px"></i> Watch
                             </button>
@@ -6374,21 +6330,6 @@
                             <button class="reel-btn-detail" onclick="openReelDetail(${reel.movieId}, '${reel.type}')">
                                 <i class="fa-solid fa-circle-info" style="font-size:9px"></i> Detail
                             </button>
-                        </div>
-                        </div>
-                        <div class="reel-actions">
-                            <div class="reel-action-btn ${lib.liked ? 'liked' : ''}" 
-                                 id="reel-like-${reel.movieId}"
-                                 onclick="toggleReelLib('likes', ${reel.movieId}, '${reel.type}', this)">
-                                <i class="fa-${lib.liked ? 'solid' : 'regular'} fa-heart"></i>
-                                <span class="reel-action-label">Like</span>
-                            </div>
-                            <div class="reel-action-btn ${lib.bookmarked ? 'bookmarked' : ''}"
-                                 id="reel-bm-${reel.movieId}"
-                                 onclick="toggleReelLib('bookmarks', ${reel.movieId}, '${reel.type}', this)">
-                                <i class="fa-${lib.bookmarked ? 'solid' : 'regular'} fa-bookmark"></i>
-                                <span class="reel-action-label">Save</span>
-                            </div>
                         </div>`;
                     container.appendChild(slide);
                 });
@@ -6435,7 +6376,15 @@
                         // Attach YT Player jika belum
                         if (!slide._ytPlayer) attachYTPlayer(iframe, slide);
                     } else {
-                        if (slide._ytPlayer && slide._ytPlayer.pauseVideo) {
+                        const wrap = slide.querySelector('.reel-video-wrap');
+                        if (wrap && wrap.classList.contains('streaming')) {
+                            // Ini bukan trailer YouTube lagi — ini stream pihak ketiga (habis
+                            // tekan Watch). Perintah pauseVideo lewat postMessage nggak bakal
+                            // dimengerti situs lain, jadi videonya tetap jalan+bunyi walau sudah
+                            // discroll. Satu-satunya cara pasti berhenti: kosongkan src-nya.
+                            iframe.src = '';
+                            wrap.classList.remove('streaming');
+                        } else if (slide._ytPlayer && slide._ytPlayer.pauseVideo) {
                             try { slide._ytPlayer.pauseVideo(); } catch(e) {}
                         } else {
                             try { iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
@@ -6577,8 +6526,16 @@
                 const src = f.src || '';
                 if (src.includes('youtube.com') || src.includes('youtu.be')) {
                     try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                } else if (f.id === 'player-frame') {
+                    // Ini player film/series (server streaming), BUKAN trailer (trailer id-nya
+                    // "vid-N", beda). Sengaja TIDAK disentuh sama sekali di sini — karena iframe
+                    // cross-origin nggak bisa kita "pause lalu resume" posisinya lewat JS, satu-
+                    // satunya cara jamin posisi terakhir tetap tersimpan pas app dibuka lagi
+                    // adalah dengan tidak menghapus/reload iframe-nya sama sekali saat disembunyikan.
+                    return;
                 } else if (src && src !== 'about:blank') {
-                    // Streaming iframe — kosongkan src untuk stop
+                    // Iframe lain (termasuk trailer Dailymotion) — boleh dikosongkan,
+                    // wajar kalau nanti ngulang dari awal pas dibuka lagi.
                     f.dataset.pausedSrc = src;
                     f.src = '';
                 }
@@ -6589,7 +6546,21 @@
         }
 
         document.addEventListener('visibilitychange', () => {
-            if (document.hidden) stopNonMusicIframes();
+            if (document.hidden) {
+                stopNonMusicIframes();
+            } else {
+                // Tab aktif lagi — kembalikan iframe streaming yang tadi "dihentikan"
+                // (src dikosongkan) saat tab sempat tersembunyi (mis. redirect iklan).
+                // SEBELUM INI: src cuma disimpan ke dataset.pausedSrc tapi TIDAK PERNAH
+                // dikembalikan — makanya video selalu blank permanen setelah kembali
+                // dari halaman lain, apapun penyebab tab-nya sempat hidden.
+                document.querySelectorAll('iframe').forEach(f => {
+                    if (f.dataset.pausedSrc) {
+                        f.src = f.dataset.pausedSrc;
+                        delete f.dataset.pausedSrc;
+                    }
+                });
+            }
         });
 
         // Stop SEMUA iframe (termasuk music) saat app benar-benar ditutup.
@@ -6903,7 +6874,18 @@
             if (!id || !type) return;
             if (btn && btn.classList) { btn.classList.add('pressed'); setTimeout(() => btn && btn.classList.remove('pressed'), 300); }
             const url = buildEmbedUrl(type, id, 1, 1, 1);
-            window.open(url, '_blank');
+            // Putar langsung di dalam frame reel-nya sendiri, bukan buka tab baru
+            const slide = document.querySelector(`.reel-slide[data-movie-id="${id}"]`);
+            const wrap = slide ? slide.querySelector('.reel-video-wrap') : null;
+            const iframe = wrap ? wrap.querySelector('iframe') : null;
+            if (iframe) {
+                iframe.src = url;
+                iframe.style.pointerEvents = 'auto';
+                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-orientation-lock allow-modals');
+                if (wrap) wrap.classList.add('streaming'); // matikan overlay penghalang tap trailer
+            } else {
+                window.open(url, '_blank'); // fallback kalau slide-nya nggak ketemu di layar
+            }
         }
 
         function openReelDownload(btn) {
@@ -6937,22 +6919,34 @@
 
                 // Touch gestures
                 slide.addEventListener('touchstart', e => {
-                    // Skip if tap on interactive elements
-                    if (e.target.closest('.reel-detail-btn, .reel-actions')) return;
+                    // Skip cuma kalau tap tepat di tombol/link interaktif, bukan seluruh
+                    // area judul/sinopsis (biar gestur tetap jalan di ruang kosong sekitarnya)
+                    if (e.target.closest('.reel-btn-detail, .reel-btn-watch, .reel-actions, .reel-translate-btn')) return;
                     sx = e.touches[0].clientX;
                     sy = e.touches[0].clientY;
                 }, { passive: true });
 
                 slide.addEventListener('touchend', e => {
-                    if (e.target.closest('.reel-detail-btn, .reel-actions')) return;
+                    if (e.target.closest('.reel-btn-detail, .reel-btn-watch, .reel-actions, .reel-translate-btn')) return;
                     const dx = sx - e.changedTouches[0].clientX;
                     const dy = Math.abs(sy - e.changedTouches[0].clientY);
 
                     // Swipe kiri → buka detail
-                    if (dx > 55 && dx > dy * 1.5) {
+                    if (dx > 35 && dx > dy * 1.2) {
                         const movieId = parseInt(slide.dataset.movieId);
                         const type = slide.dataset.type;
                         if (movieId && type) openReelDetail(movieId, type);
+                        return;
+                    }
+
+                    // Swipe kanan → simpan (bookmark)
+                    if (dx < -35 && Math.abs(dx) > dy * 1.2) {
+                        const movieId = parseInt(slide.dataset.movieId);
+                        const type = slide.dataset.type;
+                        const bmBtn = document.getElementById(`reel-bm-${movieId}`);
+                        if (bmBtn && !bmBtn.classList.contains('bookmarked')) {
+                            toggleReelLib('bookmarks', movieId, type, bmBtn);
+                        }
                         return;
                     }
 
@@ -7915,7 +7909,7 @@
 
                 if (rVideos.length === 0) {
                     const fallbackUrl = buildEmbedUrl(type, id, 1, 1, 1);
-                    track.innerHTML = `<div class="carousel-slide"><iframe id="player-frame" src="${fallbackUrl}" class="w-full h-full" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                    track.innerHTML = `<div class="carousel-slide"><iframe id="player-frame" src="${fallbackUrl}" class="w-full h-full" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-orientation-lock allow-modals"></iframe></div>`;
                     document.getElementById('swipeOverlay').style.display = 'none';
                     return;
                 }
@@ -7973,7 +7967,7 @@
 
                 if (vidsToDisplay.length === 0) {
                     const fallbackUrl = buildEmbedUrl(type, id, 1, 1, 1);
-                    track.innerHTML = `<div class="carousel-slide"><iframe id="player-frame" src="${fallbackUrl}" class="w-full h-full" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`;
+                    track.innerHTML = `<div class="carousel-slide"><iframe id="player-frame" src="${fallbackUrl}" class="w-full h-full" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-orientation-lock allow-modals"></iframe></div>`;
                     document.getElementById('swipeOverlay').style.display = 'none';
                     return;
                 }
@@ -8010,7 +8004,6 @@
             
             document.getElementById('mTitle').innerHTML = `<div class="sk sk-line" style="width:60%;height:14px;display:inline-block"></div>`;
             document.getElementById('mDesc').innerHTML = "";
-            document.getElementById('mLikeDisplay').innerText = "";
             document.getElementById('mDateDisplay').innerText = "";
             document.getElementById('mHashtags').innerHTML = "";
             document.getElementById('castContainer').innerHTML = `<div style="display:flex;gap:15px;padding:8px 16px">${Array(5).fill(`<div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0"><div class="sk sk-circle" style="width:60px;height:60px"></div><div class="sk sk-line" style="width:50px;height:8px"></div></div>`).join('')}</div>`;
@@ -8087,7 +8080,7 @@
 
             const handleTrailerError = async () => {
                 const fallbackUrl = buildEmbedUrl(type, id, 1, 1, 1); 
-                track.innerHTML = `<div class="carousel-slide"><iframe id="player-frame" src="${fallbackUrl}" class="w-full h-full" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe></div>`; 
+                track.innerHTML = `<div class="carousel-slide"><iframe id="player-frame" src="${fallbackUrl}" class="w-full h-full" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-orientation-lock allow-modals"></iframe></div>`; 
                 document.getElementById('swipeOverlay').style.display = 'none';
             };
 
@@ -8236,7 +8229,6 @@
                 return `<div class="cast-item" onclick="openActorProfile(${c.id})"><div class="cast-img-border"><div class="inner-border">${profileImg}</div></div><span class="cast-name">${displayName}</span>${charName ? `<span style="font-size:8px;color:#555;display:block;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:65px">${charName}</span>` : ''}</div>`;
             }));
             document.getElementById('castContainer').innerHTML = castItems.join('');
-            document.getElementById('mLikeDisplay').innerText = `${Math.floor((dId.vote_average || 0) * 1234).toLocaleString('id-ID')} suka`;
             // Prioritaskan judul en-US agar selalu Latin
             // Jika dEn kosong atau masih non-Latin, coba ambil lagi
             let displayTitle = dEn.title || dEn.name || dId.title || dId.name || '';
@@ -8315,25 +8307,10 @@
             // tanggal dihapus dari modal (sudah ada di info grid)
             
             let serverButtonsHTML = '';
-            for(let i=1; i<=18; i++) {
+            for(let i=1; i<=4; i++) {
                 serverButtonsHTML += `<button class="server-btn" onclick="changeServer(${i}, this)">Server ${i}</button>`;
             }
             document.getElementById('serverList').innerHTML = serverButtonsHTML;
-
-            // Kalau film ini pernah diputar dan ada server yang terakhir berhasil, langsung
-            // pakai itu (skip trailer) — biar tidak perlu coba-coba server dari awal lagi.
-            // Khusus movie dulu — untuk series, biarkan trailer tampil dulu karena alur
-            // pemilihan episode berjalan async setelah baris ini.
-            if (type === 'movie') {
-                const remembered = getLastWorkingServer(id);
-                if (remembered) {
-                    _autoAdvanceCount = 0;
-                    const btns = document.querySelectorAll('#serverList .server-btn');
-                    if (btns[remembered - 1]) {
-                        changeServer(remembered, btns[remembered - 1]);
-                    }
-                }
-            }
 
             if(type === 'tv') { document.getElementById('seriesControl').classList.remove('hidden'); document.getElementById('seasonSel').innerHTML = (dId.seasons||[]).filter(s=>s.season_number>0).map(s=>`<option value="${s.season_number}">Season ${s.season_number}</option>`).join(''); loadEpisodes(); } else { document.getElementById('seriesControl').classList.add('hidden'); }
             updateLibButtons(id);
@@ -8453,9 +8430,7 @@
                     <button class="dl-link-btn" onclick="handleDownload()">Down1</button>
                     <button class="dl-link-btn" onclick="handleDownload2()">Down2</button>
                     <button class="dl-link-btn" onclick="handleDownload3()">Down3</button>
-                    <button class="dl-link-btn" onclick="handleDownload4()">Down4</button>
-                    <button class="dl-link-btn" onclick="handleDownload5()">Down5</button>
-                    <button class="dl-link-btn" onclick="handleDownload6()">Down6</button>
+                    <button class="dl-link-btn" onclick="handleDownload5()">Down4</button>
                 </div>
                 <div id="mSimilarSection" class="similar-section" style="display:none">
                     <span class="similar-label">Similar Movies</span>
@@ -8483,19 +8458,11 @@
             document.addEventListener('touchend', () => { _lastUserAction = Date.now(); }, true);
             document.addEventListener('keydown', () => { _lastUserAction = Date.now(); }, true);
 
-            // Intersepsi beforeunload — dipanggil saat halaman mau pindah
-            window.addEventListener('beforeunload', (e) => {
-                const timeSinceUser = Date.now() - _lastUserAction;
-                // Jika tidak ada aksi user dalam 1.5 detik terakhir → redirect dari iframe
-                if (timeSinceUser > 1500) {
-                    e.preventDefault();
-                    e.returnValue = '';
-                    // CATATAN: sebelumnya di sini ada window.history.go(0) — itu yang
-                    // menyebabkan seluruh aplikasi reload penuh (video jadi blank/reset
-                    // ke awal) setiap kali redirect diblokir. Cukup preventDefault saja;
-                    // browser akan menahan halaman tetap di sini tanpa perlu reload apa pun.
-                }
-            });
+            // CATATAN: listener beforeunload yang dulu ada di sini sudah dihapus — itu yang
+            // memicu dialog "Tinggalkan halaman?" muncul, kadang di momen yang salah (bukan
+            // cuma pas ada redirect iklan beneran). Sekarang proteksi utama dari redirect
+            // iklan sudah ditangani `sandbox` di iframe player (diblokir langsung oleh
+            // browser), jadi penjagaan tambahan lewat JS ini sudah tidak diperlukan lagi.
 
             // Blokir window.open dari iframe yang mencurigakan (popup iklan)
             const _origOpen = window.open;
@@ -8537,10 +8504,16 @@
             newIframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
             newIframe.setAttribute('scrolling', 'no');
             newIframe.setAttribute('frameborder', '0');
+            newIframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-orientation-lock allow-modals');
             
             // FIX BUG 2: fallback timer — loader pasti sembunyi setelah 6 detik.
-            // Sekaligus dipakai sebagai sinyal "server ini gagal dimuat" kalau onload tidak
-            // pernah terpanggil dalam waktu itu → otomatis coba server berikutnya.
+            // CATATAN: timer ini HANYA buat sembunyiin spinner loading, BUKAN sinyal
+            // kegagalan. Banyak server memang tidak pernah memicu event 'onload' sama
+            // sekali meski videonya jalan normal (karena skrip/iklan di halamannya jalan
+            // terus-menerus) — kalau timeout ini dipakai buat auto-skip, server yang
+            // sebenarnya aman malah otomatis "dicabut" tiap 6 detik dan diganti server
+            // lain yang belum tentu lebih baik. Auto-skip sekarang HANYA jalan lewat
+            // onerror (kegagalan jaringan asli — domain mati/gagal konek), bukan timeout.
             let _loadedOK = false;
             newIframe.onload = () => {
                 _loadedOK = true;
@@ -8555,7 +8528,12 @@
             _loaderTimer = setTimeout(() => {
                 loader.classList.add('hidden');
                 _loaderTimer = null;
-                if (!_loadedOK && activeServerIdx !== 99) _tryNextServerOnFail();
+                // Anggap berhasil dimuat setelah loader disembunyikan, biar tersimpan
+                // sebagai "server terakhir yang berhasil" walau onload-nya tidak pernah
+                // terpanggil (umum terjadi, bukan berarti servernya gagal).
+                if (!_loadedOK && activeServerIdx !== 99) {
+                    saveLastWorkingServer(window.currentMediaId, activeServerIdx);
+                }
             }, 6000);
             
             track.innerHTML = '';
@@ -8616,23 +8594,23 @@
             let url = "";
             switch(srv) {
                 case 1:  url = `https://cinextream.net/api/embed/${type}/${id}${seriesSuffix}`; break;
-                case 2:  url = `https://player.cinezo.live/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 3:  url = `https://vidsrc.wtf/1/${type}/${id}${seriesSuffix}`; break;
-                case 4:  url = `https://111movies.com/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 5:  url = `https://111movies.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 6:  url = `https://embed.smashystream.com/playere.php?tmdb=${id}${type==='tv'?`&season=${s}&episode=${e}`:''}`; break;
-                case 7:  url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 8:  url = `https://player.videasy.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoplay=1${type==='tv'?'&autoNext=true':''}`; break;
-                case 9:  url = `https://vidlink.pro/${type}/${id}${seriesSuffix}`; break;
-                case 10: url = `https://vidcore.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true`; break;
-                case 11: url = `https://vidstorm.ru/embed/${type}/${id}${seriesSuffix}`; break;
-                case 12: url = `https://vidsync.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true${type==='tv'?'&autoNext=true':''}`; break;
-                case 13: url = `https://mgeb.top/embed/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 14: url = `https://player.vidzee.wtf/embed/${type}/${id}${seriesSuffix}`; break;
-                case 15: url = `https://2embed.cc/embed/${type}/${id}${seriesSuffix}`; break;
-                case 16: url = `https://embed.wfs.lol/embed/${type}/${id}${seriesSuffix}`; break;
-                case 17: url = `https://vaplayer.ru/embed/${type}/${id}${seriesSuffix}`; break;
-                case 18: url = `https://vidsync.live/embed/${type}/${id}${seriesSuffix}?autoPlay=true${type==='tv'?'&autoNext=true':''}`; break;
+                case 2:  url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 3:  url = `https://player.cinezo.live/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoplay=true`; break;
+                case 4:  url = `https://vidsrc.wtf/1/${type}/${id}${seriesSuffix}`; break;
+                case 5:  url = `https://111movies.com/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 6:  url = `https://111movies.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 7:  url = `https://player.videasy.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoplay=1${type==='tv'?'&autoNext=true':''}`; break;
+                case 8:  url = `https://vidlink.pro/${type}/${id}${seriesSuffix}`; break;
+                case 9:  url = `https://vidcore.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true`; break;
+                case 10: url = `https://vidstorm.ru/embed/${type}/${id}${seriesSuffix}`; break;
+                case 11: url = `https://vidsync.xyz/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoPlay=true${type==='tv'?'&autoNext=true':''}`; break;
+                case 12: url = `https://mgeb.top/embed/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 13: url = `https://player.vidzee.wtf/embed/${type}/${id}${seriesSuffix}`; break;
+                case 14: url = `https://2embed.cc/embed/${type}/${id}${seriesSuffix}`; break;
+                case 15: url = `https://embed.wfs.lol/embed/${type}/${id}${seriesSuffix}`; break;
+                case 16: url = `https://vaplayer.ru/embed/${type}/${id}${seriesSuffix}`; break;
+                case 17: url = `https://vidsync.live/embed/${type}/${id}${seriesSuffix}?autoPlay=true${type==='tv'?'&autoNext=true':''}`; break;
+                case 18: url = `https://embed.smashystream.com/playere.php?tmdb=${id}${type==='tv'?`&season=${s}&episode=${e}`:''}`; break;
                 case 19: url = `https://vidsuper.net/${type}/${id}${seriesSuffix}`; break;
                 case 20: url = `https://vidfast.pro/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
                 case 21: url = `https://vidrock.net/embed/${type}/${id}${seriesSuffix}`; break;
@@ -8977,6 +8955,7 @@
 
         // ===== CUSTOM LIGHTBOX =====
         let _lbIdx = 0;
+        let _lbSlideWidth = 0; // lebar 1 slide dalam pixel — dihitung via JS, bukan persen, biar nggak ambigu
         let _lbSx = 0, _lbSy = 0, _lbDx = 0;
         let _lbDragging = false;
 
@@ -8996,14 +8975,18 @@
             document.body.style.overflow = 'hidden';
             history.pushState({view:'lightbox'}, '');
 
+            // Ukur lebar viewport lightbox dalam pixel (bukan persen) — hindari ambiguitas
+            // CSS "min-width:100%" pada child flex yang parent-nya width:auto/max-content.
+            _lbSlideWidth = document.querySelector('#lightboxModal .lb-slides').clientWidth;
+
             // Build slides - semua portrait/landscape fit screen
             track.innerHTML = images.map((img, i) => {
                 const size = img.isBackdrop ? 'original' : 'w780';
-                return `<div class="lb-slide" style="min-width:100%;height:100vh;display:flex;align-items:center;justify-content:center;background:#000">
+                return `<div class="lb-slide" style="width:${_lbSlideWidth}px;flex-shrink:0;height:100%;display:flex;align-items:center;justify-content:center;background:#000">
                     <img src="https://image.tmdb.org/t/p/${size}${img.path}"
                          loading="${Math.abs(i - _lbIdx) <= 1 ? 'eager' : 'lazy'}"
                          draggable="false"
-                         style="max-width:100%;max-height:100vh;object-fit:contain;display:block">
+                         style="max-width:100%;max-height:100%;object-fit:contain;display:block">
                 </div>`;
             }).join('');
 
@@ -9023,7 +9006,7 @@
             const track = document.getElementById('lbTrack');
             if (!track) return;
             track.style.transition = animate ? 'transform 0.28s cubic-bezier(0.25,1,0.5,1)' : 'none';
-            track.style.transform = `translateX(calc(-${_lbIdx} * 100%))`;
+            track.style.transform = `translateX(-${_lbIdx * _lbSlideWidth}px)`;
             const counter = document.getElementById('lbCounter');
             if (counter) counter.innerText = `${_lbIdx + 1} / ${images.length}`;
             document.querySelectorAll('.lb-dot').forEach((d, i) => {
@@ -9135,7 +9118,7 @@
                 if (Math.abs(_lbDx) < dy) return; // vertical scroll
                 // Live drag feedback
                 if (track) {
-                    track.style.transform = `translateX(calc(-${_lbIdx} * 100% + ${_lbDx}px))`;
+                    track.style.transform = `translateX(${-(_lbIdx * _lbSlideWidth) + _lbDx}px)`;
                 }
             }, { passive: true });
 
@@ -9325,12 +9308,14 @@
             modal.style.display = 'flex';
             // Tidak perlu push history lagi karena actorPhotos sudah push
 
+            _lbSlideWidth = document.querySelector('#lightboxModal .lb-slides').clientWidth;
+
             track.innerHTML = window._galleryImages.map((img, i) => {
-                return `<div class="lb-slide" style="min-width:100%;height:100vh;display:flex;align-items:center;justify-content:center;background:#000">
+                return `<div class="lb-slide" style="width:${_lbSlideWidth}px;flex-shrink:0;height:100%;display:flex;align-items:center;justify-content:center;background:#000">
                     <img src="https://image.tmdb.org/t/p/w780${img.path}"
                          loading="${Math.abs(i - _lbIdx) <= 1 ? 'eager' : 'lazy'}"
                          draggable="false"
-                         style="max-width:100%;max-height:100vh;object-fit:contain;display:block">
+                         style="max-width:100%;max-height:100%;object-fit:contain;display:block">
                 </div>`;
             }).join('');
 
