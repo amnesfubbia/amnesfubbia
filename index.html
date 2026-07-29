@@ -4853,7 +4853,35 @@
                     cur = null;
                 }
             }
-            return channels;
+            return _collapseChannelBrands(channels);
+        }
+
+        // Beberapa channel (TVRI, JTV, Jawa Pos TV, Star TV) muncul berkali-kali di
+        // playlist dengan nama yang beda-beda dikit (mis. "TVRI Nasional", "TVRI Jatim",
+        // "TVRI Jabar", "STARTV Jakarta", dst — bukan duplikat persis, tapi tetap satu
+        // "merek" yang sama). Supaya daftar channel rapi & tidak dobel-dobel, sisakan
+        // cuma 1 per merek — diutamakan yang ada kata "Nasional"-nya, kalau tidak ada
+        // ya yang pertama ketemu. Nama dinormalisasi (buang spasi/tanda baca) dan dicek
+        // "mengandung" (bukan cuma "diawali") supaya varian penulisan apapun tetap kena.
+        function _collapseChannelBrands(channels) {
+            const BRANDS = ['tvri', 'jtv', 'jawapostv', 'staratv'];
+            const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const pickedIdxByBrand = {};
+            const result = [];
+            channels.forEach((ch) => {
+                const n = norm(ch.name);
+                const brand = BRANDS.find(b => n.includes(b));
+                if (!brand) { result.push(ch); return; }
+                if (!(brand in pickedIdxByBrand)) {
+                    pickedIdxByBrand[brand] = result.length;
+                    result.push(ch);
+                } else if (n.includes('nasional')) {
+                    // Ganti yang sudah kepilih dengan varian "Nasional" kalau baru ketemu
+                    result[pickedIdxByBrand[brand]] = ch;
+                }
+                // varian lain (regional) dari merek yang sama — dilewati, tidak ditampilkan
+            });
+            return result;
         }
 
         async function loadIptvChannels() {
