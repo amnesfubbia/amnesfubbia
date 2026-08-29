@@ -2861,7 +2861,7 @@
             <div id="musicHomeScroll" style="flex:1;overflow-y:auto;padding-bottom:160px">
                 <!-- Hero carousel (5 slide, auto-rotate tiap 4 detik) -->
                 <div style="margin-bottom:26px">
-                    <div id="musicHeroTrack" style="display:flex;overflow:hidden;border-radius:16px;position:relative;touch-action:pan-y;margin:0 20px"></div>
+                    <div id="musicHeroTrack" style="position:relative;height:170px;overflow:hidden;border-radius:16px;margin:0 20px;background:#141414"></div>
                     <div id="musicHeroDots" style="display:flex;justify-content:center;gap:6px;margin-top:10px"></div>
                 </div>
 
@@ -3091,8 +3091,8 @@
                     <i class="fa-solid fa-ellipsis" style="font-size:18px;color:#fff;cursor:pointer;padding:6px" onclick="musicShowPanel('queue')"></i>
                 </div>
 
-                <!-- Artwork -->
-                <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px 40px 10px">
+                <!-- Artwork / video (mode FULL menampilkan iframe YouTube di sini) -->
+                <div id="musicFullArtWrap" style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px 40px 10px;position:relative;min-height:0">
                     <img id="musicFullArt" src="" style="width:100%;max-width:300px;aspect-ratio:1;border-radius:18px;object-fit:cover;box-shadow:0 30px 70px rgba(0,0,0,0.6);background:#1e1e1e">
                 </div>
 
@@ -3177,10 +3177,13 @@
     <!-- ===== UNIVERSAL BOTTOM NAV ===== -->
     <nav class="bottom-nav" id="globalBottomNav"></nav>
 
-    <!-- Pemutar lagu penuh (YouTube IFrame API) — SELALU di-render (tidak display:none),
-         karena YT.Player gagal init di dalam kontainer tersembunyi -->
-    <div id="musicYtPlayer"
-        style="position:fixed;left:-9999px;top:0;width:640px;height:360px;opacity:0;pointer-events:none;z-index:-1"></div>
+    <!-- Anchor pemutar lagu penuh (YouTube IFrame API) — SELALU di-render (tidak display:none),
+         karena YT.Player gagal init di dalam kontainer tersembunyi.
+         Saat mode FULL aktif, elemen #musicYtPlayer dipindah ke tengah pemutar penuh
+         menggantikan poster; saat nonaktif, kembali ke anchor off-screen ini. -->
+    <div id="musicYtAnchor" style="position:fixed;left:-9999px;top:0;width:640px;height:360px;opacity:0;pointer-events:none;z-index:-1">
+        <div id="musicYtPlayer" style="width:100%;height:100%"></div>
+    </div>
 
     <script>
         const API_KEY = 'bfa7df5310c9974f62f26c6789a8c00d';
@@ -3981,6 +3984,7 @@
                             try { ev.target.playVideo(); } catch(e) {}
                             _musicStopPoll();
                             _musicPollIv = setInterval(() => _musicYtPoll(), 1000);
+                            _musicShowYtInPlayer(); // tampilkan video di tengah pemutar penuh
                         },
                         onStateChange: ev => {
                             const s = ev.data;
@@ -4017,6 +4021,28 @@
                 }
             }, 10000);
         }
+        // Tampilkan video YouTube di tengah pemutar penuh (menggantikan poster)
+        function _musicShowYtInPlayer() {
+            const modal = document.getElementById('musicFullPlayer');
+            if (!modal || modal.style.display === 'none') return; // pemutar penuh tidak terbuka
+            const player = document.getElementById('musicYtPlayer');
+            const wrap = document.getElementById('musicFullArtWrap');
+            const art = document.getElementById('musicFullArt');
+            if (!player || !wrap) return;
+            if (player.parentElement !== wrap) wrap.appendChild(player);
+            player.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;opacity:1;pointer-events:auto;z-index:3;background:#000;border-radius:14px;overflow:hidden';
+            if (art) art.style.opacity = '0';
+        }
+        // Kembalikan video ke anchor off-screen dan tampilkan poster lagi
+        function _musicHideYtInPlayer() {
+            const player = document.getElementById('musicYtPlayer');
+            const anchor = document.getElementById('musicYtAnchor');
+            const art = document.getElementById('musicFullArt');
+            if (!player || !anchor) return;
+            if (player.parentElement !== anchor) anchor.appendChild(player);
+            player.style.cssText = 'width:100%;height:100%';
+            if (art) art.style.opacity = '1';
+        }
         function _musicStopYt() {
             if (_musicYtFailTimer) { clearTimeout(_musicYtFailTimer); _musicYtFailTimer = null; }
             _musicStopPoll();
@@ -4024,6 +4050,7 @@
             const ph = document.getElementById('musicYtPlayer');
             if (ph) ph.innerHTML = '';
             _musicYtGotSignal = false;
+            _musicHideYtInPlayer();
         }
         function _musicStopPoll() {
             if (_musicPollIv) { clearInterval(_musicPollIv); _musicPollIv = null; }
@@ -4033,6 +4060,7 @@
         }
         function _musicPlayPreview(t) {
             if (!t || !t.preview) return;
+            _musicHideYtInPlayer(); // mode preview → tampilkan poster lagi
             _musicStopAudio();
             _musicAudio = new Audio(t.preview);
             _musicAudio.volume = (document.getElementById('musicVolumeSlider')?.value || 100) / 100;
@@ -4232,8 +4260,11 @@
             const dots = document.getElementById('musicHeroDots');
             if (!track || !tracks.length) return;
             _musicHeroIdx = 0;
+            // Teknik FADE (show/hide) — anti-gagal: slide aktif tampil, sisanya disembunyikan.
+            // Tidak bergantung pada transform/flex yang bisa salah di beberapa browser.
             track.innerHTML = tracks.map((t, i) => `
-                <div onclick="musicPlayHeroSlide(${i})" style="min-width:100%;height:170px;position:relative;border-radius:16px;overflow:hidden;cursor:pointer;background:#141414 url('${t.artwork || MUSIC_PLACEHOLDER_IMG}') center/cover no-repeat">
+                <div onclick="musicPlayHeroSlide(${i})" data-i="${i}"
+                    style="position:absolute;inset:0;border-radius:16px;overflow:hidden;cursor:pointer;opacity:${i === 0 ? '1' : '0'};pointer-events:${i === 0 ? 'auto' : 'none'};transition:opacity 0.45s ease;background:#141414 url('${t.artwork || MUSIC_PLACEHOLDER_IMG}') center/cover no-repeat">
                     <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0.25) 100%)"></div>
                     <div style="position:absolute;left:16px;right:60px;bottom:14px">
                         <div style="font-size:8px;font-weight:800;color:rgba(255,255,255,0.65);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${i === 0 ? 'Sedang Populer' : `Pilihan ${i + 1}`}</div>
@@ -4246,7 +4277,6 @@
                 </div>`).join('');
             dots.innerHTML = tracks.map((t, i) => `<div onclick="event.stopPropagation();musicHeroGo(${i})"
                 style="width:${i === 0 ? '16px' : '6px'};height:6px;border-radius:3px;background:${i === 0 ? '#fff' : '#3a3a3a'};cursor:pointer;transition:all 0.3s"></div>`).join('');
-            track.style.transform = 'translateX(0)';
             // Pramuat semua artwork slide supaya tidak ada slide kosong/hitam
             tracks.forEach(t => { if (t.artwork) { const im = new Image(); im.src = t.artwork; } });
             _musicHeroBindSwipe(track);
@@ -4264,8 +4294,11 @@
             const dots = document.getElementById('musicHeroDots');
             if (!track || !_musicHeroTracks.length) return;
             _musicHeroIdx = i;
-            track.style.transition = 'transform 0.45s cubic-bezier(0.25,1,0.5,1)';
-            track.style.transform = `translateX(-${i * 100}%)`;
+            // Tampilkan slide aktif, sembunyikan lainnya (fade)
+            [...(track.children || [])].forEach((s, j) => {
+                s.style.opacity = (j === i) ? '1' : '0';
+                s.style.pointerEvents = (j === i) ? 'auto' : 'none';
+            });
             [...(dots?.children || [])].forEach((d, j) => {
                 d.style.width = (j === i ? '16px' : '6px');
                 d.style.background = (j === i ? '#fff' : '#3a3a3a');
@@ -4341,9 +4374,12 @@
             document.getElementById('musicFullPlayer').style.display = 'flex';
             document.getElementById('musicMiniPlayer').style.display = 'none';
             history.pushState({view:'musicFullPlayer'}, '');
+            // Mode FULL → tampilkan video YouTube menggantikan poster
+            if (_musicFullMode && _musicYtPlayer) _musicShowYtInPlayer();
         }
         function musicCloseFullPlayer() {
             document.getElementById('musicFullPlayer').style.display = 'none';
+            _musicHideYtInPlayer(); // kembali ke anchor off-screen, poster tampil lagi
             musicRestoreMiniPlayer();
             musicClosePanel();
         }
@@ -7880,7 +7916,7 @@
                     const rating = (m.vote_average || 0).toFixed(1);
                     const genres = (m.genre_ids || []).slice(0, 2).map(id => `<span class="cal-genre-pill">${genreMap[id] || ''}</span>`).join('');
                     const posterContent = m.poster_path
-                        ? `<img src="https://image.tmdb.org/t/p/w185${m.poster_path}" class="w-full h-full object-cover" loading="lazy" onload="this.style.opacity=1" style="opacity:0;transition:opacity 0.3s">`
+                        ? `<img src="https://image.tmdb.org/t/p/w185${m.poster_path}" class="w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'">`
                         : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a 0%,#111 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
                             <i class="fa-solid fa-film" style="font-size:20px;color:#2a2a2a"></i>
                             <div style="font-size:9px;font-weight:700;color:#2a2a2a;text-align:center;padding:0 4px;line-height:1.3;word-break:break-word">${title.slice(0,20)}</div>
@@ -10836,7 +10872,7 @@
             if (!valid.length) { wrap.style.display = 'none'; return; }
             wrap.style.display = 'block';
             // Kartu landscape 16:9 — 2 kartu terlihat, sisanya digeser (scroll snap)
-            scroll.style.cssText = 'display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 16px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch';
+            scroll.style.cssText = 'display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 16px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x';
             scroll.innerHTML = valid.map(c => {
                 const bg = c.d.backdrop || c.d.poster;
                 return `
