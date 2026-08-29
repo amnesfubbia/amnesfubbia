@@ -3260,6 +3260,10 @@
         // MUSIC MODULE — iTunes Search API
         // ============================================================
         const ITUNES_API = 'https://itunes.apple.com';
+        // Untuk mode "Lagu Penuh" (full song via YouTube). Daftarkan API key gratis di
+        // https://console.cloud.google.com/apis/library/youtube.googleapis.com (aktifkan "YouTube Data API v3"),
+        // lalu tempel key-nya di sini. Tanpa key ini, mode Full otomatis fallback ke preview 30 detik.
+        const YOUTUBE_API_KEY = 'MASUKKAN_YOUTUBE_API_KEY_DI_SINI';
         // iTunes Search API tidak punya sorting "populer" — pencarian frasa generik seperti
         // "top hits indonesia" hanya text-match ke katalog (sering nyangkut ke musisi indie/tidak dikenal).
         // Jadi dipakai daftar artis yang memang terkenal sebagai jangkar pencarian, supaya hasilnya benar-benar dikenali.
@@ -3910,21 +3914,24 @@
         let _musicYtGotSignal = false; // sudah dapat sinyal valid dari player?
         let _musicLastDur = 0;         // durasi lagu penuh terakhir (untuk seek)
         let _dmCurTime = 0;            // posisi waktu terakhir dari event player
-        let _musicFrameWin = null;     // contentWindow iframe Dailymotion
+        let _musicFrameWin = null;     // contentWindow iframe YouTube
 
-        // Cari lagu penuh di Dailymotion (API publik, CORS terbuka, tanpa kunci)
-        async function _musicSearchDm(q) {
+        // Cari lagu penuh di YouTube (YouTube Data API v3 — butuh YOUTUBE_API_KEY)
+        async function _musicSearchYt(q) {
+            if (!YOUTUBE_API_KEY || YOUTUBE_API_KEY === 'MASUKKAN_YOUTUBE_API_KEY_DI_SINI') return null;
             try {
-                const r = await fetch(`https://api.dailymotion.com/videos?fields=id,title&search=${encodeURIComponent(q)}&limit=5&family_filter=0`);
+                const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=1&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}`;
+                const r = await fetch(url);
                 if (!r.ok) return null;
                 const d = await r.json();
-                const list = d.list || [];
-                return list.length ? list[0].id : null;
+                const items = d.items || [];
+                return items.length ? items[0].id.videoId : null;
             } catch(e) { return null; }
         }
-        function _musicDmPost(obj) {
+        // Kirim perintah kontrol ke iframe YouTube (protokol postMessage IFrame API resmi)
+        function _musicYtCmd(func, args) {
             if (!_musicFrameWin) return;
-            try { _musicFrameWin.postMessage(JSON.stringify(obj), '*'); } catch(e) {}
+            try { _musicFrameWin.postMessage(JSON.stringify({event: 'command', func, args: args || ''}), '*'); } catch(e) {}
         }
         function _musicYtPoll() {
             if (!_musicFrameWin) return;
@@ -3945,9 +3952,9 @@
                 ? '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>'
                 : '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
         }
-        // Putar lagu penuh via embed Dailymotion (terbukti jalan di aplikasi ini)
+        // Putar lagu penuh via embed YouTube (protokol postMessage sama seperti trailer di app ini)
         async function _musicPlayYt(q) {
-            const vidId = await _musicSearchDm(q);
+            const vidId = await _musicSearchYt(q);
             if (!vidId) {
                 showToast('Lagu penuh tidak ditemukan — pakai preview 30 detik');
                 _musicPlayPreview(_musicCurrentTrack);
@@ -3963,7 +3970,8 @@
             const f = document.createElement('iframe');
             f.setAttribute('allow', 'autoplay; fullscreen; encrypted-media; picture-in-picture');
             f.style.cssText = 'width:100%;height:100%;border:0;display:block';
-            f.src = `https://www.dailymotion.com/embed/video/${vidId}?autoplay=1&playsinline=1&queue-enable=0&ui-start-screen-info=0`;
+            const origin = encodeURIComponent(location.origin || location.href.split('/').slice(0,3).join('/'));
+            f.src = `https://www.youtube.com/embed/${vidId}?enablejsapi=1&autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=0&showinfo=0&iv_load_policy=3&origin=${origin}`;
             ph.appendChild(f);
             // Kirim perintah play/volume/kecepatan setelah contentWindow siap
             let tries = 0;
@@ -3971,14 +3979,15 @@
                 tries++;
                 if (f.contentWindow) {
                     _musicFrameWin = f.contentWindow;
-                    _musicDmPost({command: 'play'});
-                    _musicDmPost({command: 'volume', params: [_lsVolume / 100]});
-                    _musicDmPost({command: 'setSpeed', params: [_playbackRate]});
+                    _musicYtCmd('playVideo');
+                    _musicYtCmd('setVolume', [_lsVolume]);
+                    _musicYtCmd('setPlaybackRate', [_playbackRate]);
                     clearInterval(iv);
                 }
                 if (tries > 25) clearInterval(iv);
             }, 200);
-            _musicPollIv = setInterval(() => _musicYtPoll(), 1000);
+            // Catatan: progress bar sudah diupdate real-time lewat event infoDelivery YouTube,
+            // jadi tidak perlu polling manual lagi di sini (dulu perlu untuk Dailymotion).
             if (_musicYtFailTimer) clearTimeout(_musicYtFailTimer);
             _musicYtFailTimer = setTimeout(() => {
                 if (!_musicYtGotSignal && _musicPlaying) {
@@ -4109,11 +4118,11 @@
             if (_musicFullMode && _musicFrameWin) {
                 // Mode lagu penuh — pause benar-benar menghentikan suara
                 if (_musicPlaying) {
-                    _musicDmPost({command: 'pause'});
+                    _musicYtCmd('pauseVideo');
                     _musicPlaying = false;
                     _musicYtIcons(false);
                 } else {
-                    _musicDmPost({command: 'play'});
+                    _musicYtCmd('playVideo');
                     _musicPlaying = true;
                     _musicYtIcons(true);
                 }
@@ -4186,7 +4195,7 @@
             const rect = bar.getBoundingClientRect();
             const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
             if (_musicFullMode && _musicFrameWin && _musicLastDur > 0) {
-                _musicDmPost({command: 'seek', params: [pct * _musicLastDur]});
+                _musicYtCmd('seekTo', [pct * _musicLastDur, true]);
                 document.getElementById('musicFullProgress').style.width = (pct * 100) + '%';
                 return;
             }
@@ -4195,7 +4204,7 @@
         }
         function musicSetVolume(v) {
             if (_musicFullMode && _musicFrameWin) {
-                _musicDmPost({command: 'volume', params: [(parseInt(v, 10) || 0) / 100]});
+                _musicYtCmd('setVolume', [parseInt(v, 10) || 0]);
                 return;
             }
             if (_musicAudio) _musicAudio.volume = v / 100;
@@ -4867,6 +4876,7 @@
                 _hSkip =
                     !!e.target.closest('#highlightList') ||
                     !!e.target.closest('#recentlyViewedWrapper') ||
+                    !!e.target.closest('#continueWatchingWrap') ||
                     !!e.target.closest('#filterBar') ||
                     document.getElementById('movieModal').style.display === 'block' ||
                     document.getElementById('searchOverlay').style.display === 'block' ||
@@ -7096,29 +7106,6 @@
         window.addEventListener('message', e => {
             try {
                 const d = JSON.parse(e.data);
-                // EVENT PEMUTAR MUSIK (Dailymotion) — progress, play/pause, selesai
-                if (window._musicFrameWin && e.source === window._musicFrameWin && d && d.event) {
-                    if (d.event === 'timeupdate' && typeof d.time === 'number') {
-                        _dmCurTime = d.time;
-                        _musicYtPoll();
-                    } else if (d.event === 'progress' && typeof d.progress === 'number') {
-                        _musicLastDur = d.progress;
-                    } else if (d.event === 'durationchange' && typeof d.duration === 'number') {
-                        _musicLastDur = d.duration;
-                    } else if (d.event === 'playing') {
-                        _musicYtGotSignal = true;
-                        _musicPlaying = true;
-                        _musicYtIcons(true);
-                    } else if (d.event === 'pause') {
-                        _musicPlaying = false;
-                        _musicYtIcons(false);
-                    } else if (d.event === 'ended') {
-                        _musicPlaying = false;
-                        _musicYtIcons(false);
-                        musicNext(); // lagu selesai → lanjut otomatis
-                    }
-                    return;
-                }
                 if (d.event !== 'infoDelivery' || !d.info) return;
                 // PEMUTAR MUSIK FULL (YouTube) — update progress mini & full player
                 if (window._musicFrameWin && e.source === window._musicFrameWin) {
@@ -10727,7 +10714,7 @@
         function _speedApply() {
             const v = document.getElementById(`vid-${currentIdx}`);
             if (v) { try { v.contentWindow.postMessage(JSON.stringify({event:'command', func:'setPlaybackRate', args:[_playbackRate]}), '*'); } catch(e) {} }
-            if (_musicFrameWin) { _musicDmPost({command: 'setSpeed', params: [_playbackRate]}); }
+            if (_musicFrameWin) { _musicYtCmd('setPlaybackRate', [_playbackRate]); }
             if (_musicAudio) { try { _musicAudio.playbackRate = _playbackRate; } catch(e) {} }
             const l1 = document.getElementById('speedLabel'); if (l1) l1.innerText = _playbackRate + '×';
             const l2 = document.getElementById('lsSpeedLabel'); if (l2) l2.innerText = _playbackRate + '×';
@@ -10946,6 +10933,7 @@
         // ---------- NOTIFIKASI RILIS ----------
         const REMIND_KEY = 'releaseReminders';
         function getReminders() { try { return JSON.parse(localStorage.getItem(REMIND_KEY) || '[]'); } catch(e) { return []; } }
+        function isReminded(id) { return getReminders().some(r => r.id === id); }
         function toggleReleaseReminder(id, type, title, releaseDate, poster, btn) {
             let arr = getReminders();
             const i = arr.findIndex(r => r.id === id);
