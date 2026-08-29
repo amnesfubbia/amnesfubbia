@@ -1938,6 +1938,55 @@
         body.light-mode #tvPlayerArea, body.light-mode .reel-video-wrap { background: #000 !important; }
         body.light-mode .ls-title-text, body.light-mode .ls-subtitle-text,
         body.light-mode #lsTime, body.light-mode #lsDuration { color: #fff !important; }
+        /* ===== PENYEMPURNAAN LIGHT MODE ===== */
+        body.light-mode .btn-ig { background:#fff !important; color:#111 !important; border:1px solid #e4e4e7 !important; }
+        body.light-mode .btn-ig.active { background:var(--accent,#1a73e8) !important; color:#fff !important; border-color:var(--accent,#1a73e8) !important; }
+        body.light-mode .btn-icon-sq { background:#fff !important; color:#111 !important; border:1px solid #e4e4e7 !important; }
+        body.light-mode .pill { background:#fff !important; color:#3f3f46 !important; border-color:#e4e4e7 !important; }
+        body.light-mode .pill.active-pill { background:var(--accent,#1a73e8) !important; color:#fff !important; border-color:var(--accent,#1a73e8) !important; }
+        body.light-mode .stat-val { color:#18181b !important; }
+        body.light-mode .stat-label { color:#71717a !important; }
+        body.light-mode .bio { color:#3f3f46 !important; }
+        body.light-mode .profile-name { color:#18181b !important; }
+        body.light-mode .tab-nav { background:#fff !important; border-top-color:#e4e4e7 !important; }
+        body.light-mode .tab-item { color:#9ca3af !important; }
+        body.light-mode .tab-item.active { color:var(--accent,#1a73e8) !important; }
+        body.light-mode .search-input-box { background:#fff !important; border-color:#e4e4e7 !important; }
+        body.light-mode .date-chip { background:#f2f2f5 !important; color:#3f3f46 !important; border-color:#e4e4e7 !important; }
+        body.light-mode .date-chip.active-date { background:var(--accent,#1a73e8) !important; color:#fff !important; border-color:var(--accent,#1a73e8) !important; }
+        body.light-mode .calendar-item { background:#fff !important; }
+        body.light-mode .cal-title { color:#18181b !important; }
+        body.light-mode .cal-genre-pill { background:#e9e9ee !important; color:#3f3f46 !important; }
+        body.light-mode .highlight-label { color:#52525b !important; }
+        body.light-mode .recently-label { color:#18181b !important; }
+        body.light-mode .recently-clear-btn { color:#8b8b94 !important; }
+        body.light-mode .ep-card { background:#fff !important; border-color:#e4e4e7 !important; }
+        body.light-mode .ep-num, body.light-mode .ep-title { color:#18181b !important; }
+        body.light-mode .ep-btn { background:#fff !important; color:#18181b !important; border-color:#d4d4d8 !important; }
+        body.light-mode .ep-btn.active-pill { background:var(--accent,#1a73e8) !important; color:#fff !important; border-color:var(--accent,#1a73e8) !important; }
+        body.light-mode .about-feature-row, body.light-mode .about-info-list,
+        body.light-mode .about-link-row { background:#fff !important; }
+        body.light-mode .about-info-label { color:#3f3f46 !important; }
+        body.light-mode .about-info-value { color:#8b8b94 !important; }
+        body.light-mode .about-link-label { color:#18181b !important; }
+        body.light-mode .smart-item { background:#fff !important; border-color:#e4e4e7 !important; }
+        body.light-mode .smart-name { color:#18181b !important; }
+        body.light-mode .smart-meta { color:#8b8b94 !important; }
+        body.light-mode .explore-section-title { color:#18181b !important; }
+        body.light-mode .mvc-seek-btn, body.light-mode .mvc-ctrl { color:#fff !important; }
+        body.light-mode .minfo-key { color:#71717a !important; }
+        body.light-mode .minfo-val { color:#3f3f46 !important; }
+        body.light-mode .poster-gallery-label, body.light-mode .similar-label { color:#18181b !important; }
+        body.light-mode .ep-search-input { background:#fff !important; color:#18181b !important; border-color:#e4e4e7 !important; }
+        body.light-mode .music-home-title { color:#18181b !important; }
+        body.light-mode .music-row-title { color:#18181b !important; }
+        body.light-mode .music-track-title { color:#18181b !important; }
+        body.light-mode .music-track-artist { color:#8b8b94 !important; }
+        body.light-mode .notif-item { background:#fff !important; }
+        body.light-mode .notif-title { color:#18181b !important; }
+        body.light-mode .notif-time { color:#8b8b94 !important; }
+        body.light-mode .toggle-track { background:#d4d4d8 !important; }
+        body.light-mode .toggle-thumb { background:#fff !important; }
     </style>
 </head>
 <body>
@@ -2354,6 +2403,7 @@
         <div id="continueWatchingWrap" style="display:none">
             <div class="recently-header">
                 <span class="recently-label" style="margin-bottom:0">Lanjut Tonton</span>
+                <span class="recently-clear-btn" onclick="clearAllResume()">Clear All</span>
             </div>
             <div class="recently-scroll" id="continueWatchingScroll"></div>
         </div>
@@ -4301,6 +4351,8 @@
             dots.innerHTML = tracks.map((t, i) => `<div onclick="event.stopPropagation();musicHeroGo(${i})"
                 style="width:${i === 0 ? '16px' : '6px'};height:6px;border-radius:3px;background:${i === 0 ? '#fff' : '#3a3a3a'};cursor:pointer;transition:all 0.3s"></div>`).join('');
             track.style.transform = 'translateX(0)';
+            // Pramuat semua artwork slide supaya tidak ada slide kosong/hitam
+            tracks.forEach(t => { if (t.artwork) { const im = new Image(); im.src = t.artwork; } });
             _musicHeroBindSwipe(track);
             musicHeroStartAuto();
         }
@@ -5670,6 +5722,10 @@
             const modal = document.getElementById('movieModal');
             modal.classList.remove('tv-mode');
             modal.style.display = 'none';
+            // Perbarui baris Lanjut Tonton segera setelah menonton (tanpa menunggu reload)
+            if (!window._isSearchMode && !currentCastId && !currentLibMode) {
+                renderContinueWatching();
+            }
             const postContent = document.querySelector('#movieModal .ig-post-content');
             if (postContent) {
                 postContent.innerHTML = `
@@ -7879,11 +7935,37 @@
                 const data = await fetchWithCache(apiUrl);
 
                 if (!data.results || data.results.length === 0) {
+                    // Tidak ada rilis persis tanggal ini → tampilkan rilis terdekat supaya kalender tidak kosong
                     const typeLabel = mediaType === 'tv' ? 'serial' : 'film';
+                    const dateField = mediaType === 'tv' ? 'first_air_date' : 'primary_release_date';
+                    try {
+                        const up = await fetchWithCache(`https://api.themoviedb.org/3/discover/${mediaType}?api_key=${API_KEY}&language=en-US&sort_by=${dateField}.asc&${dateField}.gte=${dateStr}&include_adult=false`);
+                        const upcoming = (up.results || []).slice(0, 5);
+                        if (upcoming.length) {
+                            list.innerHTML = `<div style="padding:14px 18px 8px;font-size:11px;font-weight:800;color:#999;letter-spacing:0.5px;text-transform:uppercase">Tidak ada rilis persis tanggal ini — rilis terdekat:</div>`;
+                            upcoming.forEach(m => {
+                                const rd = (m.release_date || m.first_air_date || '').split('-');
+                                const rdLabel = rd.length === 3 ? `${rd[2]}/${rd[1]}/${rd[0]}` : (m.release_date || m.first_air_date || '');
+                                const card = document.createElement('div');
+                                card.className = 'calendar-item';
+                                card.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 18px;cursor:pointer';
+                                card.onclick = () => openModal(m.id, mediaType);
+                                card.innerHTML = `
+                                    <img src="https://image.tmdb.org/t/p/w92${m.poster_path || ''}" loading="lazy" style="width:42px;height:60px;border-radius:8px;object-fit:cover;background:#1a1a1a">
+                                    <div style="flex:1;min-width:0">
+                                        <div class="cal-title" style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.title || m.name || ''}</div>
+                                        <div style="font-size:10px;color:#888;margin-top:3px">${rdLabel}</div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right" style="color:#2a2a2a;font-size:11px"></i>`;
+                                list.appendChild(card);
+                            });
+                            return;
+                        }
+                    } catch(e) {}
                     list.innerHTML = `<div style="text-align:center;padding:60px 20px">
-                        <i class="fa-regular fa-calendar-xmark" style="font-size:36px;color:#222;margin-bottom:14px;display:block"></i>
+                        <i class="fa-regular fa-calendar-xmark" style="font-size:36px;color:#444;margin-bottom:14px;display:block"></i>
                         <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:6px">No schedule</div>
-                        <div style="font-size:12px;color:#555">Belum ada ${typeLabel} yang rilis<br>on this date.</div>
+                        <div style="font-size:12px;color:#777">Belum ada ${typeLabel} yang rilis<br>pada tanggal ini.</div>
                     </div>`;
                     return;
                 }
@@ -7935,7 +8017,7 @@
                             </div>
                             <div class="flex gap-1 mt-1 flex-wrap">${genres}</div>
                         </div>
-                        <i class="fa-solid fa-bell" onclick="event.stopPropagation(); toggleReleaseReminder(${m.id}, '${mediaType}', ${JSON.stringify(title)}, '${releaseDate}', '${m.poster_path || ''}', this)"
+                        <i class="fa-solid fa-bell" onclick="event.stopPropagation(); toggleReleaseReminder(${m.id}, '${mediaType}', '${String(title).replace(/'/g, "\\'")}', '${releaseDate}', '${m.poster_path || ''}', this)"
                             style="font-size:13px;color:${isReminded(m.id) ? '#e50914' : '#3a3a3a'};flex-shrink:0;cursor:pointer;padding:8px" title="Ingatkan saya saat rilis"></i>
                         <i class="fa-solid fa-chevron-right" style="color:#2a2a2a;font-size:11px;flex-shrink:0"></i>`;
                     list.appendChild(item);
@@ -10808,6 +10890,22 @@
         }
 
         // ---------- LANJUT TONTON DI BERANDA ----------
+        function clearAllResume() {
+            try { localStorage.removeItem('resumeData'); } catch(e) {}
+            const wrap = document.getElementById('continueWatchingWrap');
+            if (wrap) wrap.style.display = 'none';
+            showToast('Lanjut Tonton dibersihkan');
+        }
+        // Ambil judul latin (huruf alfabet) — non-Latin diterjemahkan ke judul EN bila ada
+        async function _latinTitle(type, id, current) {
+            if (!isNonLatin(current || '')) return current || 'Judul';
+            try {
+                const r = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=en-US`);
+                const t = r.title || r.name || r.original_title || r.original_name || '';
+                if (t && !isNonLatin(t)) return t;
+            } catch(e) {}
+            return current || 'Judul';
+        }
         async function renderContinueWatching() {
             const wrap = document.getElementById('continueWatchingWrap');
             const scroll = document.getElementById('continueWatchingScroll');
@@ -10819,16 +10917,30 @@
                 .slice(0, 6);
             if (!entries.length) { wrap.style.display = 'none'; return; }
             const cards = await Promise.all(entries.map(async ([id, v]) => {
-                const type = v.type || 'movie';
+                let type = v.type || 'movie';
                 const key = `cw_${type}_${id}`;
                 let d = null;
                 try { d = JSON.parse(sessionStorage.getItem(key)); } catch(e) {}
                 if (!d) {
+                    // Coba tipe tersimpan, lalu tipe sebaliknya (entri lama mungkin salah tipe)
+                    for (const t2 of [type, type === 'tv' ? 'movie' : 'tv']) {
+                        try {
+                            const r = await fetchWithCache(`https://api.themoviedb.org/3/${t2}/${id}?api_key=${API_KEY}&language=id-ID`);
+                            if (r && !r.status_code && (r.title || r.name)) {
+                                let title = await _latinTitle(t2, id, r.title || r.name);
+                                d = { title, poster: r.poster_path || '', backdrop: r.backdrop_path || '' };
+                                type = t2;
+                                break;
+                            }
+                        } catch(e) {}
+                    }
+                    if (!d) return null;
+                    try { sessionStorage.setItem(`cw_${type}_${id}`, JSON.stringify(d)); } catch(e) {}
+                    // Perbaiki tipe di resumeData agar konsisten
                     try {
-                        const r = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=id-ID`);
-                        d = { title: r.title || r.name || 'Judul', poster: r.poster_path || '', backdrop: r.backdrop_path || '' };
-                        try { sessionStorage.setItem(key, JSON.stringify(d)); } catch(e) {}
-                    } catch(e) { return null; }
+                        const m = getResumeData();
+                        if (m[id]) { m[id].type = type; localStorage.setItem(RESUME_KEY, JSON.stringify(m)); }
+                    } catch(e) {}
                 }
                 const label = type === 'tv'
                     ? `S${v.s || 1} · E${v.e || 1}`
