@@ -3135,9 +3135,9 @@
         <!-- ===== FULL PLAYER MODAL ===== -->
         <div id="musicFullPlayer" style="display:none;position:absolute;top:0;left:0;right:0;bottom:62px;z-index:30;background:#000;flex-direction:column;overflow:hidden">
             <div id="musicFullPlayerBg" style="position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(60px) brightness(0.25);transform:scale(1.3);transition:background-image 0.8s ease"></div>
-            <!-- Sumber lagu penuh (YouTube embed search) — tersembunyi di belakang artwork -->
-            <iframe id="musicYtFrame" allow="autoplay; encrypted-media; picture-in-picture"
-                style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0;z-index:1"></iframe>
+            <!-- Sumber lagu penuh (YouTube IFrame API) — tersembunyi di belakang artwork -->
+            <div id="musicYtPlayer"
+                style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;pointer-events:none;z-index:1"></div>
             <div style="position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:0 0 10px">
                 <!-- Top bar -->
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 0">
@@ -3955,50 +3955,128 @@
         (function _musicModeInit() {
             try { _musicFullMode = localStorage.getItem('musicFullMode') !== '0'; } catch(e) {}
         })();
-        let _musicFrameWin = null;     // contentWindow iframe YouTube musik
+        let _musicYtPlayer = null;     // instance YT.Player untuk lagu penuh
+        let _musicYtApiPromise = null; // promise muat YouTube IFrame API
         let _musicPollIv = null;       // polling getCurrentTime
         let _musicYtFailTimer = null;  // fallback ke preview kalau YouTube gagal
-        let _musicYtGotSignal = false; // sudah dapat sinyal infoDelivery valid?
+        let _musicYtGotSignal = false; // sudah dapat sinyal valid dari player?
         let _musicLastDur = 0;         // durasi lagu penuh terakhir (untuk seek)
+        let _musicFrameWin = null;     // cadangan — tidak dipakai di alur YT.Player
 
-        function _musicYtURL(q) {
-            return `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(q)}&autoplay=1&playsinline=1&enablejsapi=1&rel=0&modestbranding=1&iv_load_policy=3`;
+        function _musicLoadYtApi() {
+            if (window.YT && YT.Player) return Promise.resolve(true);
+            if (_musicYtApiPromise) return _musicYtApiPromise;
+            _musicYtApiPromise = new Promise(resolve => {
+                const poll = () => {
+                    const iv = setInterval(() => {
+                        if (window.YT && YT.Player) { clearInterval(iv); resolve(true); }
+                    }, 150);
+                    setTimeout(() => { clearInterval(iv); resolve(false); }, 8000);
+                };
+                if (document.getElementById('yt-api-script')) { poll(); return; }
+                const s = document.createElement('script');
+                s.id = 'yt-api-script';
+                s.src = 'https://www.youtube.com/iframe_api';
+                s.onerror = () => resolve(false);
+                document.head.appendChild(s);
+                poll();
+            });
+            return _musicYtApiPromise;
         }
-        function _musicYtPostMsg(obj) {
-            if (!_musicFrameWin) return;
-            try { _musicFrameWin.postMessage(JSON.stringify(obj), '*'); } catch(e) {}
+        function _musicYtCmd(fn, args) {
+            if (!_musicYtPlayer || typeof _musicYtPlayer[fn] !== 'function') return false;
+            try { _musicYtPlayer[fn].apply(_musicYtPlayer, args || []); return true; } catch(e) { return false; }
         }
-        function _musicStartYt(q) {
-            const f = document.getElementById('musicYtFrame');
-            if (!f) return;
-            _musicFrameWin = null; _musicYtGotSignal = false;
-            f.src = _musicYtURL(q);
-            const readyIv = setInterval(() => {
-                if (f.contentWindow) { _musicFrameWin = f.contentWindow; clearInterval(readyIv); }
-            }, 200);
+        function _musicYtPoll() {
+            if (!_musicYtPlayer || typeof _musicYtPlayer.getCurrentTime !== 'function') return;
+            let cur = 0, dur = 0;
+            try { cur = _musicYtPlayer.getCurrentTime() || 0; dur = _musicYtPlayer.getDuration() || 0; } catch(e) { return; }
+            _musicLastDur = dur;
+            if (dur > 0) _musicYtGotSignal = true;
+            const pct = dur > 0 ? Math.min(100, (cur / dur) * 100) : 0;
+            const fmtT = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+            const mp = document.getElementById('musicMiniProgress'); if (mp) mp.style.width = pct + '%';
+            const fp = document.getElementById('musicFullProgress'); if (fp) fp.style.width = pct + '%';
+            const ft = document.getElementById('musicFullThumb');   if (ft) ft.style.left = pct + '%';
+            const cT = document.getElementById('musicFullCurTime'); if (cT) cT.textContent = fmtT(cur);
+            const dT = document.getElementById('musicFullDurTime'); if (dT) dT.textContent = fmtT(dur);
+        }
+        function _musicYtIcons(playing) {
+            const mp = document.getElementById('musicMiniPlayBtn');
+            if (mp) mp.className = 'fa-solid ' + (playing ? 'fa-pause' : 'fa-play');
+            const fp = document.getElementById('musicFullPlayBtn');
+            if (fp) fp.innerHTML = playing
+                ? '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>'
+                : '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
+        }
+        async function _musicPlayYt(q) {
+            const ok = await _musicLoadYtApi();
+            if (!ok) {
+                showToast('YouTube gagal dimuat — pakai preview 30 detik');
+                _musicPlayPreview(_musicCurrentTrack);
+                return;
+            }
+            _musicYtGotSignal = false;
             _musicStopPoll();
-            _musicPollIv = setInterval(() => {
-                _musicYtPostMsg({event:'listening', value:1});
-                _musicYtPostMsg({event:'command', func:'getCurrentTime', args:''});
-            }, 1200);
-            // Fallback: kalau 9 detik tidak ada sinyal apa pun → pakai preview 30 detik
+            try { if (_musicYtPlayer) _musicYtPlayer.destroy(); } catch(e) {}
+            try {
+                _musicYtPlayer = new YT.Player('musicYtPlayer', {
+                    width: '100%', height: '100%',
+                    playerVars: {
+                        listType: 'search', list: q, autoplay: 1, playsinline: 1,
+                        rel: 0, modestbranding: 1, iv_load_policy: 3, enablejsapi: 1
+                    },
+                    events: {
+                        onReady: ev => {
+                            _musicYtGotSignal = true;
+                            try { ev.target.setVolume(_lsVolume); } catch(e) {}
+                            try { ev.target.setPlaybackRate(_playbackRate); } catch(e) {}
+                            try { ev.target.playVideo(); } catch(e) {}
+                            _musicStopPoll();
+                            _musicPollIv = setInterval(() => _musicYtPoll(), 1000);
+                        },
+                        onStateChange: ev => {
+                            const s = ev.data;
+                            if (s === 1) {
+                                _musicYtGotSignal = true;
+                                _musicPlaying = true; _musicYtIcons(true);
+                            } else if (s === 2) {
+                                _musicPlaying = false; _musicYtIcons(false);
+                            } else if (s === 0 && _musicPlaying) {
+                                // Lagu selesai — lanjut otomatis ke lagu berikutnya
+                                _musicPlaying = false; _musicYtIcons(false);
+                                musicNext();
+                            }
+                            _musicYtPoll();
+                        },
+                        onError: () => {
+                            if (!_musicYtGotSignal) {
+                                showToast('Lagu tidak tersedia — pakai preview 30 detik');
+                                _musicPlayPreview(_musicCurrentTrack);
+                            }
+                        }
+                    }
+                });
+            } catch(e) {
+                showToast('YouTube gagal — pakai preview 30 detik');
+                _musicPlayPreview(_musicCurrentTrack);
+                return;
+            }
             if (_musicYtFailTimer) clearTimeout(_musicYtFailTimer);
             _musicYtFailTimer = setTimeout(() => {
-                if (!_musicYtGotSignal) {
-                    showToast('Lagu penuh tidak tersedia — pakai preview 30 detik');
+                if (!_musicYtGotSignal && _musicPlaying) {
+                    showToast('Lagu penuh gagal dimuat — preview 30 detik');
                     _musicPlayPreview(_musicCurrentTrack);
                 }
-            }, 9000);
+            }, 10000);
         }
         function _musicStopYt() {
             if (_musicYtFailTimer) { clearTimeout(_musicYtFailTimer); _musicYtFailTimer = null; }
             _musicStopPoll();
-            const f = document.getElementById('musicYtFrame');
-            if (f && f.src) {
-                try { _musicYtPostMsg({event:'command', func:'pauseVideo', args:''}); } catch(e) {}
-                f.src = '';
-            }
-            _musicFrameWin = null;
+            if (_musicYtPlayer) { try { _musicYtPlayer.destroy(); } catch(e) {} _musicYtPlayer = null; }
+            const ph = document.getElementById('musicYtPlayer');
+            if (ph) ph.innerHTML = '';
+            _musicYtGotSignal = false;
         }
         function _musicStopPoll() {
             if (_musicPollIv) { clearInterval(_musicPollIv); _musicPollIv = null; }
@@ -4023,7 +4101,7 @@
             _musicPlaying = true;
             if (_musicFullMode && t.title) {
                 _musicStopAudio();
-                _musicStartYt(`${t.artist || ''} ${t.title} - official audio`);
+                _musicPlayYt(`${t.artist || ''} ${t.title} - official audio`);
             } else {
                 _musicStopYt();
                 _musicPlayPreview(t);
@@ -4087,18 +4165,16 @@
         }
 
         function musicTogglePlay() {
-            if (_musicFullMode && _musicFrameWin) {
-                // Mode lagu penuh (YouTube)
+            if (_musicFullMode && _musicYtPlayer) {
+                // Mode lagu penuh (YouTube IFrame API) — pause benar-benar menghentikan suara
                 if (_musicPlaying) {
-                    _musicYtPostMsg({event:'command', func:'pauseVideo', args:''});
+                    _musicYtCmd('pauseVideo');
                     _musicPlaying = false;
-                    document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-play';
-                    document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
+                    _musicYtIcons(false);
                 } else {
-                    _musicYtPostMsg({event:'command', func:'playVideo', args:''});
+                    _musicYtCmd('playVideo');
                     _musicPlaying = true;
-                    document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-pause';
-                    document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>';
+                    _musicYtIcons(true);
                 }
                 return;
             }
@@ -4118,13 +4194,13 @@
         // biar suaranya nggak dobel/tumpuk. Lanjut otomatis begitu sumber lain berhenti. ----------
         let _musicDuckedByOther = false;
         function musicDuckForOtherAudio() {
-            if (_musicPlaying && (_musicAudio || _musicFrameWin)) {
+            if (_musicPlaying && (_musicAudio || _musicYtPlayer)) {
                 musicTogglePlay();
                 _musicDuckedByOther = true;
             }
         }
         function musicResumeFromDuck() {
-            if (_musicDuckedByOther && (_musicAudio || _musicFrameWin) && !_musicPlaying) {
+            if (_musicDuckedByOther && (_musicAudio || _musicYtPlayer) && !_musicPlaying) {
                 musicTogglePlay();
             }
             _musicDuckedByOther = false;
@@ -4168,8 +4244,8 @@
             const bar = document.getElementById('musicFullProgressBar');
             const rect = bar.getBoundingClientRect();
             const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-            if (_musicFullMode && _musicFrameWin && _musicLastDur > 0) {
-                _musicYtPostMsg({event:'command', func:'seekTo', args:[pct * _musicLastDur, true]});
+            if (_musicFullMode && _musicYtPlayer && _musicLastDur > 0) {
+                _musicYtCmd('seekTo', [pct * _musicLastDur, true]);
                 document.getElementById('musicFullProgress').style.width = (pct * 100) + '%';
                 return;
             }
@@ -4177,8 +4253,8 @@
             _musicAudio.currentTime = pct * _musicAudio.duration;
         }
         function musicSetVolume(v) {
-            if (_musicFullMode && _musicFrameWin) {
-                _musicYtPostMsg({event:'command', func:'setVolume', args:[parseInt(v, 10) || 0]});
+            if (_musicFullMode && _musicYtPlayer) {
+                _musicYtCmd('setVolume', [parseInt(v, 10) || 0]);
                 return;
             }
             if (_musicAudio) _musicAudio.volume = v / 100;
@@ -4211,7 +4287,7 @@
             _musicHeroIdx = 0;
             track.innerHTML = tracks.map((t, i) => `
                 <div onclick="musicPlayHeroSlide(${i})" style="min-width:100%;height:170px;position:relative;border-radius:16px;overflow:hidden;cursor:pointer;background:#141414">
-                    <img src="${t.artwork}" onerror="musicImgFallback(this)" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+                    <img src="${t.artwork}" onerror="musicImgFallback(this)" fetchpriority="${i === 0 ? 'high' : 'low'}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
                     <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0.25) 100%)"></div>
                     <div style="position:absolute;left:16px;right:60px;bottom:14px">
                         <div style="font-size:8px;font-weight:800;color:rgba(255,255,255,0.65);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${i === 0 ? 'Sedang Populer' : `Pilihan ${i + 1}`}</div>
@@ -7109,6 +7185,13 @@
                     }
                     return;
                 }
+                // Hanya proses pesan dari video modal/landscape — abaikan pemutar lain
+                // (musik YouTube, reels) supaya tidak terjadi loop pause/play.
+                const srcWin = e.source;
+                const curVid = document.getElementById('vid-' + currentIdx);
+                const pf = document.getElementById('player-frame');
+                const isVideoSrc = (curVid && srcWin === curVid.contentWindow) || (pf && srcWin === pf.contentWindow);
+                if (!isVideoSrc) return;
                 // playerState: 1=playing, 2=paused, 0=ended — dipakai untuk auto-pause/lanjutkan musik
                 if (typeof d.info.playerState === 'number') {
                     if (d.info.playerState === 1) musicDuckForOtherAudio();
@@ -7148,8 +7231,8 @@
         // Stop video/streaming saat tab disembunyikan — tapi BUKAN music iframe
         function stopNonMusicIframes() {
             document.querySelectorAll('iframe').forEach(f => {
-                // Jangan hentikan music iframe (termasuk pemutar lagu penuh YouTube)
-                if (f.id === 'musicIframe' || f.id === 'musicYtFrame') return;
+                // Jangan hentikan music iframe (termasuk pemutar lagu penuh YouTube via YT.Player)
+                if (f.id === 'musicIframe' || f.id === 'musicYtFrame' || f.closest('#musicYtPlayer')) return;
                 const src = f.src || '';
                 if (src.includes('youtube.com') || src.includes('youtu.be')) {
                     try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
@@ -9277,7 +9360,10 @@
             
             let url = "";
             switch(srv) {
-                case 1:  url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                // cinesrc.st: movie → /embed/movie/{id}; series → /embed/tv/{id}?season={s}&episode={e}
+                case 1:  url = type === 'tv'
+                    ? `https://cinesrc.st/embed/tv/${id}?season=${s}&episode=${e}`
+                    : `https://cinesrc.st/embed/movie/${id}`; break;
                 case 2:  url = `https://player.cinezo.live/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoplay=true`; break;
                 case 5:  url = `https://111movies.com/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
                 case 6:  url = `https://111movies.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
@@ -9322,7 +9408,9 @@
                 case 45: url = `https://production-player.vidrift.pages.dev/embed/${type}/${id}${seriesSuffix}`; break;
                 case 46: url = `https://primesrc.me/embed/${type}/${id}${seriesSuffix}`; break;
                 case 47: url = `https://fmovies4u.com/embed/${type}/${id}${seriesSuffix}`; break;
-                case 99: url = `https://www.dailymotion.com/embed/video/${currentDailymotionId}`; break;     default: url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`;
+                case 99: url = `https://www.dailymotion.com/embed/video/${currentDailymotionId}`; break;     default: url = type === 'tv'
+                    ? `https://cinesrc.st/embed/tv/${id}?season=${s}&episode=${e}`
+                    : `https://cinesrc.st/embed/movie/${id}`;
             }
             return url.replace("http://", "https://");
         }
@@ -10648,7 +10736,7 @@
         function _speedApply() {
             const v = document.getElementById(`vid-${currentIdx}`);
             if (v) { try { v.contentWindow.postMessage(JSON.stringify({event:'command', func:'setPlaybackRate', args:[_playbackRate]}), '*'); } catch(e) {} }
-            if (_musicFrameWin) { _musicYtPostMsg({event:'command', func:'setPlaybackRate', args:[_playbackRate]}); }
+            if (_musicYtPlayer) { _musicYtCmd('setPlaybackRate', [_playbackRate]); }
             if (_musicAudio) { try { _musicAudio.playbackRate = _playbackRate; } catch(e) {} }
             const l1 = document.getElementById('speedLabel'); if (l1) l1.innerText = _playbackRate + '×';
             const l2 = document.getElementById('lsSpeedLabel'); if (l2) l2.innerText = _playbackRate + '×';
@@ -10728,7 +10816,7 @@
             const entries = Object.entries(rd)
                 .filter(([, v]) => v && v.ts)
                 .sort((a, b) => b[1].ts - a[1].ts)
-                .slice(0, 10);
+                .slice(0, 6);
             if (!entries.length) { wrap.style.display = 'none'; return; }
             const cards = await Promise.all(entries.map(async ([id, v]) => {
                 const type = v.type || 'movie';
@@ -10738,7 +10826,7 @@
                 if (!d) {
                     try {
                         const r = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=id-ID`);
-                        d = { title: r.title || r.name || 'Judul', poster: r.poster_path || '' };
+                        d = { title: r.title || r.name || 'Judul', poster: r.poster_path || '', backdrop: r.backdrop_path || '' };
                         try { sessionStorage.setItem(key, JSON.stringify(d)); } catch(e) {}
                     } catch(e) { return null; }
                 }
@@ -10751,15 +10839,20 @@
             const valid = cards.filter(Boolean);
             if (!valid.length) { wrap.style.display = 'none'; return; }
             wrap.style.display = 'block';
-            scroll.innerHTML = valid.map(c => `
-                <div onclick="openModal(${c.id}, '${c.type}')" style="flex-shrink:0;width:112px;cursor:pointer">
-                    <div style="position:relative;width:112px;height:158px;border-radius:10px;overflow:hidden;background:#161616">
-                        ${c.d.poster ? `<img src="https://image.tmdb.org/t/p/w185${c.d.poster}" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333"><i class="fa-solid fa-film" style="font-size:24px"></i></div>`}
-                        <div style="position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,0.15)"><div style="height:100%;width:${c.pct}%;background:var(--accent,#1a73e8)"></div></div>
-                    </div>
-                    <div style="margin-top:6px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.d.title}</div>
-                    <div style="font-size:9px;color:#888;margin-top:2px">${c.label}</div>
-                </div>`).join('');
+            // Kartu landscape 16:9 — 2 kartu terlihat, sisanya digeser (scroll snap)
+            scroll.style.cssText = 'display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 16px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch';
+            scroll.innerHTML = valid.map(c => {
+                const bg = c.d.backdrop || c.d.poster;
+                return `
+                <div onclick="openModal(${c.id}, '${c.type}')" style="flex:0 0 calc(50% - 5px);scroll-snap-align:start;position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;cursor:pointer;background:#161616">
+                    ${bg ? `<img src="https://image.tmdb.org/t/p/w500${bg}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#333"><i class="fa-solid fa-film" style="font-size:22px"></i></div>`}
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.1) 60%)"></div>
+                    <div style="position:absolute;top:8px;left:10px;font-size:8px;font-weight:800;letter-spacing:0.5px;color:#fff;background:rgba(0,0,0,0.55);padding:3px 8px;border-radius:8px;text-transform:uppercase">${c.label}</div>
+                    <div style="position:absolute;left:10px;right:44px;bottom:12px;font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.d.title}</div>
+                    <div style="position:absolute;right:12px;bottom:10px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.5)"><i class="fa-solid fa-play" style="color:#111;font-size:11px;margin-left:1px"></i></div>
+                    <div style="position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,0.2)"><div style="height:100%;width:${c.pct}%;background:var(--accent,#1a73e8)"></div></div>
+                </div>`;
+            }).join('');
         }
 
         // ---------- PUSTAKA UNDUHAN ----------
