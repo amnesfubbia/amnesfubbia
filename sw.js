@@ -1,11 +1,9 @@
-/* amnesfubbia — Service Worker (cache shell dasar untuk akses offline & PWA installable) */
+/* amnesfubbia — Service Worker
+   Fungsi: PWA installable + fallback offline untuk halaman aplikasi.
+   PENTING: permintaan ke luar (TMDb, gambar, itunes, embed) TIDAK dicegat —
+   biar tidak membebani performa HP. */
 const CACHE_NAME = 'amnesfubbia-v1';
-const SHELL = [
-  './',
-  './index.html',
-  './index.html.txt',
-  './amnesfubbia.png'
-];
+const SHELL = ['./', './index.html', './index.html.txt', './amnesfubbia.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
@@ -28,15 +26,10 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // API & sumber luar (TMDb, image.tmdb.org, itunes, dll) — strategi network-first
-  if (url.origin !== self.location.origin) {
-    e.respondWith(
-      fetch(req).catch(() => caches.match(req))
-    );
-    return;
-  }
+  // Permintaan luar (API, gambar, embed): biarkan browser menanganinya langsung
+  if (url.origin !== self.location.origin) return;
 
-  // Halaman & aset lokal — network-first dengan fallback cache (konten selalu terbaru)
+  // Hanya halaman/aset lokal: network-first dengan fallback cache
   e.respondWith(
     fetch(req)
       .then((res) => {
