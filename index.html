@@ -200,8 +200,9 @@
         .server-btn.active-link { border: 1.5px solid #fff !important; background: rgba(255,255,255,0.1); }
         
         /* DOWNLOAD & TRAILER GRID - DIPERKECIL */
-        .dl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; margin-bottom: 2px; }
-        .dl-link-btn { width: 100%; padding: 8px 2px; border-radius: 10px; background: #000; color: #fff; font-size: 9.5px; font-weight: 800; text-transform: uppercase; text-align: center; border: 1px solid #333; cursor: pointer; }
+        .dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; margin-bottom: 2px; }
+        .dl-link-btn { width: 100%; padding: 7px 6px; border-radius: 8px; background: #000; color: #fff; font-size: 9px; font-weight: 800; text-transform: uppercase; text-align: center; border: 1px solid #1c1c1c; cursor: pointer; transition: all 0.2s; }
+        .dl-link-btn:active { background: #1c1c1c; }
         
         /* PENYELARASAN WARNA TOMBOL TRAILER */
         .btn-trailer-special { background: #000; color: #fff; border: 1px solid #333; }
@@ -550,8 +551,20 @@
         /* Landscape mode active */
         .landscape-active #movieModal { overflow: hidden !important; }
         .landscape-active #modalScrollTop { height: 100vh; max-width: 100%; padding: 0; }
-        .landscape-active .carousel-slide { height: 100vh; }
-        .landscape-active #mainVideoArea { height: 100vh !important; }
+        /* Overlay landscape WAJIB full-screen — override max-width:480px dari tablet fix,
+           supaya video mengisi layar penuh saat HP diputar landscape (seperti aplikasi film). */
+        .landscape-active .landscape-overlay {
+            max-width: 100vw !important;
+            width: 100vw !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+        }
+        .landscape-active #mainVideoArea { height: 100vh !important; width: 100vw !important; }
+        .landscape-active .carousel-track { width: 100vw !important; height: 100vh !important; }
+        .landscape-active .carousel-slide { width: 100vw; height: 100vh; aspect-ratio: auto; }
+        .landscape-active .carousel-slide iframe { width: 100%; height: 100%; }
 
         /* --- ACTOR MODAL (Instagram Pro) --- */
         .actor-modal {
@@ -1385,7 +1398,13 @@
         }
         .rds-btn-row {
             display: grid; grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px; padding: 14px 16px 80px;
+            gap: 8px; padding: 14px 16px 20px;
+            /* Tombol menempel di dasar sheet (sticky), tidak mengambang di tengah */
+            position: sticky; bottom: 0;
+            background: #141414;
+            z-index: 5;
+            border-top: 1px solid #2a2a2a;
+            margin-top: auto;
         }
         .rds-btn-watch, .rds-btn-info {
             flex: 0 0 auto; padding: 8px 16px;
@@ -1853,6 +1872,72 @@
             margin-left: auto !important;
             margin-right: auto !important;
         }
+
+        /* ===== WARNA AKSEN (custom theme) ===== */
+        :root { --accent: #1a73e8; }
+        .nav-item-wrap.nav-active i, .nav-item-wrap:active i { color: var(--accent) !important; }
+        .server-btn.active-link, .ls-srv-btn.active-link { border-color: var(--accent) !important; background: rgba(0,0,0,0.12); }
+        .dot.bg-blue-500 { background: var(--accent) !important; }
+        .ep-btn.active-pill { background: var(--accent) !important; border-color: var(--accent) !important; color: #fff !important; }
+        .accent-swatch {
+            width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+            border: 2px solid transparent; display: inline-block;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .accent-swatch:active { transform: scale(0.85); }
+        .accent-swatch.active { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.25); }
+
+        /* ===== LIGHT MODE ===== */
+        body.light-mode { background: #f2f2f5 !important; color: #18181b !important; }
+        body.light-mode #mainProfile,
+        body.light-mode .modal-player,
+        body.light-mode #searchOverlay,
+        body.light-mode #sideMenu,
+        body.light-mode #tvModal,
+        body.light-mode #notifModal,
+        body.light-mode #reelsModal,
+        body.light-mode #musicModal,
+        body.light-mode #reelDetailSheet,
+        body.light-mode .actor-modal,
+        body.light-mode #decadeModal,
+        body.light-mode #movieografiModal,
+        body.light-mode #lightboxModal,
+        body.light-mode #soundtrackModal,
+        body.light-mode #livesportModal,
+        body.light-mode #actorPhotosModal,
+        body.light-mode #splashScreen { background: #f2f2f5 !important; color: #18181b !important; }
+        body.light-mode .bottom-nav { background: #ffffff !important; border-top-color: #e4e4e7 !important; }
+        body.light-mode [class*="bg-black"], body.light-mode [class*="bg-zinc-950"],
+        body.light-mode [class*="bg-zinc-900"] { background: #ffffff !important; }
+        body.light-mode [class*="bg-zinc-800"], body.light-mode [class*="bg-zinc-700"] { background: #e9e9ee !important; }
+        body.light-mode [class*="text-white"] { color: #18181b !important; }
+        body.light-mode [class*="text-zinc-300"] { color: #3f3f46 !important; }
+        body.light-mode [class*="text-zinc-400"] { color: #71717a !important; }
+        body.light-mode [class*="text-zinc-500"], body.light-mode [class*="text-zinc-600"] { color: #8b8b94 !important; }
+        body.light-mode [class*="border-zinc-900"], body.light-mode [class*="border-zinc-800"],
+        body.light-mode [class*="border-zinc-700"] { border-color: #e4e4e7 !important; }
+        body.light-mode [class*="border-white"] { border-color: #d4d4d8 !important; }
+        body.light-mode .server-btn, body.light-mode .dl-link-btn,
+        body.light-mode .ep-action-btn, body.light-mode .ep-page-btn {
+            background: #ffffff !important; color: #27272a !important; border-color: #d4d4d8 !important;
+        }
+        body.light-mode .server-btn.active-link, body.light-mode .ls-srv-btn.active-link {
+            border-color: var(--accent) !important; background: rgba(26,115,232,0.08) !important;
+        }
+        body.light-mode .ep-btn.active-pill { background: var(--accent) !important; color: #fff !important; }
+        body.light-mode .ep-title, body.light-mode .ep-synopsis { color: #27272a !important; }
+        body.light-mode input, body.light-mode select, body.light-mode textarea { color: #18181b !important; background-color: #ffffff !important; }
+        body.light-mode input::placeholder { color: #a1a1aa !important; }
+        body.light-mode .about-hero-glow { opacity: 0.35; }
+        body.light-mode .sk { background: #e4e4e7 !important; }
+        body.light-mode .rds-btn-row { background: #f2f2f5 !important; border-top-color: #e4e4e7 !important; }
+        body.light-mode .accent-swatch.active { border-color: #18181b; }
+        /* Area video/player tetap gelap walau light mode aktif */
+        body.light-mode .carousel-slide, body.light-mode .iframe-loader,
+        body.light-mode .landscape-overlay, body.light-mode #mainVideoArea,
+        body.light-mode #tvPlayerArea, body.light-mode .reel-video-wrap { background: #000 !important; }
+        body.light-mode .ls-title-text, body.light-mode .ls-subtitle-text,
+        body.light-mode #lsTime, body.light-mode #lsDuration { color: #fff !important; }
     </style>
 </head>
 <body>
@@ -1884,7 +1969,7 @@
         </div>
     </div>
 
-    <div id="landscapeOverlay" class="landscape-overlay" onclick="toggleLsUI()">
+    <div id="landscapeOverlay" class="landscape-overlay" onclick="lsHandleTap()">
         <!-- Lock layer -->
         <div id="lsLockLayer" class="ls-lock-screen" style="display:none">
             <div class="ls-lock-badge" onclick="event.stopPropagation(); unlockScreen()">
@@ -1935,9 +2020,20 @@
                     <i class="fa-solid fa-forward-step ls-btn ls-btn-sm" onclick="event.stopPropagation(); lsCarouselNav(1)" title="Next"></i>
                     <i class="fa-solid fa-expand ls-btn ls-btn-sm" onclick="event.stopPropagation(); tryFullscreen()" title="Fullscreen"></i>
                 </div>
-                <!-- server pill -->
-                <div style="display:flex;justify-content:center;margin-top:8px">
+                <!-- server pill + volume -->
+                <div style="display:flex;justify-content:center;align-items:center;gap:16px;margin-top:8px">
                     <span class="ls-server-pill" id="lsServerPill" onclick="event.stopPropagation(); toggleLsServerPanel()">Server 1</span>
+                    <div style="display:flex;align-items:center;gap:8px" onclick="event.stopPropagation()">
+                        <i id="lsVolIcon" class="fa-solid fa-volume-high ls-btn ls-btn-sm" onclick="event.stopPropagation(); lsToggleMute()" title="Mute/Unmute"></i>
+                        <input id="lsVolSlider" type="range" min="0" max="100" value="100"
+                            oninput="lsSetVolume(this.value)"
+                            style="width:80px;height:22px;accent-color:#fff;cursor:pointer;background:transparent;touch-action:none">
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px" onclick="event.stopPropagation()">
+                        <span id="lsSpeedLabel" onclick="event.stopPropagation();cyclePlaybackSpeed()"
+                            style="font-size:9px;font-weight:800;color:#fff;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:4px 9px;cursor:pointer;letter-spacing:0.5px">1×</span>
+                        <i class="fa-solid fa-display ls-btn ls-btn-sm" onclick="event.stopPropagation(); castVideo()" title="Cast ke TV"></i>
+                    </div>
                 </div>
                 <div class="ls-hint">Tap screen to hide controls</div>
             </div>
@@ -1978,7 +2074,7 @@
                 <span class="about-stat-lbl">Series</span>
             </div>
             <div class="about-stat-card">
-                <span class="about-stat-num">4</span>
+                <span class="about-stat-num">2</span>
                 <span class="about-stat-lbl">Server</span>
             </div>
             <div class="about-stat-card">
@@ -2032,7 +2128,7 @@
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Multi-Server Streaming</div>
-                    <div class="about-feat-desc">4 server streaming terpilih yang sudah diuji aman dari redirect iklan (pakai sandbox browser). Auto-skip otomatis ke server berikutnya kalau satu server gagal dimuat.</div>
+                    <div class="about-feat-desc">2 server streaming terpilih yang sudah diuji aman dari redirect iklan (pakai sandbox browser). Auto-skip otomatis ke server berikutnya kalau satu server gagal dimuat.</div>
                 </div>
             </div>
             <div class="about-feature-row">
@@ -2041,7 +2137,7 @@
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Multi-Server Download</div>
-                    <div class="about-feat-desc">6 server download tersedia untuk movie & series, termasuk per episode. Pilih server terbaik sesuai koneksi.</div>
+                    <div class="about-feat-desc">3 server download tersedia untuk movie & series, termasuk per episode. Pilih server terbaik sesuai koneksi.</div>
                 </div>
             </div>
             <div class="about-feature-row">
@@ -2094,6 +2190,39 @@
 
 
 
+        <!-- Pengaturan Tampilan -->
+        <div class="about-section-label">Pengaturan Tampilan</div>
+        <div class="about-info-list">
+            <div class="about-info-row" style="cursor:pointer" onclick="toggleLightMode()">
+                <span class="about-info-label">Mode Terang</span>
+                <span class="about-info-value" id="lightModeBadge">Gelap</span>
+            </div>
+            <div class="about-info-row" style="flex-wrap:wrap">
+                <span class="about-info-label">Warna Aksen</span>
+                <div class="about-info-value" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+                    <span class="accent-swatch active" data-color="#1a73e8" style="background:#1a73e8" onclick="setAccent('#1a73e8', this)"></span>
+                    <span class="accent-swatch" data-color="#e50914" style="background:#e50914" onclick="setAccent('#e50914', this)"></span>
+                    <span class="accent-swatch" data-color="#4caf7d" style="background:#4caf7d" onclick="setAccent('#4caf7d', this)"></span>
+                    <span class="accent-swatch" data-color="#a78bfa" style="background:#a78bfa" onclick="setAccent('#a78bfa', this)"></span>
+                    <span class="accent-swatch" data-color="#f472b6" style="background:#f472b6" onclick="setAccent('#f472b6', this)"></span>
+                    <span class="accent-swatch" data-color="#facc15" style="background:#facc15" onclick="setAccent('#facc15', this)"></span>
+                    <input type="color" id="accentPicker" value="#1a73e8" oninput="setAccent(this.value, null)" title="Warna custom"
+                        style="width:26px;height:26px;border:none;background:none;cursor:pointer;padding:0">
+                </div>
+            </div>
+        </div>
+        <div class="about-info-list">
+            <div class="about-link-row" onclick="openDownloadLib()">
+                <span class="about-link-label">Pustaka Unduhan</span>
+                <i class="fa-solid fa-chevron-right about-link-arrow"></i>
+            </div>
+            <div class="about-link-row" onclick="openNotifCenter()">
+                <span class="about-link-label">Notifikasi Rilis</span>
+                <span id="notifBadge" style="font-size:9px;font-weight:800;color:#e50914"></span>
+                <i class="fa-solid fa-chevron-right about-link-arrow"></i>
+            </div>
+        </div>
+
         <!-- Data source -->
         <div class="about-section-label">Sumber Data</div>
         <div class="about-info-list">
@@ -2107,11 +2236,11 @@
             </div>
             <div class="about-info-row">
                 <span class="about-info-label">Streaming Server</span>
-                <span class="about-info-value">4 Provider</span>
+                <span class="about-info-value">2 Provider</span>
             </div>
             <div class="about-info-row">
                 <span class="about-info-label">Download Server</span>
-                <span class="about-info-value">6 Provider</span>
+                <span class="about-info-value">3 Provider</span>
             </div>
             <div class="about-info-row">
                 <span class="about-info-label">Live TV & IPTV</span>
@@ -2222,6 +2351,13 @@
 
         <div class="highlights-wrapper no-scrollbar"><div class="highlights-container no-scrollbar" id="highlightList"></div></div>
 
+        <div id="continueWatchingWrap" style="display:none">
+            <div class="recently-header">
+                <span class="recently-label" style="margin-bottom:0">Lanjut Tonton</span>
+            </div>
+            <div class="recently-scroll" id="continueWatchingScroll"></div>
+        </div>
+
         <div id="recentlyViewedWrapper">
             <div class="recently-header">
                 <span class="recently-label" style="margin-bottom:0">Recently Viewed</span>
@@ -2246,6 +2382,7 @@
                 <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
                 <input type="text" id="searchInp" autocomplete="off" placeholder="Search movies, series, or actors..." onkeydown="if(event.key==='Enter') searchAction()" oninput="handleSearchInput(this.value)">
                 <i class="fa-solid fa-xmark text-zinc-500 text-xs cursor-pointer" id="searchClearBtn" style="display:none;padding-left:6px" onclick="clearSearch()"></i>
+                <i class="fa-solid fa-microphone text-zinc-500 text-xs cursor-pointer" id="searchMicBtn" style="padding-left:6px;display:none" onclick="voiceSearch('movie')" title="Cari dengan suara"></i>
                 <div id="smartSearchDropdown" class="no-scrollbar"></div>
             </div>
             <div id="searchFilterToggleBtn" onclick="handleSearchFilterBtn()" style="
@@ -2393,7 +2530,7 @@
                             <span id="mvcTime" style="font-size:11px;color:#fff;min-width:38px;font-weight:600">0:00</span>
                             <div id="mvcTrack" style="flex:1;height:3px;background:rgba(255,255,255,0.25);border-radius:2px;cursor:pointer;position:relative">
                                 <div id="mvcProgress" style="width:0%;height:100%;background:#fff;border-radius:2px;transition:width 0.5s linear"></div>
-                                <div id="mvcThumb" style="position:absolute;top:50%;left:0%;transform:translate(-50%,-50%);width:12px;height:12px;background:#1a73e8;border-radius:50%;transition:left 0.5s linear"></div>
+                                <div id="mvcThumb" style="position:absolute;top:50%;left:0%;transform:translate(-50%,-50%);width:12px;height:12px;background:var(--accent,#1a73e8);border-radius:50%;transition:left 0.5s linear"></div>
                             </div>
                             <span id="mvcDuration" style="font-size:11px;color:#aaa;min-width:38px;text-align:right">0:00</span>
                         </div>
@@ -2420,6 +2557,14 @@
                             <!-- next slide -->
                             <button onclick="modalVideoCmd('next')" style="background:none;border:none;color:#fff;font-size:20px;padding:4px 8px;cursor:pointer" title="Next">
                                 <i class="fa-solid fa-forward-step"></i>
+                            </button>
+                            <!-- kecepatan putar -->
+                            <button onclick="cyclePlaybackSpeed()" style="background:none;border:none;color:#fff;padding:4px 8px;cursor:pointer" title="Kecepatan putar">
+                                <span id="speedLabel" style="font-size:11px;font-weight:800">1×</span>
+                            </button>
+                            <!-- Picture-in-Picture -->
+                            <button onclick="pipVideo()" style="background:none;border:none;color:#fff;font-size:18px;padding:4px 8px;cursor:pointer" title="Picture-in-Picture">
+                                <i class="fa-solid fa-window-restore"></i>
                             </button>
                             <!-- fullscreen / landscape -->
                             <button onclick="enterLandscape()" style="background:none;border:none;color:#fff;font-size:18px;padding:4px 8px;cursor:pointer" title="Fullscreen">
@@ -2472,7 +2617,7 @@
                 <div id="seriesControl" class="hidden mt-4 p-4 bg-black rounded-2xl border border-zinc-900">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Episodes</h4>
-                        <select id="seasonSel" class="bg-zinc-900 text-white text-[10px] px-2 py-1 rounded border border-zinc-700 appearance-none" onchange="loadEpisodes()"></select>
+                        <select id="seasonSel" class="bg-zinc-900 text-white text-[10px] px-2 py-1 rounded border border-zinc-700 appearance-none" onchange="onSeasonChange()"></select>
                     </div>
                     <div id="episodeSearchWrap" style="margin-bottom:10px;display:none">
                         <div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:8px">
@@ -2494,9 +2639,8 @@
                 
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;margin-bottom:2px;">
                     <button class="dl-link-btn" onclick="handleDownload()">Down1</button>
-                    <button class="dl-link-btn" onclick="handleDownload2()">Down2</button>
-                    <button class="dl-link-btn" onclick="handleDownload3()">Down3</button>
-                    <button class="dl-link-btn" onclick="handleDownload5()">Down4</button>
+                    <button class="dl-link-btn" onclick="handleDownload3()">Down2</button>
+                    <button class="dl-link-btn" onclick="handleDownload5()">Down3</button>
                 </div>
                 <div id="mCollectionSection" class="similar-section" style="display:none">
                     <span class="similar-label" id="mCollectionLabel">Part of Collection</span>
@@ -2770,6 +2914,12 @@
             </div>
 
             <div id="musicHomeScroll" style="flex:1;overflow-y:auto;padding-bottom:160px">
+                <!-- Hero carousel (5 slide, auto-rotate tiap 4 detik) -->
+                <div style="margin-bottom:26px">
+                    <div id="musicHeroTrack" style="display:flex;overflow:hidden;border-radius:16px;position:relative;touch-action:pan-y;margin:0 20px"></div>
+                    <div id="musicHeroDots" style="display:flex;justify-content:center;gap:6px;margin-top:10px"></div>
+                </div>
+
                 <!-- Rekomendasi -->
                 <div style="margin-bottom:28px">
                     <div style="padding:0 20px 12px"><span class="music-section-label"><i class="fa-solid fa-tower-broadcast" style="margin-right:6px"></i>Rekomendasi</span></div>
@@ -2831,6 +2981,7 @@
                         <input id="musicSearchInp" type="text" placeholder="Cari lagu, album, artis, podcast" autocomplete="off"
                             style="flex:1;background:none;border:none;outline:none;color:#fff;font-size:14px"
                             oninput="musicDebounceSearch(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();musicSearch(this.value)}">
+                        <i id="musicMicBtn" class="fa-solid fa-microphone" style="color:#777;font-size:14px;cursor:pointer;display:none" onclick="voiceSearch('music')" title="Cari dengan suara"></i>
                         <i class="fa-solid fa-xmark" style="color:#666;cursor:pointer;font-size:14px" onclick="document.getElementById('musicSearchInp').value='';musicRenderSearchLanding()"></i>
                     </div>
                     <div onclick="musicShowPanel('genrefilter')" style="flex-shrink:0;width:46px;height:46px;border-radius:14px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;cursor:pointer">
@@ -2984,6 +3135,9 @@
         <!-- ===== FULL PLAYER MODAL ===== -->
         <div id="musicFullPlayer" style="display:none;position:absolute;top:0;left:0;right:0;bottom:62px;z-index:30;background:#000;flex-direction:column;overflow:hidden">
             <div id="musicFullPlayerBg" style="position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(60px) brightness(0.25);transform:scale(1.3);transition:background-image 0.8s ease"></div>
+            <!-- Sumber lagu penuh (YouTube embed search) — tersembunyi di belakang artwork -->
+            <iframe id="musicYtFrame" allow="autoplay; encrypted-media; picture-in-picture"
+                style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;pointer-events:none;border:0;z-index:1"></iframe>
             <div style="position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:0 0 10px">
                 <!-- Top bar -->
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 0">
@@ -3006,7 +3160,11 @@
                         <div id="musicFullTitle" style="font-size:22px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-0.3px"></div>
                         <div id="musicFullArtist" style="font-size:14px;color:#666;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
                     </div>
-                    <i id="musicFullLikeBtn" class="fa-regular fa-heart" onclick="musicToggleLike()" style="color:#666;font-size:24px;padding:8px 0 8px 14px;cursor:pointer;flex-shrink:0"></i>
+                    <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+                        <span id="musicModeChip" onclick="musicToggleFullMode()" title="Ganti mode pemutaran: lagu penuh (YouTube) / preview 30 detik (iTunes)"
+                            style="font-size:8px;font-weight:800;padding:4px 9px;border-radius:10px;background:rgba(255,255,255,0.12);color:#fff;cursor:pointer;letter-spacing:0.8px;border:1px solid rgba(255,255,255,0.18)">FULL</span>
+                        <i id="musicFullLikeBtn" class="fa-regular fa-heart" onclick="musicToggleLike()" style="color:#666;font-size:24px;padding:8px 0;cursor:pointer;flex-shrink:0"></i>
+                    </div>
                 </div>
 
                 <!-- Progress bar -->
@@ -3090,7 +3248,7 @@
         let activeServerIdx = 1;
         let activeEpisode = 1;
         let activeSeason = 1;
-        const TOTAL_SERVERS = 4; // sinkron dengan jumlah tombol server yang ditampilkan
+        const TOTAL_SERVERS = 2; // sinkron dengan jumlah tombol server yang ditampilkan
         let _autoAdvanceCount = 0;
         let _isAutoAdvancing = false;
 
@@ -3203,6 +3361,7 @@
             document.getElementById('musicModal').style.display = 'none';
             document.body.style.overflow = 'auto';
             history.replaceState({view:'home'}, '');
+            musicHeroStopAuto(); // hentikan rotasi carousel saat modal ditutup
             // audio TETAP lanjut — sesuai requirement
         }
 
@@ -3254,6 +3413,7 @@
 
         // ---------- HOME CONTENT ----------
         async function musicLoadHomeContent() {
+            musicRenderHeroCarousel();
             musicRenderRecoList();
             musicLoadHomePlaylistCard();
             musicRenderCommunityPlaylists();
@@ -3300,7 +3460,7 @@
         }
         async function musicFetchTracksByArtists(names, perArtist) {
             const batches = await Promise.all(names.map(name =>
-                fetch(`${ITUNES_API}/search?term=${encodeURIComponent(name)}&media=music&limit=${perArtist}`)
+                fetch(`${ITUNES_API}/search?term=${encodeURIComponent(name)}&media=music&country=ID&lang=id_id&limit=${perArtist}`)
                     .then(r => r.json()).then(d => (d.results || []).filter(t => t.trackId && t.previewUrl)).catch(() => [])
             ));
             return batches.flat();
@@ -3339,7 +3499,7 @@
         async function musicLoadHomePlaylistCard() {
             [[MUSIC_PLAYLISTS[0], 'musicHomePlCard1'], [MUSIC_PLAYLISTS[1], 'musicHomePlCard2']].forEach(async ([p, elId]) => {
                 try {
-                    const r = await fetch(`${ITUNES_API}/search?term=${encodeURIComponent(p.artists[0])}&media=music&limit=1`);
+                    const r = await fetch(`${ITUNES_API}/search?term=${encodeURIComponent(p.artists[0])}&media=music&country=ID&lang=id_id&limit=1`);
                     const d = await r.json();
                     const t = (d.results || [])[0];
                     if (t && t.artworkUrl100) {
@@ -3376,7 +3536,7 @@
             try {
                 const names = musicPickRandomArtists(6);
                 const batches = await Promise.all(names.map(name =>
-                    fetch(`${ITUNES_API}/search?term=${encodeURIComponent(name)}&entity=album&limit=2`)
+                    fetch(`${ITUNES_API}/search?term=${encodeURIComponent(name)}&entity=album&country=ID&lang=id_id&limit=2`)
                         .then(r => r.json()).then(d => (d.results || []).filter(a => a.collectionId)).catch(() => [])
                 ));
                 const albums = batches.flat();
@@ -3429,7 +3589,7 @@
             try {
                 const names = musicPickRandomArtists(10);
                 const results = await Promise.all(names.map(name =>
-                    fetch(`${ITUNES_API}/search?term=${encodeURIComponent(name)}&entity=musicArtist&limit=1`)
+                    fetch(`${ITUNES_API}/search?term=${encodeURIComponent(name)}&entity=musicArtist&country=ID&lang=id_id&limit=1`)
                         .then(r => r.json()).then(d => (d.results || [])[0]).catch(() => null)
                 ));
                 const artists = results.filter(a => a && a.artistId && a.artistName);
@@ -3477,7 +3637,7 @@
         function musicHydratePlaylistArt(scope) {
             MUSIC_PLAYLISTS.forEach(async p => {
                 try {
-                    const r = await fetch(`${ITUNES_API}/search?term=${encodeURIComponent(p.artists[0])}&media=music&limit=1`);
+                    const r = await fetch(`${ITUNES_API}/search?term=${encodeURIComponent(p.artists[0])}&media=music&country=ID&lang=id_id&limit=1`);
                     const d = await r.json();
                     const t = (d.results || [])[0];
                     const el = document.getElementById(`plCardBg-${p.id}-${scope}`);
@@ -3644,7 +3804,7 @@
                 </div>`;
             const teratasNames = musicPickRandomArtists(8);
             Promise.all(teratasNames.map(name =>
-                fetch(`${ITUNES_API}/search?term=${encodeURIComponent(name)}&entity=musicArtist&limit=1`)
+                fetch(`${ITUNES_API}/search?term=${encodeURIComponent(name)}&entity=musicArtist&country=ID&lang=id_id&limit=1`)
                     .then(r => r.json()).then(d => (d.results || [])[0]).catch(() => null)
             )).then(results => {
                     const scroll = document.getElementById('musicSearchTopArtistsScroll');
@@ -3671,8 +3831,8 @@
             el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#444"><i class="fa-solid fa-compact-disc fa-spin" style="font-size:28px;color:#fff;margin-bottom:12px;display:block"></i>Mencari...</div>`;
             try {
                 const [trackRes, artistRes] = await Promise.all([
-                    fetch(`${ITUNES_API}/search?term=${encodeURIComponent(q)}&media=music&limit=30`).then(r => r.json()),
-                    fetch(`${ITUNES_API}/search?term=${encodeURIComponent(q)}&entity=musicArtist&limit=6`).then(r => r.json()),
+                    fetch(`${ITUNES_API}/search?term=${encodeURIComponent(q)}&media=music&country=ID&lang=id_id&limit=30`).then(r => r.json()),
+                    fetch(`${ITUNES_API}/search?term=${encodeURIComponent(q)}&entity=musicArtist&country=ID&lang=id_id&limit=6`).then(r => r.json()),
                 ]);
                 const tracks = (trackRes.results || []).filter(t => t.trackId && t.previewUrl).map(musicNormalize);
                 const artists = (artistRes.results || []).filter(a => a.artistId && a.artistName);
@@ -3790,20 +3950,102 @@
             _musicQueueIdx = idx;
             musicPlayCurrentQueueItem();
         }
+        // ===== PEMUTAR MUSIK: FULL (lagu penuh via YouTube) vs PREVIEW (iTunes 30 dtk) =====
+        let _musicFullMode = true;
+        (function _musicModeInit() {
+            try { _musicFullMode = localStorage.getItem('musicFullMode') !== '0'; } catch(e) {}
+        })();
+        let _musicFrameWin = null;     // contentWindow iframe YouTube musik
+        let _musicPollIv = null;       // polling getCurrentTime
+        let _musicYtFailTimer = null;  // fallback ke preview kalau YouTube gagal
+        let _musicYtGotSignal = false; // sudah dapat sinyal infoDelivery valid?
+        let _musicLastDur = 0;         // durasi lagu penuh terakhir (untuk seek)
+
+        function _musicYtURL(q) {
+            return `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(q)}&autoplay=1&playsinline=1&enablejsapi=1&rel=0&modestbranding=1&iv_load_policy=3`;
+        }
+        function _musicYtPostMsg(obj) {
+            if (!_musicFrameWin) return;
+            try { _musicFrameWin.postMessage(JSON.stringify(obj), '*'); } catch(e) {}
+        }
+        function _musicStartYt(q) {
+            const f = document.getElementById('musicYtFrame');
+            if (!f) return;
+            _musicFrameWin = null; _musicYtGotSignal = false;
+            f.src = _musicYtURL(q);
+            const readyIv = setInterval(() => {
+                if (f.contentWindow) { _musicFrameWin = f.contentWindow; clearInterval(readyIv); }
+            }, 200);
+            _musicStopPoll();
+            _musicPollIv = setInterval(() => {
+                _musicYtPostMsg({event:'listening', value:1});
+                _musicYtPostMsg({event:'command', func:'getCurrentTime', args:''});
+            }, 1200);
+            // Fallback: kalau 9 detik tidak ada sinyal apa pun → pakai preview 30 detik
+            if (_musicYtFailTimer) clearTimeout(_musicYtFailTimer);
+            _musicYtFailTimer = setTimeout(() => {
+                if (!_musicYtGotSignal) {
+                    showToast('Lagu penuh tidak tersedia — pakai preview 30 detik');
+                    _musicPlayPreview(_musicCurrentTrack);
+                }
+            }, 9000);
+        }
+        function _musicStopYt() {
+            if (_musicYtFailTimer) { clearTimeout(_musicYtFailTimer); _musicYtFailTimer = null; }
+            _musicStopPoll();
+            const f = document.getElementById('musicYtFrame');
+            if (f && f.src) {
+                try { _musicYtPostMsg({event:'command', func:'pauseVideo', args:''}); } catch(e) {}
+                f.src = '';
+            }
+            _musicFrameWin = null;
+        }
+        function _musicStopPoll() {
+            if (_musicPollIv) { clearInterval(_musicPollIv); _musicPollIv = null; }
+        }
+        function _musicStopAudio() {
+            if (_musicAudio) { try { _musicAudio.pause(); } catch(e) {} _musicAudio.src = ''; _musicAudio = null; }
+        }
+        function _musicPlayPreview(t) {
+            if (!t || !t.preview) return;
+            _musicStopAudio();
+            _musicAudio = new Audio(t.preview);
+            _musicAudio.volume = (document.getElementById('musicVolumeSlider')?.value || 100) / 100;
+            _musicAudio.play().catch(() => {});
+            _musicPlaying = true;
+            musicBindAudioEvents();
+        }
+
         function musicPlayCurrentQueueItem() {
             const t = _musicQueue[_musicQueueIdx];
             if (!t) return;
             _musicCurrentTrack = t;
-
-            if (_musicAudio) { _musicAudio.pause(); _musicAudio.src = ''; }
-            _musicAudio = new Audio(t.preview);
-            _musicAudio.volume = (document.getElementById('musicVolumeSlider')?.value || 100) / 100;
-            _musicAudio.play().catch(e => console.warn(e));
             _musicPlaying = true;
-
+            if (_musicFullMode && t.title) {
+                _musicStopAudio();
+                _musicStartYt(`${t.artist || ''} ${t.title} - official audio`);
+            } else {
+                _musicStopYt();
+                _musicPlayPreview(t);
+            }
             musicUpdateAllUI(t);
             musicAddToHistory(t);
-            musicBindAudioEvents();
+            _musicUpdateModeChip();
+        }
+
+        function musicToggleFullMode() {
+            _musicFullMode = !_musicFullMode;
+            try { localStorage.setItem('musicFullMode', _musicFullMode ? '1' : '0'); } catch(e) {}
+            _musicUpdateModeChip();
+            if (_musicCurrentTrack) {
+                showToast(_musicFullMode ? 'Mode: Lagu Penuh (YouTube)' : 'Mode: Preview 30 detik');
+                _musicStopYt(); _musicStopAudio();
+                musicPlayCurrentQueueItem();
+            }
+        }
+        function _musicUpdateModeChip() {
+            const chip = document.getElementById('musicModeChip');
+            if (chip) chip.innerText = _musicFullMode ? 'FULL' : '30s';
         }
 
         function musicBindAudioEvents() {
@@ -3845,6 +4087,21 @@
         }
 
         function musicTogglePlay() {
+            if (_musicFullMode && _musicFrameWin) {
+                // Mode lagu penuh (YouTube)
+                if (_musicPlaying) {
+                    _musicYtPostMsg({event:'command', func:'pauseVideo', args:''});
+                    _musicPlaying = false;
+                    document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-play';
+                    document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
+                } else {
+                    _musicYtPostMsg({event:'command', func:'playVideo', args:''});
+                    _musicPlaying = true;
+                    document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-pause';
+                    document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>';
+                }
+                return;
+            }
             if (!_musicAudio) return;
             if (_musicPlaying) {
                 _musicAudio.pause(); _musicPlaying = false;
@@ -3861,13 +4118,13 @@
         // biar suaranya nggak dobel/tumpuk. Lanjut otomatis begitu sumber lain berhenti. ----------
         let _musicDuckedByOther = false;
         function musicDuckForOtherAudio() {
-            if (_musicAudio && _musicPlaying) {
+            if (_musicPlaying && (_musicAudio || _musicFrameWin)) {
                 musicTogglePlay();
                 _musicDuckedByOther = true;
             }
         }
         function musicResumeFromDuck() {
-            if (_musicDuckedByOther && _musicAudio && !_musicPlaying) {
+            if (_musicDuckedByOther && (_musicAudio || _musicFrameWin) && !_musicPlaying) {
                 musicTogglePlay();
             }
             _musicDuckedByOther = false;
@@ -3908,14 +4165,114 @@
         }
 
         function musicSeek(e) {
-            if (!_musicAudio || !_musicAudio.duration) return;
             const bar = document.getElementById('musicFullProgressBar');
             const rect = bar.getBoundingClientRect();
             const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            if (_musicFullMode && _musicFrameWin && _musicLastDur > 0) {
+                _musicYtPostMsg({event:'command', func:'seekTo', args:[pct * _musicLastDur, true]});
+                document.getElementById('musicFullProgress').style.width = (pct * 100) + '%';
+                return;
+            }
+            if (!_musicAudio || !_musicAudio.duration) return;
             _musicAudio.currentTime = pct * _musicAudio.duration;
         }
         function musicSetVolume(v) {
+            if (_musicFullMode && _musicFrameWin) {
+                _musicYtPostMsg({event:'command', func:'setVolume', args:[parseInt(v, 10) || 0]});
+                return;
+            }
             if (_musicAudio) _musicAudio.volume = v / 100;
+        }
+
+        // ---------- HERO CAROUSEL (5 slide, auto-rotate tiap 4 detik) ----------
+        let _musicHeroIdx = 0;
+        let _musicHeroIv = null;
+        let _musicHeroTracks = [];
+        function musicRenderHeroCarousel() {
+            const track = document.getElementById('musicHeroTrack');
+            if (!track) return;
+            const reco = (_musicHomeQueues.reco || []).slice(0, 5);
+            if (reco.length >= 5) {
+                _musicHeroTracks = reco;
+                _musicHeroRender(reco);
+                return;
+            }
+            musicFetchTracksByArtists(musicPickRandomArtists(5), 1)
+                .then(raw => {
+                    const tracks = raw.map(musicNormalize).slice(0, 5);
+                    _musicHeroTracks = tracks;
+                    _musicHeroRender(tracks);
+                }).catch(() => {});
+        }
+        function _musicHeroRender(tracks) {
+            const track = document.getElementById('musicHeroTrack');
+            const dots = document.getElementById('musicHeroDots');
+            if (!track || !tracks.length) return;
+            _musicHeroIdx = 0;
+            track.innerHTML = tracks.map((t, i) => `
+                <div onclick="musicPlayHeroSlide(${i})" style="min-width:100%;height:170px;position:relative;border-radius:16px;overflow:hidden;cursor:pointer;background:#141414">
+                    <img src="${t.artwork}" onerror="musicImgFallback(this)" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0.25) 100%)"></div>
+                    <div style="position:absolute;left:16px;right:60px;bottom:14px">
+                        <div style="font-size:8px;font-weight:800;color:rgba(255,255,255,0.65);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${i === 0 ? 'Sedang Populer' : `Pilihan ${i + 1}`}</div>
+                        <div style="font-size:17px;font-weight:900;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div>
+                        <div style="font-size:11px;color:rgba(255,255,255,0.72);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.artist}</div>
+                    </div>
+                    <div style="position:absolute;right:14px;bottom:14px;width:42px;height:42px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.4)">
+                        <i class="fa-solid fa-play" style="color:#111;font-size:15px;margin-left:2px"></i>
+                    </div>
+                </div>`).join('');
+            dots.innerHTML = tracks.map((t, i) => `<div onclick="event.stopPropagation();musicHeroGo(${i})"
+                style="width:${i === 0 ? '16px' : '6px'};height:6px;border-radius:3px;background:${i === 0 ? '#fff' : '#3a3a3a'};cursor:pointer;transition:all 0.3s"></div>`).join('');
+            track.style.transform = 'translateX(0)';
+            _musicHeroBindSwipe(track);
+            musicHeroStartAuto();
+        }
+        function musicPlayHeroSlide(i) {
+            if (!_musicHeroTracks.length) return;
+            _musicQueue = _musicHeroTracks;
+            _musicQueueIdx = i;
+            musicPlayCurrentQueueItem();
+            musicOpenFullPlayer();
+        }
+        function musicHeroGo(i) {
+            const track = document.getElementById('musicHeroTrack');
+            const dots = document.getElementById('musicHeroDots');
+            if (!track || !_musicHeroTracks.length) return;
+            _musicHeroIdx = i;
+            track.style.transition = 'transform 0.45s cubic-bezier(0.25,1,0.5,1)';
+            track.style.transform = `translateX(-${i * 100}%)`;
+            [...(dots?.children || [])].forEach((d, j) => {
+                d.style.width = (j === i ? '16px' : '6px');
+                d.style.background = (j === i ? '#fff' : '#3a3a3a');
+            });
+            musicHeroStartAuto();
+        }
+        function musicHeroNext() {
+            if (!_musicHeroTracks.length) return;
+            musicHeroGo((_musicHeroIdx + 1) % _musicHeroTracks.length);
+        }
+        function musicHeroStartAuto() {
+            musicHeroStopAuto();
+            _musicHeroIv = setInterval(musicHeroNext, 4000);
+        }
+        function musicHeroStopAuto() {
+            if (_musicHeroIv) { clearInterval(_musicHeroIv); _musicHeroIv = null; }
+        }
+        function _musicHeroBindSwipe(track) {
+            let sx = 0, sy = 0;
+            track.addEventListener('touchstart', e => {
+                if (e.touches.length !== 1) return;
+                sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+            }, { passive: true });
+            track.addEventListener('touchend', e => {
+                const dx = e.changedTouches[0].clientX - sx;
+                const dy = e.changedTouches[0].clientY - sy;
+                if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+                    if (dx < 0) musicHeroNext();
+                    else musicHeroGo((_musicHeroIdx - 1 + _musicHeroTracks.length) % _musicHeroTracks.length);
+                }
+            }, { passive: true });
         }
 
         // ---------- LIKE / FAVORITE ----------
@@ -5065,10 +5422,10 @@
                 const q4 = encodeURIComponent(`${mediaTitle} ost`);
 
                 const [r1, r2, r3, r4] = await Promise.allSettled([
-                    fetch(`https://itunes.apple.com/search?term=${q1}&entity=song&limit=25`).then(r=>r.json()),
-                    fetch(`https://itunes.apple.com/search?term=${q2}&entity=song&limit=25`).then(r=>r.json()),
-                    fetch(`https://itunes.apple.com/search?term=${q3}&entity=song&limit=15`).then(r=>r.json()),
-                    fetch(`https://itunes.apple.com/search?term=${q4}&entity=song&limit=15`).then(r=>r.json()),
+                    fetch(`https://itunes.apple.com/search?term=${q1}&entity=song&country=ID&lang=id_id&limit=25`).then(r=>r.json()),
+                    fetch(`https://itunes.apple.com/search?term=${q2}&entity=song&country=ID&lang=id_id&limit=25`).then(r=>r.json()),
+                    fetch(`https://itunes.apple.com/search?term=${q3}&entity=song&country=ID&lang=id_id&limit=15`).then(r=>r.json()),
+                    fetch(`https://itunes.apple.com/search?term=${q4}&entity=song&country=ID&lang=id_id&limit=15`).then(r=>r.json()),
                 ]);
 
                 let allResults = [];
@@ -5191,19 +5548,10 @@
                     ? `https://vidvault.ru/tv/${window.currentMediaId}/${activeSeason || 1}/${activeEpisode || 1}`
                     : `https://vidvault.ru/movie/${window.currentMediaId}`;
                 window.open(downloadUrl, '_blank');
+                addToDownloadLib('vidvault', downloadUrl);
             } else {
                 showToast('Media tidak ditemukan.');
             }
-        }
-
-        function handleDownload2() {
-            if(window.currentMediaId && window.currentMediaType) {
-                const isTV = window.currentMediaType === 'tv';
-                const url = isTV
-                    ? `https://1embed.cc/download/tv/${window.currentMediaId}/${activeSeason || 1}/${activeEpisode || 1}`
-                    : `https://1embed.cc/download/movie/${window.currentMediaId}`;
-                window.open(url, '_blank');
-            } else { showToast('Media tidak ditemukan.'); }
         }
 
         function handleDownload3() {
@@ -5213,16 +5561,7 @@
                     ? `https://02moviedownloader.site/api/download/tv/${window.currentMediaId}/${activeSeason || 1}/${activeEpisode || 1}`
                     : `https://02moviedownloader.site/api/download/movie/${window.currentMediaId}`;
                 window.open(downloadUrl, '_blank');
-            } else { showToast('Media tidak ditemukan.'); }
-        }
-
-        function handleDownload4() {
-            if(window.currentMediaId && window.currentMediaType) {
-                const isTV = window.currentMediaType === 'tv';
-                const url = isTV
-                    ? `https://rivestream.ru/download?type=tv&id=${window.currentMediaId}`
-                    : `https://dl.peachify.top/movie/${window.currentMediaId}`;
-                window.open(url, '_blank');
+                addToDownloadLib('02moviedownloader', downloadUrl);
             } else { showToast('Media tidak ditemukan.'); }
         }
 
@@ -5233,16 +5572,7 @@
                     ? `https://rivestream.ru/download?type=tv&id=${window.currentMediaId}`
                     : `https://rivestream.ru/download?type=movie&id=${window.currentMediaId}`;
                 window.open(url, '_blank');
-            } else { showToast('Media tidak ditemukan.'); }
-        }
-
-        function handleDownload6() {
-            if(window.currentMediaId && window.currentMediaType) {
-                const isTV = window.currentMediaType === 'tv';
-                const url = isTV
-                    ? `https://cinesrc.st/download/tv/${window.currentMediaId}`
-                    : `https://cinesrc.st/download/movie/${window.currentMediaId}`;
-                window.open(url, '_blank');
+                addToDownloadLib('rivestream', url);
             } else { showToast('Media tidak ditemukan.'); }
         }
 
@@ -5251,7 +5581,9 @@
             const id = window.currentMediaId;
             const s = activeSeason || 1;
             if (!id) { showToast('Media tidak ditemukan.'); return; }
-            window.open(`https://vidvault.ru/tv/${id}/${s}/${epNum}`, '_blank');
+            const epUrl = `https://vidvault.ru/tv/${id}/${s}/${epNum}`;
+            window.open(epUrl, '_blank');
+            addToDownloadLib(`vidvault E${epNum}`, epUrl);
         }
 
         // ===== BACK BUTTON LOGIC (diperbaiki) =====
@@ -5263,7 +5595,7 @@
             modal.classList.remove('tv-mode');
             modal.style.display = 'none';
             const postContent = document.querySelector('#movieModal .ig-post-content');
-            if (postContent && document.getElementById('tvChannelSwitcher')) {
+            if (postContent) {
                 postContent.innerHTML = `
                 <div class="mb-1"><span class="ig-username" id="mModalTitle"></span><span id="mDesc" class="ig-caption"></span>
                 <div class="mt-1"><span id="mToggleBtn" class="toggle-btn hidden" onclick="handleToggleDesc()">more</span><p id="mTranslateBtn" onclick="handleTranslate()" style="display:none;margin-top:2px;font-size:11px;color:#fff;font-weight:700;cursor:pointer"></p></div></div>
@@ -5277,7 +5609,7 @@
                 <div id="seriesControl" class="hidden mt-4 p-4 bg-black rounded-2xl border border-zinc-900">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Episodes</h4>
-                        <select id="seasonSel" class="bg-zinc-900 text-white text-[10px] px-2 py-1 rounded border border-zinc-700 appearance-none" onchange="loadEpisodes()"></select>
+                        <select id="seasonSel" class="bg-zinc-900 text-white text-[10px] px-2 py-1 rounded border border-zinc-700 appearance-none" onchange="onSeasonChange()"></select>
                     </div>
                     <div id="episodeSearchWrap" style="margin-bottom:10px;display:none">
                         <div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:8px">
@@ -5297,9 +5629,8 @@
                 <div id="serverList" class="server-scroll-wrapper mt-4 px-4"></div>
                 <div class="dl-grid">
                     <button class="dl-link-btn" onclick="handleDownload()">Down1</button>
-                    <button class="dl-link-btn" onclick="handleDownload2()">Down2</button>
-                    <button class="dl-link-btn" onclick="handleDownload3()">Down3</button>
-                    <button class="dl-link-btn" onclick="handleDownload5()">Down4</button>
+                    <button class="dl-link-btn" onclick="handleDownload3()">Down2</button>
+                    <button class="dl-link-btn" onclick="handleDownload5()">Down3</button>
                 </div>
                 <div id="mSimilarSection" class="similar-section" style="display:none">
                     <span class="similar-label">Similar Movies</span>
@@ -5575,6 +5906,7 @@
 
         async function enterLandscape() {
             const overlay = document.getElementById('landscapeOverlay');
+            if (overlay.style.display === 'block') return; // sudah di landscape, jangan dobel
             const lsTitle = document.getElementById('lsTitle');
             const lsSub = document.getElementById('lsSubtitle');
             lsTitle.innerText = document.getElementById('mTitle').innerText;
@@ -5609,13 +5941,17 @@
             
             history.pushState({view: 'landscape'}, "");
 
-            // Cuma minta fullscreen biasa (didukung luas, aman kalau gagal juga tidak apa-apa).
-            // Rotasi ke landscape sepenuhnya diserahkan ke fisik HP + perilaku responsive browser
-            // yang normal — tanpa screen.orientation.lock() atau trik CSS lain yang gampang bermasalah
-            // di berbagai browser.
+            // Fullscreen dulu, baru kunci orientasi landscape (Chrome mensyaratkan fullscreen
+            // untuk screen.orientation.lock). Kalau lock gagal di browser tertentu (mis. iOS),
+            // fallback ke perilaku responsive biasa — tidak merusak apa pun.
             try {
                 if (document.documentElement.requestFullscreen) {
                     await document.documentElement.requestFullscreen();
+                }
+            } catch (e) {}
+            try {
+                if (screen.orientation && screen.orientation.lock) {
+                    await screen.orientation.lock('landscape');
                 }
             } catch (e) {}
         }
@@ -5623,7 +5959,7 @@
         function buildLsServerList() {
             const scroll = document.getElementById('lsServerScroll');
             let html = '';
-            for (let i = 1; i <= 4; i++) {
+            for (let i = 1; i <= TOTAL_SERVERS; i++) {
                 const active = (i === activeServerIdx) ? 'active-link' : '';
                 html += `<div class="ls-srv-btn ${active}" onclick="event.stopPropagation(); lsChangeServer(${i}, this)">Server ${i}</div>`;
             }
@@ -5688,6 +6024,231 @@
                 }
             } catch(e){}
         }
+
+        // --- Auto-landscape saat HP diputar, seperti aplikasi film pada umumnya ---
+        // Putar HP ke landscape (dengan modal film terbuka) → otomatis masuk mode landscape.
+        // Kembali ke portrait → otomatis keluar dari mode landscape.
+        // Hanya aktif untuk perangkat sentuh (phone/tablet), supaya desktop tidak terganggu.
+        let _orientDebounce = null;
+        function handleDeviceOrientation() {
+            const overlay = document.getElementById('landscapeOverlay');
+            const modal = document.getElementById('movieModal');
+            const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+            const isTouch = window.matchMedia('(pointer: coarse)').matches;
+            const modalOpen = modal && modal.style.display === 'block';
+            const inLandscape = overlay && overlay.style.display === 'block';
+            if (isTouch && isLandscape && modalOpen && !inLandscape) {
+                enterLandscape();
+            } else if (isTouch && !isLandscape && inLandscape) {
+                closeLandscapeSilently();
+            }
+        }
+        window.addEventListener('orientationchange', () => {
+            clearTimeout(_orientDebounce);
+            _orientDebounce = setTimeout(handleDeviceOrientation, 250);
+        });
+        window.addEventListener('resize', () => {
+            clearTimeout(_orientDebounce);
+            _orientDebounce = setTimeout(handleDeviceOrientation, 250);
+        });
+
+        // ===== VOLUME NATIVE DI LANDSCAPE =====
+        let _lsVolume = 100, _lsMuted = false, _lsVolWarned = false;
+        (function _lsVolInit() {
+            try {
+                const v = parseInt(localStorage.getItem('lsVolume'), 10);
+                if (!isNaN(v)) _lsVolume = Math.min(100, Math.max(0, v));
+            } catch(e) {}
+        })();
+        function _lsVolTarget() {
+            // Trailer = iframe vid-N (YouTube/Dailymotion); streaming = player-frame
+            return activeServerIdx === 99
+                ? document.getElementById(`vid-${currentIdx}`)
+                : document.getElementById('player-frame');
+        }
+        function _lsPostVolume(v) {
+            const f = _lsVolTarget();
+            if (!f || !f.contentWindow) return;
+            try {
+                const src = f.src || '';
+                if (activeServerIdx === 99) {
+                    if (src.includes('youtube') || src.includes('youtu.be')) {
+                        f.contentWindow.postMessage(JSON.stringify({event:'command', func:'setVolume', args:[v]}), '*');
+                        f.contentWindow.postMessage(JSON.stringify({event:'command', func: v === 0 ? 'mute' : 'unMute', args: []}), '*');
+                    } else if (src.includes('dailymotion')) {
+                        f.contentWindow.postMessage(JSON.stringify({command:'volume', params:[v / 100]}), '*');
+                    }
+                } else {
+                    // Best-effort untuk sebagian player streaming yang paham postMessage
+                    try { f.contentWindow.postMessage(JSON.stringify({type:'setVolume', volume: v / 100}), '*'); } catch(e) {}
+                    try { f.contentWindow.postMessage(JSON.stringify({event:'command', func:'setVolume', args:[v]}), '*'); } catch(e) {}
+                    if (!_lsVolWarned) {
+                        _lsVolWarned = true;
+                        showToast('Volume diatur dari player (server streaming)');
+                    }
+                }
+            } catch(e) {}
+        }
+        function _lsVolUI(v) {
+            const icon = document.getElementById('lsVolIcon');
+            if (icon) icon.className = `fa-solid ${v === 0 ? 'fa-volume-xmark' : v < 50 ? 'fa-volume-low' : 'fa-volume-high'} ls-btn ls-btn-sm`;
+            const s = document.getElementById('lsVolSlider');
+            if (s) s.value = v;
+        }
+        function lsSetVolume(v) {
+            _lsVolume = Math.min(100, Math.max(0, parseInt(v, 10) || 0));
+            _lsMuted = _lsVolume === 0;
+            try { localStorage.setItem('lsVolume', String(_lsVolume)); } catch(e) {}
+            _lsVolUI(_lsVolume);
+            _lsPostVolume(_lsVolume);
+        }
+        function lsToggleMute() {
+            _lsMuted = !_lsMuted;
+            lsSetVolume(_lsMuted ? 0 : (_lsVolume || 100));
+        }
+        // Inisialisasi UI volume saat masuk landscape
+        (function _lsVolInitUI() {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => {
+                    if (document.getElementById('lsVolSlider')) { _lsVolUI(_lsVolume); _lsPostVolume(_lsVolume); }
+                }, 300);
+            });
+        })();
+
+        // ===== GESTUR LANDSCAPE: swipe keluar + double-tap play/pause =====
+        let _lsTapTimer = null, _lsTapCount = 0;
+        function lsHandleTap() {
+            const panel = document.getElementById('lsServerPanel');
+            if (panel && panel.classList.contains('open')) { toggleLsUI(); return; }
+            if (document.getElementById('lsLockLayer').style.display === 'flex') return;
+            _lsTapCount++;
+            if (_lsTapCount === 1) {
+                _lsTapTimer = setTimeout(() => {
+                    _lsTapCount = 0;
+                    toggleLsUI(); // single tap = toggle kontrol
+                }, 280);
+            } else {
+                _lsTapCount = 0;
+                clearTimeout(_lsTapTimer);
+                showLsUI(); // double tap = play/pause (hanya trailer; streaming diabaikan)
+                lsPlayPause();
+            }
+        }
+        (function _initLsSwipe() {
+            const overlay = document.getElementById('landscapeOverlay');
+            if (!overlay) return;
+            let sx = 0, sy = 0;
+            overlay.addEventListener('touchstart', e => {
+                if (e.touches.length !== 1) return;
+                if (e.target.closest('#lsServerPanel') || e.target.closest('#lsLockLayer')) return;
+                sx = e.touches[0].clientX;
+                sy = e.touches[0].clientY;
+            }, { passive: true });
+            overlay.addEventListener('touchend', e => {
+                if (!sx && !sy) return;
+                const dx = e.changedTouches[0].clientX - sx;
+                const dy = e.changedTouches[0].clientY - sy;
+                sx = 0; sy = 0;
+                if (Math.abs(dy) >= 60 && Math.abs(dy) > Math.abs(dx) * 1.2) {
+                    closeLandscapeSilently(); // swipe atas/bawah = keluar landscape
+                }
+            }, { passive: true });
+        })();
+
+        // ===== LANJUT TONTON (RESUME) =====
+        const RESUME_KEY = 'resumeData';
+        let _lastResumeSave = 0;
+        let _resumeTrailerTime = 0;   // posisi trailer (detik) untuk movie
+        let _pendingResumeEp = null;  // episode yang harus disorot untuk series
+        function getResumeData() {
+            try { return JSON.parse(localStorage.getItem(RESUME_KEY) || '{}'); } catch(e) { return {}; }
+        }
+        function saveResume(mediaId, opts) {
+            if (!mediaId) return;
+            try {
+                const map = getResumeData();
+                const cur = map[mediaId] || {};
+                if (opts.s !== undefined) cur.s = opts.s;
+                if (opts.e !== undefined) cur.e = opts.e;
+                if (typeof opts.t === 'number') cur.t = opts.t;
+                if (window.currentMediaType) cur.type = window.currentMediaType;
+                cur.ts = Date.now();
+                map[mediaId] = cur;
+                const keys = Object.keys(map);
+                if (keys.length > 200) delete map[keys[0]];
+                localStorage.setItem(RESUME_KEY, JSON.stringify(map));
+            } catch(e) {}
+        }
+        function fmtTime(sec) {
+            sec = Math.floor(sec || 0);
+            const m = Math.floor(sec / 60), s = sec % 60;
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+        let _resumeSeekIv = null;
+        function _resumeTrailerSeek(sec) {
+            if (!sec || sec < 15) return;
+            if (_resumeSeekIv) { clearInterval(_resumeSeekIv); _resumeSeekIv = null; }
+            let tries = 0;
+            _resumeSeekIv = setInterval(() => {
+                tries++;
+                const f = document.getElementById('vid-0');
+                if (f && f.contentWindow) {
+                    try { f.contentWindow.postMessage(JSON.stringify({event:'command', func:'seekTo', args:[sec, true]}), '*'); } catch(e) {}
+                }
+                if (tries >= 6) {
+                    clearInterval(_resumeSeekIv);
+                    _resumeSeekIv = null;
+                    _resumeTrailerTime = 0;
+                }
+            }, 1500);
+            showToast(`Lanjut trailer dari ${fmtTime(sec)}`);
+        }
+        function _applyResumeEpisode() {
+            if (!_pendingResumeEp || window.currentMediaType !== 'tv') { _pendingResumeEp = null; return; }
+            const ep = _pendingResumeEp;
+            _pendingResumeEp = null;
+            activeEpisode = ep;
+            document.querySelectorAll('.ep-card').forEach(b => {
+                b.classList.toggle('active-ep', parseInt(b.getAttribute('data-ep'), 10) === ep);
+            });
+            showToast(`Lanjut dari E${ep}`);
+        }
+
+        // ===== BINGE MODE: auto lanjut episode saat semua server gagal =====
+        // (modifikasi perilaku _tryNextServerOnFail — lihat fungsi aslinya)
+
+        // ===== TAMPILAN: LIGHT MODE & WARNA AKSEN =====
+        function applyAccent(color) {
+            try { document.documentElement.style.setProperty('--accent', color); } catch(e) {}
+            document.querySelectorAll('.accent-swatch').forEach(s => {
+                const sc = (s.getAttribute('data-color') || '').toLowerCase();
+                s.classList.toggle('active', sc === String(color).toLowerCase());
+            });
+            const p = document.getElementById('accentPicker');
+            if (p) p.value = color;
+        }
+        function setAccent(color, el) {
+            applyAccent(color);
+            try { localStorage.setItem('accentColor', color); } catch(e) {}
+        }
+        function applyThemePrefs() {
+            let accent = '#1a73e8';
+            try { accent = localStorage.getItem('accentColor') || accent; } catch(e) {}
+            applyAccent(accent);
+            let light = '0';
+            try { light = localStorage.getItem('lightMode') || '0'; } catch(e) {}
+            document.body.classList.toggle('light-mode', light === '1');
+            const badge = document.getElementById('lightModeBadge');
+            if (badge) badge.innerText = light === '1' ? 'Terang' : 'Gelap';
+        }
+        function toggleLightMode() {
+            const on = !document.body.classList.contains('light-mode');
+            document.body.classList.toggle('light-mode', on);
+            try { localStorage.setItem('lightMode', on ? '1' : '0'); } catch(e) {}
+            const badge = document.getElementById('lightModeBadge');
+            if (badge) badge.innerText = on ? 'Terang' : 'Gelap';
+        }
+        applyThemePrefs();
 
         function handleLsBack() { window.history.back(); }
 
@@ -6518,6 +7079,36 @@
             try {
                 const d = JSON.parse(e.data);
                 if (d.event !== 'infoDelivery' || !d.info) return;
+                // PEMUTAR MUSIK FULL (YouTube) — update progress mini & full player
+                if (window._musicFrameWin && e.source === window._musicFrameWin) {
+                    const cur = typeof d.info.currentTime === 'number' ? d.info.currentTime : 0;
+                    const dur = typeof d.info.duration === 'number' ? d.info.duration : 0;
+                    if (dur > 0) _musicYtGotSignal = true;
+                    _musicLastDur = dur;
+                    const pct = dur > 0 ? (cur / dur * 100) : 0;
+                    const fmtT = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+                    const mp = document.getElementById('musicMiniProgress'); if (mp) mp.style.width = pct + '%';
+                    const fp = document.getElementById('musicFullProgress'); if (fp) fp.style.width = pct + '%';
+                    const ft = document.getElementById('musicFullThumb');   if (ft) ft.style.left = pct + '%';
+                    const cT = document.getElementById('musicFullCurTime'); if (cT) cT.textContent = fmtT(cur);
+                    const dT = document.getElementById('musicFullDurTime'); if (dT) dT.textContent = fmtT(dur);
+                    if (typeof d.info.playerState === 'number') {
+                        if (d.info.playerState === 1 && !_musicPlaying) {
+                            _musicPlaying = true;
+                            document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-pause';
+                            document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>';
+                        } else if (d.info.playerState === 2 && _musicPlaying) {
+                            _musicPlaying = false;
+                            document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-play';
+                            document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
+                        } else if (d.info.playerState === 0 && _musicPlaying) {
+                            // Lagu selesai — lanjut otomatis ke lagu berikutnya
+                            _musicPlaying = false;
+                            musicNext();
+                        }
+                    }
+                    return;
+                }
                 // playerState: 1=playing, 2=paused, 0=ended — dipakai untuk auto-pause/lanjutkan musik
                 if (typeof d.info.playerState === 'number') {
                     if (d.info.playerState === 1) musicDuckForOtherAudio();
@@ -6544,13 +7135,21 @@
                 if (lTime) lTime.textContent = fmt(cur);
                 if (lDur) lDur.textContent = fmt(dur);
                 _lsLastDuration = dur;
+                // Simpan posisi trailer (YouTube) untuk fitur lanjut tonton — tiap ~6 detik
+                if (activeServerIdx === 99 && window.currentMediaId && typeof cur === 'number') {
+                    const now = Date.now();
+                    if (!_lastResumeSave || now - _lastResumeSave > 6000) {
+                        _lastResumeSave = now;
+                        saveResume(window.currentMediaId, { t: cur });
+                    }
+                }
             } catch(e2) {}
         });
         // Stop video/streaming saat tab disembunyikan — tapi BUKAN music iframe
         function stopNonMusicIframes() {
             document.querySelectorAll('iframe').forEach(f => {
-                // Jangan hentikan music iframe
-                if (f.id === 'musicIframe') return;
+                // Jangan hentikan music iframe (termasuk pemutar lagu penuh YouTube)
+                if (f.id === 'musicIframe' || f.id === 'musicYtFrame') return;
                 const src = f.src || '';
                 if (src.includes('youtube.com') || src.includes('youtu.be')) {
                     try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
@@ -6924,6 +7523,7 @@
                 ? `https://vidvault.ru/tv/${_rdsCurrentId}/1/1`
                 : `https://vidvault.ru/movie/${_rdsCurrentId}`;
             window.open(url, '_blank');
+            addToDownloadLib('vidvault (reels)', url);
         }
 
         function openReelDownload2(btn) {
@@ -6934,6 +7534,7 @@
                 ? `https://02moviedownloader.site/api/download/tv/${_rdsCurrentId}/1/1`
                 : `https://02moviedownloader.site/api/download/movie/${_rdsCurrentId}`;
             window.open(url, '_blank');
+            addToDownloadLib('02moviedownloader (reels)', url);
         }
 
         // Setup swipe-left (open detail) + double-tap (like) + gestures on reel slides
@@ -7251,6 +7852,8 @@
                             </div>
                             <div class="flex gap-1 mt-1 flex-wrap">${genres}</div>
                         </div>
+                        <i class="fa-solid fa-bell" onclick="event.stopPropagation(); toggleReleaseReminder(${m.id}, '${mediaType}', ${JSON.stringify(title)}, '${releaseDate}', '${m.poster_path || ''}', this)"
+                            style="font-size:13px;color:${isReminded(m.id) ? '#e50914' : '#3a3a3a'};flex-shrink:0;cursor:pointer;padding:8px" title="Ingatkan saya saat rilis"></i>
                         <i class="fa-solid fa-chevron-right" style="color:#2a2a2a;font-size:11px;flex-shrink:0"></i>`;
                     list.appendChild(item);
                 });
@@ -7562,6 +8165,10 @@
             if(loading && isNew) { loading = false; } // reset flag agar request baru bisa jalan
             if(loading && !isNew) return;
             loading = true;
+            // Baris "Lanjut Tonton" hanya untuk muatan awal beranda (bukan hasil pencarian)
+            if (isNew && !searchQuery && !currentCastId && !currentLibMode) {
+                renderContinueWatching();
+            }
             const grid = document.getElementById('searchOverlay').style.display === 'block' ? document.getElementById('searchGrid') : document.getElementById('feedGrid');
             if(isNew) { page = 1; grid.innerHTML = ''; }
             let url;
@@ -8025,6 +8632,11 @@
             const actorModal = document.getElementById('actorModal');
             if (actorModal.style.display === 'block') actorModal.style.display = 'none';
             window.currentMediaId = id; window.currentMediaType = type;
+            if (_pipWin) { try { _pipWin.close(); } catch(e) {} } // tutup PiP saat pindah judul
+            // State lanjut tonton — diset di awal supaya trailer render bisa langsung memakainya
+            _pendingResumeEp = null;
+            const _rdInit = getResumeData()[id] || {};
+            _resumeTrailerTime = (typeof _rdInit.t === 'number' && _rdInit.t > 15) ? _rdInit.t : 0;
             
             activeServerIdx = 1;
             activeEpisode = 1;
@@ -8073,7 +8685,8 @@
                 fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${API_KEY}`),
                 fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}/external_ids?api_key=${API_KEY}`)
             ]);
-            currentImdbId = dExt.imdb_id || ""; 
+            currentImdbId = dExt.imdb_id || "";
+            window._currentMediaTitle = dEn.title || dEn.name || dId.title || dId.name || ''; 
             originalIndoDesc = dId.overview || "";
             globalEnDesc = dEn.overview || "";
             // Default: tampilkan synopsis bahasa Inggris
@@ -8210,6 +8823,8 @@
                 const so = document.getElementById('swipeOverlay');
                 so.style.display = vidsToDisplay.length > 1 ? 'block' : 'none';
                 so.style.pointerEvents = 'auto'; // aktifkan kembali untuk swipe trailer
+                // Fitur lanjut tonton: lompat ke posisi trailer yang tersimpan
+                _resumeTrailerSeek(_resumeTrailerTime);
             } else { 
                 await handleTrailerError();
             }
@@ -8335,12 +8950,27 @@
             // tanggal dihapus dari modal (sudah ada di info grid)
             
             let serverButtonsHTML = '';
-            for(let i=1; i<=4; i++) {
+            for(let i=1; i<=TOTAL_SERVERS; i++) {
                 serverButtonsHTML += `<button class="server-btn" onclick="changeServer(${i}, this)">Server ${i}</button>`;
             }
             document.getElementById('serverList').innerHTML = serverButtonsHTML;
 
-            if(type === 'tv') { document.getElementById('seriesControl').classList.remove('hidden'); document.getElementById('seasonSel').innerHTML = (dId.seasons||[]).filter(s=>s.season_number>0).map(s=>`<option value="${s.season_number}">Season ${s.season_number}</option>`).join(''); loadEpisodes(); } else { document.getElementById('seriesControl').classList.add('hidden'); }
+            if(type === 'tv') {
+                document.getElementById('seriesControl').classList.remove('hidden');
+                document.getElementById('seasonSel').innerHTML = (dId.seasons||[]).filter(s=>s.season_number>0).map(s=>`<option value="${s.season_number}">Season ${s.season_number}</option>`).join('');
+                // Fitur lanjut tonton: pulihkan season & episode terakhir
+                const rdTv = getResumeData()[id] || {};
+                _pendingResumeEp = null;
+                if (rdTv.s) {
+                    const sel = document.getElementById('seasonSel');
+                    const exists = [...(sel?.options || [])].some(o => parseInt(o.value, 10) === parseInt(rdTv.s, 10));
+                    if (exists) { sel.value = rdTv.s; _pendingResumeEp = rdTv.e || null; }
+                }
+                loadEpisodes();
+            } else {
+                document.getElementById('seriesControl').classList.add('hidden');
+                // Posisi trailer movie sudah disiapkan di awal openModal (_resumeTrailerTime)
+            }
             updateLibButtons(id);
 
             // Rating badges (bintang berwarna, angka putih)
@@ -8419,7 +9049,7 @@
             document.body.style.overflow = 'auto';
             // Restore ig-post-content ke struktur asli jika sebelumnya TV mode
             const postContent = document.querySelector('#movieModal .ig-post-content');
-            if (postContent && document.getElementById('tvChannelSwitcher')) {
+            if (postContent) {
                 postContent.innerHTML = `
                 <div class="mb-1">
                     <span class="ig-username" id="mModalTitle"></span>
@@ -8436,7 +9066,7 @@
                 <div id="seriesControl" class="hidden mt-4 p-4 bg-black rounded-2xl border border-zinc-900">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Episodes</h4>
-                        <select id="seasonSel" class="bg-zinc-900 text-white text-[10px] px-2 py-1 rounded border border-zinc-700 appearance-none" onchange="loadEpisodes()"></select>
+                        <select id="seasonSel" class="bg-zinc-900 text-white text-[10px] px-2 py-1 rounded border border-zinc-700 appearance-none" onchange="onSeasonChange()"></select>
                     </div>
                     <div id="episodeSearchWrap" style="margin-bottom:10px;display:none">
                         <div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:8px">
@@ -8456,9 +9086,8 @@
                 <div id="serverList" class="server-scroll-wrapper mt-4 px-4"></div>
                 <div class="dl-grid">
                     <button class="dl-link-btn" onclick="handleDownload()">Down1</button>
-                    <button class="dl-link-btn" onclick="handleDownload2()">Down2</button>
-                    <button class="dl-link-btn" onclick="handleDownload3()">Down3</button>
-                    <button class="dl-link-btn" onclick="handleDownload5()">Down4</button>
+                    <button class="dl-link-btn" onclick="handleDownload3()">Down2</button>
+                    <button class="dl-link-btn" onclick="handleDownload5()">Down3</button>
                 </div>
                 <div id="mSimilarSection" class="similar-section" style="display:none">
                     <span class="similar-label">Similar Movies</span>
@@ -8580,10 +9209,29 @@
         }
 
         // Kalau server gagal dimuat (timeout/error), otomatis coba server berikutnya.
-        // Berhenti kalau sudah mencoba semua 18 server supaya tidak muter selamanya.
+        // Berhenti kalau sudah mencoba semua server yang tersedia supaya tidak muter selamanya.
         function _tryNextServerOnFail() {
             if (_autoAdvanceCount >= TOTAL_SERVERS - 1) {
                 _autoAdvanceCount = 0;
+                // BINGE MODE: untuk series, kalau semua server gagal → lanjut otomatis
+                // ke episode berikutnya (server dari episode sebelumnya sudah mati semua).
+                if (window.currentMediaType === 'tv' && _allEpisodes.length > 0) {
+                    const nextEp = activeEpisode + 1;
+                    if (_allEpisodes.some(ep => ep.episode_number === nextEp)) {
+                        activeEpisode = nextEp;
+                        document.querySelectorAll('.ep-card').forEach(b => {
+                            b.classList.toggle('active-ep', parseInt(b.getAttribute('data-ep'), 10) === nextEp);
+                        });
+                        activeServerIdx = 1;
+                        document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active-link'));
+                        const allBtns = document.querySelectorAll('.server-btn');
+                        if (allBtns[0]) allBtns[0].classList.add('active-link');
+                        saveResume(window.currentMediaId, { s: activeSeason, e: nextEp });
+                        showToast(`Server gagal — lanjut ke E${nextEp}`);
+                        playVid(buildEmbedUrl('tv', window.currentMediaId, activeSeason, nextEp, 1));
+                        return;
+                    }
+                }
                 showToast('Semua server gagal dimuat, coba pilih manual.');
                 return;
             }
@@ -8604,6 +9252,10 @@
             activeServerIdx = srvIdx;
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active-link'));
             if(srvIdx !== 99) el.classList.add('active-link');
+            // Simpan progres episode untuk fitur lanjut tonton (kecuali mode trailer)
+            if (window.currentMediaType === 'tv' && srvIdx !== 99) {
+                saveResume(window.currentMediaId, { s: activeSeason, e: activeEpisode });
+            }
             const url = buildEmbedUrl(window.currentMediaType, window.currentMediaId, activeSeason, activeEpisode, activeServerIdx);
             playVid(url);
         }
@@ -8612,6 +9264,10 @@
             activeEpisode = epNum;
             document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active-pill'));
             el.classList.add('active-pill');
+            // Simpan progres episode untuk fitur lanjut tonton
+            if (window.currentMediaType === 'tv') {
+                saveResume(window.currentMediaId, { s: activeSeason, e: epNum });
+            }
             const url = buildEmbedUrl(window.currentMediaType, window.currentMediaId, activeSeason, activeEpisode, activeServerIdx);
             playVid(url);
         }
@@ -8621,10 +9277,8 @@
             
             let url = "";
             switch(srv) {
-                case 1:  url = `https://cinextream.net/api/embed/${type}/${id}${seriesSuffix}`; break;
-                case 2:  url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
-                case 3:  url = `https://player.cinezo.live/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoplay=true`; break;
-                case 4:  url = `https://vidsrc.wtf/1/${type}/${id}${seriesSuffix}`; break;
+                case 1:  url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
+                case 2:  url = `https://player.cinezo.live/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoplay=true`; break;
                 case 5:  url = `https://111movies.com/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
                 case 6:  url = `https://111movies.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`; break;
                 case 7:  url = `https://player.videasy.net/${type}/${id}${type==='tv'?`/${s}/${e}`:''}?autoplay=1${type==='tv'?'&autoNext=true':''}`; break;
@@ -8668,7 +9322,7 @@
                 case 45: url = `https://production-player.vidrift.pages.dev/embed/${type}/${id}${seriesSuffix}`; break;
                 case 46: url = `https://primesrc.me/embed/${type}/${id}${seriesSuffix}`; break;
                 case 47: url = `https://fmovies4u.com/embed/${type}/${id}${seriesSuffix}`; break;
-                case 99: url = `https://www.dailymotion.com/embed/video/${currentDailymotionId}`; break;     default: url = `https://cinextream.net/api/embed/${type}/${id}${seriesSuffix}`;
+                case 99: url = `https://www.dailymotion.com/embed/video/${currentDailymotionId}`; break;     default: url = `https://cinesrc.st/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`;
             }
             return url.replace("http://", "https://");
         }
@@ -8676,6 +9330,12 @@
         let _allEpisodes = [];
         let _epPage = 0;
         const EP_PER_PAGE = 15;
+
+        function onSeasonChange() {
+            // Ganti musim oleh user — simpan progres agar bisa dilanjutkan
+            saveResume(window.currentMediaId, { s: document.getElementById('seasonSel').value, e: 1 });
+            loadEpisodes();
+        }
 
         async function loadEpisodes() { 
             activeSeason = document.getElementById('seasonSel').value;
@@ -8685,6 +9345,8 @@
             let data = await fetchWithCache(`https://api.themoviedb.org/3/tv/${window.currentMediaId}/season/${activeSeason}?api_key=${API_KEY}&language=en-US`);
             _allEpisodes = data.episodes || [];
             renderEpisodePage();
+            // Sorot episode terakhir yang ditonton (fitur lanjut tonton)
+            _applyResumeEpisode();
         }
 
         function renderEpisodePage() {
@@ -8722,7 +9384,7 @@
 
                 const actionRowHTML = '';
 
-                return `<div class="ep-card" style="flex-direction:column;padding-bottom:0" onclick="changeEpisode(${epNum}, this)">
+                return `<div class="ep-card" data-ep="${epNum}" style="flex-direction:column;padding-bottom:0" onclick="changeEpisode(${epNum}, this)">
                     <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0 4px">
                         <div class="ep-thumb-wrap">
                             ${thumbHTML}
@@ -9970,6 +10632,359 @@
                 curY = 0; startY = 0;
             }, { passive: true });
         })();
+
+        // ============================================================
+        // FITUR BARU: kecepatan putar, PiP, double-tap seek, lanjut
+        // tonton, pustaka unduhan, notifikasi rilis, pencarian suara,
+        // cast helper, PWA manifest + service worker
+        // ============================================================
+
+        // ---------- KECEPATAN PUTAR (0.5x - 2x) ----------
+        const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2];
+        let _playbackRate = 1;
+        (function _speedInit() {
+            try { const r = parseFloat(localStorage.getItem('playbackRate')); if (PLAYBACK_RATES.includes(r)) _playbackRate = r; } catch(e) {}
+        })();
+        function _speedApply() {
+            const v = document.getElementById(`vid-${currentIdx}`);
+            if (v) { try { v.contentWindow.postMessage(JSON.stringify({event:'command', func:'setPlaybackRate', args:[_playbackRate]}), '*'); } catch(e) {} }
+            if (_musicFrameWin) { _musicYtPostMsg({event:'command', func:'setPlaybackRate', args:[_playbackRate]}); }
+            if (_musicAudio) { try { _musicAudio.playbackRate = _playbackRate; } catch(e) {} }
+            const l1 = document.getElementById('speedLabel'); if (l1) l1.innerText = _playbackRate + '×';
+            const l2 = document.getElementById('lsSpeedLabel'); if (l2) l2.innerText = _playbackRate + '×';
+        }
+        function cyclePlaybackSpeed() {
+            const i = PLAYBACK_RATES.indexOf(_playbackRate);
+            _playbackRate = PLAYBACK_RATES[(i + 1) % PLAYBACK_RATES.length];
+            try { localStorage.setItem('playbackRate', String(_playbackRate)); } catch(e) {}
+            const isStream = activeServerIdx !== 99 && !_musicFrameWin && !_musicAudio;
+            showToast(isStream ? 'Kecepatan diatur dari player (streaming)' : `Kecepatan ${_playbackRate}×`);
+            _speedApply();
+        }
+
+        // ---------- PICTURE-IN-PICTURE (trailer) ----------
+        let _pipWin = null, _pipIframe = null;
+        async function pipVideo() {
+            const f = document.getElementById(`vid-${currentIdx}`) || document.getElementById('player-frame');
+            if (!f) { showToast('Tidak ada video untuk PiP.'); return; }
+            if (_pipWin) { try { _pipWin.close(); } catch(e) {} return; }
+            if (!window.documentPictureInPicture) { showToast('PiP didukung di Chrome/Edge (desktop).'); return; }
+            try {
+                const win = await window.documentPictureInPicture.requestWindow({ width: 420, height: 260 });
+                _pipWin = win; _pipIframe = f;
+                win.document.body.style.cssText = 'margin:0;background:#000;overflow:hidden';
+                f._pipPrevStyle = { width: f.style.width, height: f.style.height, position: f.style.position, top: f.style.top, left: f.style.left };
+                f.style.cssText = 'width:100%;height:100%;position:absolute;top:0;left:0;border:0';
+                win.document.body.appendChild(f);
+                win.addEventListener('pagehide', () => _pipRestore());
+                win.addEventListener('close', () => _pipRestore());
+                showToast('Video di Picture-in-Picture');
+            } catch(e) { showToast('PiP gagal dibuka.'); }
+        }
+        function _pipRestore() {
+            if (!_pipIframe) return;
+            const f = _pipIframe;
+            const track = document.getElementById('carouselTrack');
+            const slide = track ? (track.children[currentIdx] || track.firstElementChild) : null;
+            if (slide) slide.appendChild(f);
+            const ps = f._pipPrevStyle || {};
+            f.style.width = ps.width || ''; f.style.height = ps.height || '';
+            f.style.position = ps.position || ''; f.style.top = ps.top || ''; f.style.left = ps.left || '';
+            delete f._pipPrevStyle;
+            _pipIframe = null; _pipWin = null;
+        }
+
+        // ---------- DOUBLE-TAP ±10 DETIK (area video modal) ----------
+        function _initDoubleTapSeek() {
+            const area = document.getElementById('mainVideoArea');
+            if (!area || area._dtInit) return;
+            area._dtInit = true;
+            let lastTap = 0;
+            area.addEventListener('touchend', e => {
+                const now = Date.now();
+                if (now - lastTap < 300) {
+                    lastTap = 0;
+                    const rect = area.getBoundingClientRect();
+                    const x = e.changedTouches[0].clientX;
+                    const dir = (x - rect.left) < rect.width / 2 ? -1 : 1;
+                    if (activeServerIdx === 99) {
+                        modalVideoCmd(dir < 0 ? 'back10' : 'fwd10');
+                        showToast(dir < 0 ? '−10 detik' : '+10 detik');
+                    } else {
+                        showToast('Seek diatur dari player (streaming)');
+                    }
+                } else {
+                    lastTap = now;
+                }
+            }, { passive: true });
+        }
+
+        // ---------- LANJUT TONTON DI BERANDA ----------
+        async function renderContinueWatching() {
+            const wrap = document.getElementById('continueWatchingWrap');
+            const scroll = document.getElementById('continueWatchingScroll');
+            if (!wrap || !scroll) return;
+            const rd = getResumeData();
+            const entries = Object.entries(rd)
+                .filter(([, v]) => v && v.ts)
+                .sort((a, b) => b[1].ts - a[1].ts)
+                .slice(0, 10);
+            if (!entries.length) { wrap.style.display = 'none'; return; }
+            const cards = await Promise.all(entries.map(async ([id, v]) => {
+                const type = v.type || 'movie';
+                const key = `cw_${type}_${id}`;
+                let d = null;
+                try { d = JSON.parse(sessionStorage.getItem(key)); } catch(e) {}
+                if (!d) {
+                    try {
+                        const r = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=id-ID`);
+                        d = { title: r.title || r.name || 'Judul', poster: r.poster_path || '' };
+                        try { sessionStorage.setItem(key, JSON.stringify(d)); } catch(e) {}
+                    } catch(e) { return null; }
+                }
+                const label = type === 'tv'
+                    ? `S${v.s || 1} · E${v.e || 1}`
+                    : (typeof v.t === 'number' && v.t > 0 ? fmtTime(v.t) : 'Film');
+                const pct = type === 'tv' ? 12 : Math.min(100, ((v.t || 0) / 7200) * 100);
+                return { id, type, d, label, pct };
+            }));
+            const valid = cards.filter(Boolean);
+            if (!valid.length) { wrap.style.display = 'none'; return; }
+            wrap.style.display = 'block';
+            scroll.innerHTML = valid.map(c => `
+                <div onclick="openModal(${c.id}, '${c.type}')" style="flex-shrink:0;width:112px;cursor:pointer">
+                    <div style="position:relative;width:112px;height:158px;border-radius:10px;overflow:hidden;background:#161616">
+                        ${c.d.poster ? `<img src="https://image.tmdb.org/t/p/w185${c.d.poster}" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#333"><i class="fa-solid fa-film" style="font-size:24px"></i></div>`}
+                        <div style="position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,0.15)"><div style="height:100%;width:${c.pct}%;background:var(--accent,#1a73e8)"></div></div>
+                    </div>
+                    <div style="margin-top:6px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.d.title}</div>
+                    <div style="font-size:9px;color:#888;margin-top:2px">${c.label}</div>
+                </div>`).join('');
+        }
+
+        // ---------- PUSTAKA UNDUHAN ----------
+        const DL_KEY = 'downloadLib';
+        function getDownloadLib() { try { return JSON.parse(localStorage.getItem(DL_KEY) || '[]'); } catch(e) { return []; } }
+        function addToDownloadLib(provider, url) {
+            if (!url) return;
+            const lib = getDownloadLib();
+            const last = lib[0];
+            if (last && last.mediaId === window.currentMediaId && last.provider === provider) return; // cegah duplikat beruntun
+            lib.unshift({
+                id: Date.now() + Math.random().toString(36).slice(2, 6),
+                mediaId: window.currentMediaId || '',
+                type: window.currentMediaType || '',
+                title: window._currentMediaTitle || document.getElementById('mTitle')?.innerText || 'Media',
+                provider: provider,
+                url: url,
+                date: new Date().toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+            });
+            try { localStorage.setItem(DL_KEY, JSON.stringify(lib.slice(0, 100))); } catch(e) {}
+            showToast('Ditambahkan ke Pustaka Unduhan');
+        }
+        function openDownloadLib() {
+            document.getElementById('downloadLibModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            renderDownloadLib();
+        }
+        function closeDownloadLib() {
+            document.getElementById('downloadLibModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        function renderDownloadLib() {
+            const list = document.getElementById('downloadLibList');
+            const lib = getDownloadLib();
+            if (!lib.length) { list.innerHTML = '<div style="text-align:center;padding:70px 20px;color:#555;font-size:13px"><i class="fa-solid fa-download" style="font-size:34px;color:#222;display:block;margin-bottom:14px"></i>Belum ada unduhan tercatat.</div>'; return; }
+            list.innerHTML = lib.map(e => `
+                <div style="display:flex;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid #161616">
+                    <div style="flex:1;min-width:0">
+                        <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.title}</div>
+                        <div style="font-size:10px;color:#777;margin-top:3px">${e.provider} · ${e.date}</div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="color:#aaa;font-size:13px;cursor:pointer;padding:7px" title="Buka" onclick="window.open('${String(e.url).replace(/'/g, "\\'")}','_blank')"></i>
+                    <i class="fa-solid fa-copy" style="color:#aaa;font-size:13px;cursor:pointer;padding:7px" title="Salin tautan" onclick="copyDownloadLink('${e.id}')"></i>
+                    <i class="fa-solid fa-trash-can" style="color:#666;font-size:13px;cursor:pointer;padding:7px" title="Hapus" onclick="removeDownloadEntry('${e.id}')"></i>
+                </div>`).join('');
+        }
+        function copyDownloadLink(id) {
+            const e = getDownloadLib().find(x => x.id === id);
+            if (!e) return;
+            const done = () => showToast('Tautan disalin');
+            if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(e.url).then(done).catch(() => _fallbackCopy(e.url, done)); }
+            else _fallbackCopy(e.url, done);
+        }
+        function _fallbackCopy(text, cb) {
+            const ta = document.createElement('textarea');
+            ta.value = text; document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); cb(); } catch(e) {}
+            ta.remove();
+        }
+        function removeDownloadEntry(id) {
+            const lib = getDownloadLib().filter(x => x.id !== id);
+            try { localStorage.setItem(DL_KEY, JSON.stringify(lib)); } catch(e) {}
+            renderDownloadLib();
+        }
+        function clearDownloadLib() {
+            try { localStorage.removeItem(DL_KEY); } catch(e) {}
+            renderDownloadLib();
+        }
+
+        // ---------- NOTIFIKASI RILIS ----------
+        const REMIND_KEY = 'releaseReminders';
+        function getReminders() { try { return JSON.parse(localStorage.getItem(REMIND_KEY) || '[]'); } catch(e) { return []; } }
+        function toggleReleaseReminder(id, type, title, releaseDate, poster, btn) {
+            let arr = getReminders();
+            const i = arr.findIndex(r => r.id === id);
+            if (i >= 0) {
+                arr.splice(i, 1); showToast('Pengingat dihapus');
+                if (btn) { btn.style.color = '#444'; }
+            } else {
+                arr.push({ id, type, title, releaseDate, poster, ts: Date.now() });
+                showToast('Ingatkan saya aktif — cek Notifikasi Rilis');
+                if (btn) { btn.style.color = '#e50914'; }
+            }
+            try { localStorage.setItem(REMIND_KEY, JSON.stringify(arr.slice(0, 50))); } catch(e) {}
+            updateNotifBadge();
+        }
+        function updateNotifBadge() {
+            const badge = document.getElementById('notifBadge');
+            if (!badge) return;
+            const n = _notifCount();
+            badge.innerText = n > 0 ? `● ${n}` : '';
+        }
+        function _notifCount() {
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const soon = new Date(today); soon.setDate(soon.getDate() + 7);
+            return getReminders().filter(r => {
+                const d = new Date(r.releaseDate + 'T00:00:00');
+                return !isNaN(d) && d <= soon;
+            }).length;
+        }
+        function openNotifCenter() {
+            document.getElementById('notifCenterModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            renderNotifCenter();
+        }
+        function closeNotifCenter() {
+            document.getElementById('notifCenterModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        function renderNotifCenter() {
+            const list = document.getElementById('notifCenterList');
+            const arr = getReminders().slice().sort((a, b) => new Date(a.releaseDate) - new Date(b.releaseDate));
+            if (!arr.length) { list.innerHTML = '<div style="text-align:center;padding:70px 20px;color:#555;font-size:13px"><i class="fa-regular fa-bell" style="font-size:34px;color:#222;display:block;margin-bottom:14px"></i>Belum ada pengingat. Ketuk lonceng di Coming Soon.</div>'; return; }
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            list.innerHTML = arr.map(r => {
+                const d = new Date(r.releaseDate + 'T00:00:00');
+                const diff = Math.round((d - today) / 86400000);
+                const status = diff < 0 ? '<span style="color:#4caf7d;font-weight:800">Sudah rilis</span>'
+                    : diff === 0 ? '<span style="color:#4caf7d;font-weight:800">Rilis hari ini!</span>'
+                    : diff <= 7 ? `<span style="color:#facc15;font-weight:800">Rilis ${diff} hari lagi</span>`
+                    : `<span style="color:#777">${diff} hari lagi</span>`;
+                return `<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #161616">
+                    <div style="width:44px;height:62px;border-radius:8px;overflow:hidden;background:#161616;flex-shrink:0">
+                        ${r.poster ? `<img src="https://image.tmdb.org/t/p/w92${r.poster}" style="width:100%;height:100%;object-fit:cover">` : ''}
+                    </div>
+                    <div style="flex:1;min-width:0">
+                        <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</div>
+                        <div style="font-size:11px;color:#888;margin-top:3px">${r.releaseDate || ''} · ${status}</div>
+                    </div>
+                    <i class="fa-solid fa-play" style="color:#aaa;font-size:13px;cursor:pointer;padding:7px" onclick="openModal(${r.id}, '${r.type}')"></i>
+                    <i class="fa-solid fa-trash-can" style="color:#666;font-size:13px;cursor:pointer;padding:7px" onclick="removeReminder(${r.id})"></i>
+                </div>`;
+            }).join('');
+        }
+        function removeReminder(id) {
+            const arr = getReminders().filter(r => r.id !== id);
+            try { localStorage.setItem(REMIND_KEY, JSON.stringify(arr)); } catch(e) {}
+            renderNotifCenter(); updateNotifBadge();
+        }
+        function clearReminders() {
+            try { localStorage.removeItem(REMIND_KEY); } catch(e) {}
+            renderNotifCenter(); updateNotifBadge();
+        }
+
+        // ---------- PENCARIAN SUARA ----------
+        function voiceSearch(kind) {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) { showToast('Pencarian suara tidak didukung browser ini'); return; }
+            const rec = new SR();
+            rec.lang = 'id-ID';
+            rec.interimResults = false;
+            rec.maxAlternatives = 1;
+            rec.onresult = ev => {
+                const txt = ev.results[0][0].transcript || '';
+                if (!txt) return;
+                if (kind === 'music') {
+                    const inp = document.getElementById('musicSearchInp');
+                    if (inp) inp.value = txt;
+                    musicSearch(txt);
+                } else {
+                    const inp = document.getElementById('searchInp');
+                    if (inp) inp.value = txt;
+                    searchAction();
+                }
+            };
+            rec.onerror = () => showToast('Suara tidak terdengar — coba lagi');
+            rec.start();
+            showToast('Mendengarkan…');
+        }
+        if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+            const sm = document.getElementById('searchMicBtn'); if (sm) sm.style.display = 'inline-block';
+            const mm = document.getElementById('musicMicBtn'); if (mm) mm.style.display = 'block';
+        }
+
+        // ---------- CAST HELPER ----------
+        function castVideo() {
+            tryFullscreen();
+            showToast('Gunakan menu ⋮ → Cast di browser untuk tampil ke TV');
+        }
+
+        // ---------- PWA: MANIFEST + SERVICE WORKER ----------
+        (function _pwaInit() {
+            try {
+                const manifest = {
+                    name: 'amnesfubbia', short_name: 'amnesfubbia',
+                    start_url: '.', display: 'standalone',
+                    background_color: '#000000', theme_color: '#000000',
+                    icons: [{ src: 'amnesfubbia.png', sizes: 'any', type: 'image/png' }]
+                };
+                const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+                const link = document.createElement('link');
+                link.rel = 'manifest';
+                link.href = URL.createObjectURL(blob);
+                document.head.appendChild(link);
+            } catch(e) {}
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            }
+        })();
+
+        // ---------- INIT FITUR BARU ----------
+        _initDoubleTapSeek();
+        updateNotifBadge();
     </script>
+
+    <!-- ===== PUSTAKA UNDUHAN ===== -->
+    <div id="downloadLibModal" style="display:none;position:fixed;inset:0;z-index:9950;background:#000;flex-direction:column">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#000;border-bottom:1px solid #161616;flex-shrink:0">
+            <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer" onclick="closeDownloadLib()"></i>
+            <span style="font-size:17px;font-weight:800;color:#fff">Pustaka Unduhan</span>
+            <span style="flex:1"></span>
+            <i class="fa-solid fa-trash-can" style="color:#555;font-size:16px;cursor:pointer" onclick="clearDownloadLib()" title="Hapus semua"></i>
+        </div>
+        <div id="downloadLibList" style="flex:1;overflow-y:auto;padding:12px 16px 40px"></div>
+    </div>
+
+    <!-- ===== PUSAT NOTIFIKASI RILIS ===== -->
+    <div id="notifCenterModal" style="display:none;position:fixed;inset:0;z-index:9950;background:#000;flex-direction:column">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#000;border-bottom:1px solid #161616;flex-shrink:0">
+            <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer" onclick="closeNotifCenter()"></i>
+            <span style="font-size:17px;font-weight:800;color:#fff">Notifikasi Rilis</span>
+            <span style="flex:1"></span>
+            <i class="fa-solid fa-trash-can" style="color:#555;font-size:16px;cursor:pointer" onclick="clearReminders()" title="Hapus semua"></i>
+        </div>
+        <div id="notifCenterList" style="flex:1;overflow-y:auto;padding:12px 16px 40px"></div>
+    </div>
 </body>
 </html>
