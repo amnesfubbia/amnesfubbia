@@ -1873,19 +1873,12 @@
             margin-right: auto !important;
         }
 
-        /* ===== WARNA AKSEN (custom theme) ===== */
+        /* ===== WARNA AKSEN (dipakai tetap di seluruh app, bukan pengaturan yang bisa diganti user) ===== */
         :root { --accent: #1a73e8; }
         .nav-item-wrap.nav-active i, .nav-item-wrap:active i { color: var(--accent) !important; }
         .server-btn.active-link, .ls-srv-btn.active-link { border-color: var(--accent) !important; background: rgba(0,0,0,0.12); }
         .dot.bg-blue-500 { background: var(--accent) !important; }
         .ep-btn.active-pill { background: var(--accent) !important; border-color: var(--accent) !important; color: #fff !important; }
-        .accent-swatch {
-            width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
-            border: 2px solid transparent; display: inline-block;
-            transition: transform 0.15s, border-color 0.15s;
-        }
-        .accent-swatch:active { transform: scale(0.85); }
-        .accent-swatch.active { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.25); }
     </style>
 </head>
 <body>
@@ -2140,21 +2133,6 @@
 
         <!-- Pengaturan Tampilan -->
         <div class="about-section-label">Pengaturan Tampilan</div>
-        <div class="about-info-list">
-            <div class="about-info-row" style="flex-wrap:wrap">
-                <span class="about-info-label">Warna Aksen</span>
-                <div class="about-info-value" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-                    <span class="accent-swatch active" data-color="#1a73e8" style="background:#1a73e8" onclick="setAccent('#1a73e8', this)"></span>
-                    <span class="accent-swatch" data-color="#e50914" style="background:#e50914" onclick="setAccent('#e50914', this)"></span>
-                    <span class="accent-swatch" data-color="#4caf7d" style="background:#4caf7d" onclick="setAccent('#4caf7d', this)"></span>
-                    <span class="accent-swatch" data-color="#a78bfa" style="background:#a78bfa" onclick="setAccent('#a78bfa', this)"></span>
-                    <span class="accent-swatch" data-color="#f472b6" style="background:#f472b6" onclick="setAccent('#f472b6', this)"></span>
-                    <span class="accent-swatch" data-color="#facc15" style="background:#facc15" onclick="setAccent('#facc15', this)"></span>
-                    <input type="color" id="accentPicker" value="#1a73e8" oninput="setAccent(this.value, null)" title="Warna custom"
-                        style="width:26px;height:26px;border:none;background:none;cursor:pointer;padding:0">
-                </div>
-            </div>
-        </div>
         <div class="about-info-list">
             <div class="about-link-row" onclick="openDownloadLib()">
                 <span class="about-link-label">Pustaka Unduhan</span>
@@ -3092,8 +3070,8 @@
                 </div>
 
                 <!-- Artwork / video (mode FULL menampilkan iframe YouTube di sini) -->
-                <div id="musicFullArtWrap" style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px 40px 10px;position:relative;min-height:0">
-                    <img id="musicFullArt" src="" style="width:100%;max-width:300px;aspect-ratio:1;border-radius:18px;object-fit:cover;box-shadow:0 30px 70px rgba(0,0,0,0.6);background:#1e1e1e">
+                <div id="musicFullArtWrap" style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px 40px 10px;position:relative;min-height:0;overflow:hidden">
+                    <img id="musicFullArt" src="" style="width:100%;max-width:300px;aspect-ratio:1;border-radius:18px;object-fit:cover;box-shadow:0 30px 70px rgba(0,0,0,0.6);background:#1e1e1e;pointer-events:none">
                 </div>
 
                 <!-- Track info -->
@@ -3415,12 +3393,37 @@
             ));
             return batches.flat();
         }
+        function musicShuffleArr(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+        // Batasi maksimal N lagu per artis di satu daftar, supaya kalau ada artis yang
+        // hasil pencariannya lebih banyak / lebih lengkap preview-nya, dia tidak mendominasi
+        // seluruh daftar rekomendasi (sebelumnya sering cuma muncul 1-2 artis saja).
+        function musicCapPerArtist(tracks, maxPerArtist) {
+            const count = {};
+            const out = [];
+            for (const t of tracks) {
+                const key = (t.artist || '').toLowerCase();
+                count[key] = (count[key] || 0) + 1;
+                if (count[key] <= maxPerArtist) out.push(t);
+            }
+            return out;
+        }
         async function musicRenderRecoList() {
             const el = document.getElementById('musicRecoList');
             el.innerHTML = musicSkeletonGridCards(6);
             try {
-                const raw = await musicFetchTracksByArtists(musicPickRandomArtists(4), 3);
-                const tracks = raw.map(musicNormalize);
+                // Ambil dari lebih banyak artis (bukan cuma 4) dengan sedikit lagu tiap artis,
+                // supaya kalau sebagian artis kebetulan gak ada preview-nya di iTunes,
+                // daftar rekomendasi tetap beragam — tidak melulu didominasi 1-2 artis saja.
+                const raw = await musicFetchTracksByArtists(musicPickRandomArtists(10), 2);
+                let tracks = musicShuffleArr(raw.map(musicNormalize));
+                tracks = musicCapPerArtist(tracks, 2).slice(0, 10);
                 _musicHomeQueues.reco = tracks;
                 el.innerHTML = tracks.length ? tracks.map((t,i) => musicRecoGridCardHTML(t, i, 'reco')).join('') : '<div style="color:#444;font-size:12px;padding:10px 20px">Tidak ada data</div>';
             } catch(e) {
@@ -6251,26 +6254,6 @@
         // (modifikasi perilaku _tryNextServerOnFail — lihat fungsi aslinya)
 
         // ===== TAMPILAN: LIGHT MODE & WARNA AKSEN =====
-        function applyAccent(color) {
-            try { document.documentElement.style.setProperty('--accent', color); } catch(e) {}
-            document.querySelectorAll('.accent-swatch').forEach(s => {
-                const sc = (s.getAttribute('data-color') || '').toLowerCase();
-                s.classList.toggle('active', sc === String(color).toLowerCase());
-            });
-            const p = document.getElementById('accentPicker');
-            if (p) p.value = color;
-        }
-        function setAccent(color, el) {
-            applyAccent(color);
-            try { localStorage.setItem('accentColor', color); } catch(e) {}
-        }
-        function applyThemePrefs() {
-            let accent = '#1a73e8';
-            try { accent = localStorage.getItem('accentColor') || accent; } catch(e) {}
-            applyAccent(accent);
-        }
-        applyThemePrefs();
-
         function handleLsBack() { window.history.back(); }
 
         function closeLandscapeSilently() {
