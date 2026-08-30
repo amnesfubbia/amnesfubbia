@@ -2,7 +2,7 @@
    Fungsi: PWA installable + fallback offline untuk halaman aplikasi.
    PENTING: permintaan ke luar (TMDb, gambar, itunes, embed) TIDAK dicegat —
    biar tidak membebani performa HP. */
-const CACHE_NAME = 'amnesfubbia-v2';
+const CACHE_NAME = 'amnesfubbia-v3';
 const SHELL = ['./', './index.html', './index.html.txt', './amnesfubbia.png'];
 
 self.addEventListener('install', (e) => {
