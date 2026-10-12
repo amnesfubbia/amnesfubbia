@@ -21,11 +21,10 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="amnesfubbia">
     <meta name="twitter:image" content="amnesfubbia.png">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.15/hls.min.js"></script>
     <style>
         /* ===== THEME VARIABLES ===== */
         :root {
@@ -238,7 +237,7 @@
         /* All overlay fixed perlu padding-top agar tidak tertutup status bar */
         .modal-player, #actorModal, #tvModal, #notifModal, #sideMenu, #searchOverlay,
         #reelsModal, #reelDetailSheet, #soundtrackModal, #actorPhotosModal {
-            padding-top: env(safe-area-inset-top, 0px);
+            padding-top: 0;
         }
         /* Landscape dan lightbox: inset sudah handle safe area */
         #landscapeOverlay, #lightboxModal { padding-top: 0; }
@@ -995,9 +994,11 @@
             display: flex; background: #000;
             border-bottom: 1px solid #1a1a1a;
             position: sticky; top: 54px; z-index: 199;
+            height: 40px; box-sizing: border-box;
         }
         .tv-tab-item {
-            flex: 1; text-align: center; padding: 10px 4px;
+            display: flex; align-items: center; justify-content: center;
+            flex: 1; text-align: center; padding: 0 4px;
             font-size: 11px; font-weight: 700; color: #555;
             cursor: pointer; border-bottom: 2px solid transparent;
             transition: all 0.2s; letter-spacing: 0.2px;
@@ -1009,7 +1010,7 @@
         #tvLiveSportPane {
             display: none;
             position: fixed;
-            top: 108px;
+            top: 94px;
             left: 0; right: 0;
             bottom: 64px;
             background: #0a0a0a;
@@ -1026,7 +1027,7 @@
         #tvPlayerArea {
             display: none;
             position: sticky;
-            top: 108px; /* topbar + tabbar */
+            top: 94px; /* topbar 54 + tabbar 40 */
             z-index: 150;
             background: #000;
             width: 100%;
@@ -1227,7 +1228,8 @@
         .reel-action-buttons {
             display: grid; grid-template-columns: 1fr 1fr 1fr;
             gap: 8px; flex-shrink: 0;
-            padding: 8px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+            /* Tanpa safe-area: webview sudah berada di atas bar sistem, jadi tombol langsung menempel di atas navigasi bawah */
+            padding: 8px 16px 14px;
         }
         .reel-btn-watch, .reel-btn-detail {
             padding: 10px 4px; border-radius: 10px;
@@ -1880,6 +1882,20 @@
         .server-btn.active-link, .ls-srv-btn.active-link { border-color: var(--accent) !important; background: rgba(0,0,0,0.12); }
         .dot.bg-blue-500 { background: var(--accent) !important; }
         .ep-btn.active-pill { background: var(--accent) !important; border-color: var(--accent) !important; color: #fff !important; }
+    
+        /* ===== TOMBOL IKON SERAGAM =====
+           Semua tombol ikon di header (back, close, menu, cari) memakai ukuran yang sama:
+           ikon 20px, area ketuk 44x44px. Margin negatif menjaga tata letak header tetap
+           seperti semula (jejak layout 32px). Tidak memengaruhi gestur swipe. */
+        .btn-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            box-sizing: content-box; width: 20px; height: 20px;
+            padding: 12px; margin: -6px; flex-shrink: 0;
+            font-size: 20px; color: #fff; cursor: pointer; border-radius: 50%;
+            transition: background 0.15s;
+            -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+        }
+        .btn-icon:active { background: rgba(255,255,255,0.14); }
     </style>
 </head>
 <body>
@@ -1992,7 +2008,7 @@
     <div id="sideMenu">
         <!-- Sticky top bar -->
         <div class="about-topbar">
-            <i class="fa-solid fa-chevron-left about-close-btn" onclick="toggleSideMenu()"></i>
+            <i class="fa-solid fa-chevron-left about-close-btn btn-icon" onclick="toggleSideMenu()"></i>
             <div class="about-topbar-title">Tentang Aplikasi</div>
             <div style="width:32px"></div>
         </div>
@@ -2030,7 +2046,7 @@
         <div class="about-feature-list">
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a1a2e">
-                    <i class="ph ph-film-slate" style="color:#6c8efb"></i>
+                    <i class="fa-solid fa-clapperboard" style="color:#6c8efb"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Database Luas</div>
@@ -2039,7 +2055,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a2a1a">
-                    <i class="ph ph-magnifying-glass" style="color:#4caf7d"></i>
+                    <i class="fa-solid fa-magnifying-glass" style="color:#4caf7d"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Smart Search + Explore</div>
@@ -2048,7 +2064,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a1a2e">
-                    <i class="ph ph-users-three" style="color:#60a5fa"></i>
+                    <i class="fa-solid fa-users" style="color:#60a5fa"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Profil Pemeran Lengkap</div>
@@ -2057,7 +2073,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#2a1a1a">
-                    <i class="ph ph-archive-box" style="color:#e57373"></i>
+                    <i class="fa-solid fa-box-archive" style="color:#e57373"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Personal Archive</div>
@@ -2066,7 +2082,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a201a">
-                    <i class="ph ph-globe-hemisphere-west" style="color:#ffca28"></i>
+                    <i class="fa-solid fa-earth-americas" style="color:#ffca28"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Multi-Server Streaming</div>
@@ -2075,7 +2091,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a2020">
-                    <i class="ph ph-download-simple" style="color:#34d399"></i>
+                    <i class="fa-solid fa-download" style="color:#34d399"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Multi-Server Download</div>
@@ -2084,7 +2100,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a1a2a">
-                    <i class="ph ph-television-simple" style="color:#a78bfa"></i>
+                    <i class="fa-solid fa-tv" style="color:#a78bfa"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Live TV — Embed, IPTV & Favorit</div>
@@ -2093,7 +2109,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a2020">
-                    <i class="ph ph-video" style="color:#34d399"></i>
+                    <i class="fa-solid fa-video" style="color:#34d399"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Reels Trailer Mode</div>
@@ -2102,7 +2118,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#201a20">
-                    <i class="ph ph-info" style="color:#f472b6"></i>
+                    <i class="fa-solid fa-circle-info" style="color:#f472b6"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Detail Lengkap per Judul</div>
@@ -2111,7 +2127,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a1a20">
-                    <i class="ph ph-trophy" style="color:#facc15"></i>
+                    <i class="fa-solid fa-trophy" style="color:#facc15"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Top Rated by Decade</div>
@@ -2120,7 +2136,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#201a1a">
-                    <i class="ph ph-translate" style="color:#fb923c"></i>
+                    <i class="fa-solid fa-language" style="color:#fb923c"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Terjemahan Sinopsis</div>
@@ -2233,8 +2249,8 @@
                     <span class="dot-notify"></span>
                 </div>
                 <div class="flex gap-5">
-                    <i class="fa-regular fa-calendar cursor-pointer" style="font-size:22px;color:#fff" onclick="openComingSoon()"></i>
-                    <i class="fa-solid fa-bars cursor-pointer" style="font-size:22px" onclick="toggleSideMenu()"></i>
+                    <i class="fa-regular fa-calendar btn-icon" onclick="openComingSoon()"></i>
+                    <i class="fa-solid fa-bars btn-icon" onclick="toggleSideMenu()"></i>
                 </div>
             </div>
 
@@ -2252,7 +2268,7 @@
 
             <div class="bio">
                 <div class="bio-name-wrapper"><span class="bio-name">amnesfubbia</span><i class="fa-solid fa-circle-check text-[#0095f6] text-[13px]"></i></div>
-                <span><i class="ph ph-film-slate mr-1"></i> Discover. Watch. Archive.</span><br>
+                <span><i class="fa-solid fa-clapperboard mr-1"></i> Discover. Watch. Archive.</span><br>
                 <span class="text-zinc-400">Jelajahi, simpan & tonton trailer movie favoritmu.</span>
             </div>
 
@@ -2301,7 +2317,7 @@
 
     <div id="searchOverlay">
         <div class="search-header">
-            <i class="fa-solid fa-arrow-left text-xl text-white" onclick="closeSearch()"></i>
+            <i class="fa-solid fa-arrow-left btn-icon" onclick="closeSearch()"></i>
             <div class="search-input-box">
                 <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
                 <input type="text" id="searchInp" autocomplete="off" placeholder="Search movies, series, or actors..." onkeydown="if(event.key==='Enter') searchAction()" oninput="handleSearchInput(this.value)">
@@ -2345,7 +2361,7 @@
         <div id="decadeModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:20px 16px 60px">
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-                    <i class="fa-solid fa-chevron-left" style="font-size:18px;color:#fff;cursor:pointer;padding:4px 8px 4px 0" onclick="closeDecadeModal()"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="closeDecadeModal()"></i>
                     <div style="font-size:17px;font-weight:800;color:#fff">Top Rated by Decade</div>
                 </div>
                 <!-- Decade + type selector -->
@@ -2401,7 +2417,7 @@
     <!-- Modal Movieografi -->
     <div id="movieografiModal">
         <div class="mvg-header">
-            <i class="fa-solid fa-chevron-left" style="font-size:18px;color:#fff;cursor:pointer" onclick="closeMovieografi()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeMovieografi()"></i>
             <div>
                 <div class="mvg-title">Movieografi</div>
                 <div class="mvg-actor-name" id="mvgActorName"></div>
@@ -2436,7 +2452,7 @@
         <div id="modalScrollTop" class="max-w-xl mx-auto pb-20">
             <div class="sticky top-0 bg-black z-[100] border-b border-zinc-900">
                 <div class="px-4 h-[54px] flex items-center">
-                    <i class="fa-solid fa-chevron-left text-xl cursor-pointer" onclick="closeModal()"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="closeModal()"></i>
                     <div class="flex-grow text-center text-[14px] font-bold truncate px-8" id="mTitle"></div>
                 </div>
                 
@@ -2590,7 +2606,7 @@
 
         <!-- Sticky top bar -->
         <div class="actor-topbar">
-            <i class="fa-solid fa-chevron-left actor-topbar-icon" onclick="closeActorModal()"></i>
+            <i class="fa-solid fa-chevron-left actor-topbar-icon btn-icon" onclick="closeActorModal()"></i>
             <div class="actor-topbar-title" id="actorHeaderTitle"></div>
             <i class="fa-solid fa-ellipsis actor-topbar-icon"></i>
         </div>
@@ -2666,10 +2682,10 @@
 
     <div id="tvModal">
         <div class="tv-topbar">
-            <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer;padding:6px" onclick="closeTvModal()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeTvModal()"></i>
             <div class="tv-live-dot"></div>
             <div class="tv-topbar-title" id="tvTopbarTitle">Embed</div>
-            <i class="fa-solid fa-magnifying-glass" style="font-size:16px;color:#8e8e8e;cursor:pointer;padding:6px" id="tvSearchIcon" onclick="focusTvSearch()"></i>
+            <i class="fa-solid fa-magnifying-glass btn-icon" style="color:#8e8e8e" id="tvSearchIcon" onclick="focusTvSearch()"></i>
         </div>
 
         <!-- Tab bar — 3 tab -->
@@ -2696,7 +2712,7 @@
             <!-- tombol LiveSport & Highlight di antara video dan channel list -->
             <div style="padding:10px 16px 4px;display:flex;gap:8px">
                 <button onclick="openLivesportModal('sport')" style="flex:1;background:#2a2a2a;border:1px solid #3a3a3a;color:#fff;font-size:13px;font-weight:700;padding:11px 0;border-radius:12px;cursor:pointer;letter-spacing:0.3px;display:flex;align-items:center;justify-content:center;gap:8px">
-                    <i class="fa-solid fa-signal-stream"></i> Live Sport
+                    <i class="fa-solid fa-tower-broadcast"></i> Live Sport
                 </button>
                 <button onclick="openLivesportModal('highlight')" style="flex:1;background:#2a2a2a;border:1px solid #3a3a3a;color:#fff;font-size:13px;font-weight:700;padding:11px 0;border-radius:12px;cursor:pointer;letter-spacing:0.3px;display:flex;align-items:center;justify-content:center;gap:8px">
                     Highlight
@@ -2803,7 +2819,7 @@
     <!-- ===== NOTIFIKASI FILM BARU ===== -->
     <div id="notifModal">
         <div class="notif-topbar">
-            <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer;padding:6px;margin-right:4px" onclick="closeNotif()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeNotif()"></i>
             <div class="notif-topbar-title">New Movies Today</div>
             <span class="notif-date-badge" id="notifDateBadge"></span>
         </div>
@@ -2816,7 +2832,7 @@
     <!-- ===== FOTO PEMERAN ===== -->
     <div id="actorPhotosModal">
         <div class="actor-photos-topbar">
-            <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer;padding:6px" onclick="closeActorPhotos()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeActorPhotos()"></i>
             <div class="actor-photos-title" id="actorPhotosTitle">Foto</div>
             <div style="width:32px"></div>
         </div>
@@ -2932,7 +2948,7 @@
                     <div id="musicPlDetailArt" style="position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(0.55)"></div>
                     <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.3),#000 95%)"></div>
                     <div style="position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between">
-                        <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer;padding:6px" onclick="musicClosePlaylistDetail()"></i>
+                        <i class="fa-solid fa-chevron-left btn-icon" onclick="musicClosePlaylistDetail()"></i>
                         <i class="fa-solid fa-ellipsis" style="font-size:18px;color:#fff;cursor:pointer;padding:6px"></i>
                     </div>
                 </div>
@@ -2956,7 +2972,7 @@
         <div id="musicAlbumDetail" style="display:none;position:absolute;top:0;left:0;right:0;bottom:62px;z-index:30;background:#000;flex-direction:column;overflow:hidden">
             <div style="flex:1;overflow-y:auto;padding-bottom:160px">
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0">
-                    <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer;padding:6px" onclick="musicCloseAlbumDetail()"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="musicCloseAlbumDetail()"></i>
                     <i id="musicAlbumLikeBtn" class="fa-regular fa-heart" style="font-size:19px;color:#666;cursor:pointer;padding:6px" onclick="musicToggleAlbumLike()"></i>
                 </div>
                 <div style="text-align:center;padding:6px 20px 0">
@@ -2986,7 +3002,7 @@
                     </div>
                     <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.15),#000 95%)"></div>
                     <div style="position:absolute;top:16px;left:16px">
-                        <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer;padding:6px" onclick="musicCloseArtistProfile()"></i>
+                        <i class="fa-solid fa-chevron-left btn-icon" onclick="musicCloseArtistProfile()"></i>
                     </div>
                     <div style="position:absolute;bottom:14px;left:20px;right:20px">
                         <div id="musicArtistName" style="font-size:22px;font-weight:900;color:#fff"></div>
@@ -3013,7 +3029,7 @@
         <div id="musicEqScreen" style="display:none;position:absolute;top:0;left:0;right:0;bottom:62px;z-index:30;background:#000;flex-direction:column;overflow:hidden">
             <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 4px;flex-shrink:0">
                 <div style="display:flex;align-items:center;gap:14px">
-                    <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer;padding:6px" onclick="musicCloseEqScreen()"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="musicCloseEqScreen()"></i>
                     <span style="font-size:20px;font-weight:800;color:#fff">Equalizer</span>
                 </div>
                 <label style="position:relative;display:inline-block;width:44px;height:26px">
@@ -3062,7 +3078,7 @@
             <div style="position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:0 0 10px">
                 <!-- Top bar -->
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 0">
-                    <i class="fa-solid fa-chevron-down" style="font-size:20px;color:#fff;cursor:pointer;padding:6px" onclick="musicCloseFullPlayer()"></i>
+                    <i class="fa-solid fa-chevron-down btn-icon" onclick="musicCloseFullPlayer()"></i>
                     <div style="text-align:center">
                         <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:1.5px">PLAYING FROM</div>
                         <div style="font-size:12px;font-weight:700;color:#fff;margin-top:2px" id="musicFullContext">Your Library</div>
@@ -3146,7 +3162,7 @@
     <audio id="musicAudioEl" preload="metadata"></audio>
     <div id="livesportModal" style="display:none;position:fixed;inset:0;z-index:9700;background:#0a0a0a;flex-direction:column">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#000;position:sticky;top:0;z-index:10">
-            <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer" onclick="closeLivesportModal()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeLivesportModal()"></i>
             <span style="font-size:17px;font-weight:800;color:#fff" id="livesportTitle">Live Sport</span>
         </div>
         <iframe id="livesportIframe" src="" style="flex:1;width:100%;border:none;display:block" allow="autoplay; encrypted-media" allowfullscreen></iframe>
@@ -3165,6 +3181,10 @@
     </div>
 
     <script>
+        // Logging error ringan: tidak menampilkan apa pun di layar, hanya ke console (untuk debugging)
+        function _warn(ctx, e) { console.warn('[amnes:' + ctx + ']', e); }
+        function _dbg(ctx, e) { console.debug('[amnes:' + ctx + ']', e); }
+
         const API_KEY = 'bfa7df5310c9974f62f26c6789a8c00d';
         let page = 1, loading = false, currentType = 'multi', currentGenre = '', currentYear = '', currentCountry = '', currentRating = '', currentSchedule = 'trending', searchQuery = '', currentCompany = '', currentLibMode = false, currentCastId = '';
         let isExpanded = false, globalFullDesc = "", globalEnDesc = "", currentIdx = 0, startX = 0, isTranslated = false, originalIndoDesc = "";
@@ -3197,7 +3217,7 @@
                 const keys = Object.keys(map);
                 if (keys.length > 300) delete map[keys[0]]; // batasi biar tidak membengkak
                 localStorage.setItem(LAST_SERVER_KEY, JSON.stringify(map));
-            } catch(e) {}
+            } catch (e) { _warn('saveLastWorkingServer', e); }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -3357,7 +3377,7 @@
         let _musicHomeQueues = { reco: [], newrelease: [] };
         function musicRadioRowHTML(t, i, section) {
             return `<div style="display:flex;align-items:center;gap:14px;padding:11px 20px;cursor:pointer;border-bottom:1px solid #161616" onclick="musicPlayHomeRow('${section}',${i})">
-                <img src="${t.artworkSmall}" onerror="musicImgFallback(this)" style="width:52px;height:52px;border-radius:10px;object-fit:cover;background:#1a1a1a;flex-shrink:0">
+                <img loading="lazy" decoding="async" src="${t.artworkSmall}" onerror="musicImgFallback(this)" style="width:52px;height:52px;border-radius:10px;object-fit:cover;background:#1a1a1a;flex-shrink:0">
                 <div style="flex:1;overflow:hidden">
                     <div style="display:flex;align-items:center;gap:6px">
                         <i class="fa-solid fa-tower-broadcast" style="font-size:11px;color:#888;flex-shrink:0"></i>
@@ -3460,7 +3480,7 @@
                         const el = document.getElementById(elId);
                         if (el) el.innerHTML = `<img src="${t.artworkUrl100.replace('100x100','300x300')}" onerror="musicImgFallback(this)" style="width:100%;height:100%;object-fit:cover">`;
                     }
-                } catch(e) {}
+                } catch (e) { _warn('musicLoadHomePlaylistCard', e); }
             });
         }
         async function musicRenderCommunityPlaylists() {
@@ -3479,7 +3499,7 @@
                     if (collage && arts.length) {
                         collage.innerHTML = arts.slice(0,4).map(u => `<img src="${u}" onerror="musicImgFallback(this)" style="width:100%;height:100%;object-fit:cover">`).join('');
                     }
-                } catch(e) {}
+                } catch (e) { _warn('musicRenderCommunityPlaylists', e); }
             });
         }
 
@@ -3596,7 +3616,7 @@
                     const t = (d.results || [])[0];
                     const el = document.getElementById(`plCardBg-${p.id}-${scope}`);
                     if (el && t && t.artworkUrl100) el.style.backgroundImage = `url(${t.artworkUrl100.replace('100x100','400x400')})`;
-                } catch(e) {}
+                } catch (e) { _warn('musicHydratePlaylistArt', e); }
             });
         }
         function musicRenderPlaylistTab() {
@@ -3774,7 +3794,7 @@
                             <div style="font-size:11px;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.artistName}</div>
                         </div>`).join('');
                     musicHydrateArtistArt(artists, 'teratas');
-                }).catch(()=>{});
+                }).catch(e => _warn('musicRenderSearchLanding', e));
         }
         async function musicSearch(q) {
             if (!q || !q.trim()) return;
@@ -3885,7 +3905,7 @@
             const isPlaying = _musicCurrentTrack && _musicCurrentTrack.id === t.id;
             return `<div style="display:flex;align-items:center;gap:12px;padding:9px 16px;cursor:pointer;${isPlaying?'background:#111':''}"
                 onclick="musicPlayFromQueue(${idx})">
-                <img src="${t.artworkSmall}" onerror="musicImgFallback(this)" style="width:46px;height:46px;border-radius:7px;object-fit:cover;flex-shrink:0;background:#1a1a1a">
+                <img loading="lazy" decoding="async" src="${t.artworkSmall}" onerror="musicImgFallback(this)" style="width:46px;height:46px;border-radius:7px;object-fit:cover;flex-shrink:0;background:#1a1a1a">
                 <div style="flex:1;overflow:hidden">
                     <div style="font-size:13px;font-weight:600;color:${isPlaying?'#fff':'#ccc'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div>
                     <div style="font-size:11px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.artist}</div>
@@ -3907,7 +3927,7 @@
         // ===== PEMUTAR MUSIK: FULL (lagu penuh via YouTube) vs PREVIEW (iTunes 30 dtk) =====
         let _musicFullMode = true;
         (function _musicModeInit() {
-            try { _musicFullMode = localStorage.getItem('musicFullMode') !== '0'; } catch(e) {}
+            try { _musicFullMode = localStorage.getItem('musicFullMode') !== '0'; } catch (e) { _warn('_musicModeInit', e); }
         })();
         let _musicPollIv = null;       // polling UI progress
         let _musicYtFailTimer = null;  // fallback ke preview kalau lagu gagal
@@ -3929,7 +3949,7 @@
         // Kirim perintah kontrol ke iframe Dailymotion
         function _musicDmPost(obj) {
             if (!_musicFrameWin) return;
-            try { _musicFrameWin.postMessage(JSON.stringify(obj), '*'); } catch(e) {}
+            try { _musicFrameWin.postMessage(JSON.stringify(obj), '*'); } catch (e) { _dbg('_musicDmPost', e); }
         }
         function _musicYtPoll() {
             if (!_musicFrameWin) return;
@@ -4028,7 +4048,7 @@
             if (_musicPollIv) { clearInterval(_musicPollIv); _musicPollIv = null; }
         }
         function _musicStopAudio() {
-            if (_musicAudio) { try { _musicAudio.pause(); } catch(e) {} _musicAudio.src = ''; _musicAudio = null; }
+            if (_musicAudio) { try { _musicAudio.pause(); } catch (e) { _dbg('_musicStopAudio', e); } _musicAudio.src = ''; _musicAudio = null; }
         }
         function _musicPlayPreview(t) {
             if (!t || !t.preview) return;
@@ -4036,7 +4056,7 @@
             _musicStopAudio();
             _musicAudio = new Audio(t.preview);
             _musicAudio.volume = (document.getElementById('musicVolumeSlider')?.value || 100) / 100;
-            _musicAudio.play().catch(() => {});
+            _musicAudio.play().catch(e => _dbg('_musicPlayPreview', e));
             _musicPlaying = true;
             musicBindAudioEvents();
         }
@@ -4060,7 +4080,7 @@
 
         function musicToggleFullMode() {
             _musicFullMode = !_musicFullMode;
-            try { localStorage.setItem('musicFullMode', _musicFullMode ? '1' : '0'); } catch(e) {}
+            try { localStorage.setItem('musicFullMode', _musicFullMode ? '1' : '0'); } catch (e) { _warn('musicToggleFullMode', e); }
             _musicUpdateModeChip();
             if (_musicCurrentTrack) {
                 showToast(_musicFullMode ? 'Mode: Lagu Penuh (YouTube)' : 'Mode: Preview 30 detik');
@@ -4225,7 +4245,7 @@
                     const tracks = raw.map(musicNormalize).slice(0, 5);
                     _musicHeroTracks = tracks;
                     _musicHeroRender(tracks);
-                }).catch(() => {});
+                }).catch(e => _warn('musicRenderHeroCarousel', e));
         }
         function _musicHeroRender(tracks) {
             const track = document.getElementById('musicHeroTrack');
@@ -4427,7 +4447,7 @@
                     const upNext = _musicQueue.map((t,i) => ({t,i})).filter(x => x.i !== _musicQueueIdx);
                     const rowHTML = (t, i, isCurrent) => `
                         <div style="display:flex;align-items:center;gap:10px;padding:9px 0">
-                            <img onclick="musicPlayFromQueue(${i});musicClosePanel()" src="${t.artworkSmall}" onerror="musicImgFallback(this)" style="width:42px;height:42px;border-radius:6px;object-fit:cover;background:#1a1a1a;cursor:pointer">
+                            <img loading="lazy" decoding="async" onclick="musicPlayFromQueue(${i});musicClosePanel()" src="${t.artworkSmall}" onerror="musicImgFallback(this)" style="width:42px;height:42px;border-radius:6px;object-fit:cover;background:#1a1a1a;cursor:pointer">
                             <div onclick="musicPlayFromQueue(${i});musicClosePanel()" style="flex:1;overflow:hidden;cursor:pointer">
                                 <div style="font-size:12px;font-weight:600;color:${isCurrent?'#fff':'#ccc'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div>
                                 <div style="font-size:10px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.artist}</div>
@@ -4513,7 +4533,7 @@
             if (!_musicCurrentTrack) return;
             const text = `${_musicCurrentTrack.title} - ${_musicCurrentTrack.artist}`;
             if (navigator.share) {
-                navigator.share({ title: text, text: text }).catch(()=>{});
+                navigator.share({ title: text, text: text }).catch(e => _dbg('musicShare', e));
             } else {
                 navigator.clipboard?.writeText(text);
                 alert('Info lagu disalin: ' + text);
@@ -4575,7 +4595,7 @@
             }
             if (_tvVideoPausedBeforeLivesport) {
                 const tvVideo = document.getElementById('tvPlayerVideo');
-                if (tvVideo) tvVideo.play().catch(() => {});
+                if (tvVideo) tvVideo.play().catch(e => _dbg('closeLivesportModal', e));
                 _tvVideoPausedBeforeLivesport = false;
             }
             // Tidak perlu replaceState — history.back() sudah kembalikan ke state tv
@@ -4621,14 +4641,14 @@
         }
         function _navAction(target) {
             // Tutup semua modal yang mungkin terbuka
-            try { if(document.getElementById('tvModal').style.display==='block'){ document.getElementById('tvPlayerFrame').src=''; _destroyHls(); const _tvv=document.getElementById('tvPlayerVideo'); if(_tvv){_tvv.pause();_tvv.removeAttribute('src');_tvv.load();} document.getElementById('tvModal').style.display='none'; document.body.style.overflow='auto'; }} catch(e){}
-            try { if(document.getElementById('livesportModal')&&document.getElementById('livesportModal').style.display==='flex') closeLivesportModal(); } catch(e){}
-            try { if(document.getElementById('musicModal')&&document.getElementById('musicModal').style.display==='flex' && target!=='music') { document.getElementById('musicModal').style.display='none'; document.body.style.overflow='auto'; } } catch(e){}
-            try { if(document.getElementById('reelsModal')&&document.getElementById('reelsModal').style.display==='block') _closeReelsSilent(); } catch(e){}
-            try { if(document.getElementById('movieModal').style.display==='block') _closeModalSilent(); } catch(e){}
-            try { if(document.getElementById('actorModal').classList.contains('open')) _closeActorModalSilent(); } catch(e){}
-            try { if(document.getElementById('searchOverlay').style.display==='block') _closeSearchSilent(); } catch(e){}
-            try { closeReelDetail && closeReelDetail(); } catch(e){}
+            try { if(document.getElementById('tvModal').style.display==='block'){ document.getElementById('tvPlayerFrame').src=''; _destroyHls(); const _tvv=document.getElementById('tvPlayerVideo'); if(_tvv){_tvv.pause();_tvv.removeAttribute('src');_tvv.load();} document.getElementById('tvModal').style.display='none'; document.body.style.overflow='auto'; }} catch (e) { _dbg('_navAction', e); }
+            try { if(document.getElementById('livesportModal')&&document.getElementById('livesportModal').style.display==='flex') closeLivesportModal(); } catch (e) { _warn('_navAction', e); }
+            try { if(document.getElementById('musicModal')&&document.getElementById('musicModal').style.display==='flex' && target!=='music') { document.getElementById('musicModal').style.display='none'; document.body.style.overflow='auto'; } } catch (e) { _warn('_navAction', e); }
+            try { if(document.getElementById('reelsModal')&&document.getElementById('reelsModal').style.display==='block') _closeReelsSilent(); } catch (e) { _warn('_navAction', e); }
+            try { if(document.getElementById('movieModal').style.display==='block') _closeModalSilent(); } catch (e) { _warn('_navAction', e); }
+            try { if(document.getElementById('actorModal').classList.contains('open')) _closeActorModalSilent(); } catch (e) { _warn('_navAction', e); }
+            try { if(document.getElementById('searchOverlay').style.display==='block') _closeSearchSilent(); } catch (e) { _warn('_navAction', e); }
+            try { closeReelDetail && closeReelDetail(); } catch (e) { _warn('_navAction', e); }
 
             switch(target) {
                 case 'home':   updateActiveNav('home');   backToHome();    break;
@@ -4646,7 +4666,7 @@
             const slides = document.querySelectorAll('.carousel-slide');
             const iframe = document.getElementById(`vid-${currentIdx}`);
             function postMsg(fn, args) {
-                try { iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:fn,args:args||''}), '*'); } catch(e) {}
+                try { iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:fn,args:args||''}), '*'); } catch (e) { _dbg('postMsg', e); }
             }
             if (cmd === 'playpause') {
                 if (_modalPlaying) {
@@ -4669,7 +4689,7 @@
                 // pause current
                 slides.forEach(s => {
                     const f = s.querySelector('iframe');
-                    if (f) try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                    if (f) try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) { _dbg('postMsg', e); }
                     s.classList.remove('playing');
                 });
                 currentIdx = newIdx;
@@ -4677,7 +4697,7 @@
                 document.querySelectorAll('.dot').forEach((d,i) => { d.className = `dot w-1.5 h-1.5 rounded-full ${i===currentIdx?'bg-blue-500':'bg-zinc-700'}`; });
                 const newVid = document.getElementById(`vid-${currentIdx}`);
                 if (newVid) {
-                    try { newVid.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch(e) {}
+                    try { newVid.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch (e) { _dbg('postMsg', e); }
                     newVid.closest('.carousel-slide')?.classList.add('playing');
                 }
                 _modalPlaying = true;
@@ -4707,7 +4727,7 @@
             if (activeServerIdx === 99) {
                 // Trailer (YouTube) — seek via postMessage
                 const iframe = document.getElementById(`vid-${currentIdx}`);
-                try { iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'seekBy',args:[sec]}), '*'); } catch(e) {}
+                try { iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'seekBy',args:[sec]}), '*'); } catch (e) { _dbg('lsSeek', e); }
             }
             // Streaming — seek tidak bisa, abaikan
         }
@@ -4723,7 +4743,7 @@
                 iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'seekTo',args:[targetTime, true]}), '*');
                 // Update UI langsung supaya terasa responsif, tidak menunggu postMessage berikutnya
                 document.getElementById('lsProgress').style.width = (ratio * 100) + '%';
-            } catch(e) {}
+            } catch (e) { _dbg('lsSeekToTap', e); }
         }
         function lsCarouselNav(dir) { modalVideoCmd(dir > 0 ? 'next' : 'prev'); }
         // Swipe helper — threshold 25px, ratio 2.0
@@ -5304,7 +5324,7 @@
         }
 
         function _destroyHls() {
-            if (_hlsInstance) { try { _hlsInstance.destroy(); } catch (e) {} _hlsInstance = null; }
+            if (_hlsInstance) { try { _hlsInstance.destroy(); } catch (e) { _dbg('_destroyHls', e); } _hlsInstance = null; }
         }
         function _playHls(video, url) {
             if (window.Hls && Hls.isSupported()) {
@@ -5316,12 +5336,12 @@
                     return;
                 }
                 _hlsInstance = new Hls();
-                _hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+                _hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(e => _dbg('_playHls', e)));
                 _hlsInstance.loadSource(url);
                 _hlsInstance.attachMedia(video);
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = url;
-                video.addEventListener('loadedmetadata', () => video.play().catch(() => {}), { once: true });
+                video.addEventListener('loadedmetadata', () => video.play().catch(e => _dbg('_playHls', e)), { once: true });
             } else {
                 video.src = url;
             }
@@ -5412,7 +5432,7 @@
                     if (iframe.src.includes("autoplay=1")) {
                         iframe.src = iframe.src.replace("autoplay=1", "autoplay=0");
                     }
-                } catch(e) {}
+                } catch (e) { _dbg('openSoundtrack', e); }
             });
 
             // Ambil data film yang sedang aktif — lebih akurat dari mTitle
@@ -5515,7 +5535,7 @@
                     <div class="music-card">
                         <div class="flex items-center gap-4">
                             <div class="relative flex-shrink-0 group">
-                                <img src="${song.artworkUrl100}" class="w-14 h-14 rounded-xl shadow-lg brightness-75">
+                                <img loading="lazy" decoding="async" src="${song.artworkUrl100}" class="w-14 h-14 rounded-xl shadow-lg brightness-75">
                                 <div class="absolute inset-0 flex items-center justify-center">
                                     <i class="fa-solid fa-music text-[10px] text-white/20"></i>
                                 </div>
@@ -5552,7 +5572,7 @@
             document.querySelectorAll('#carouselTrack iframe').forEach(iframe => {
                 try {
                     iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                } catch(e) {}
+                } catch (e) { _dbg('closeSoundtrack', e); }
             });
             if (document.getElementById('movieModal').style.display !== 'block') {
                 document.body.style.overflow = 'auto';
@@ -5708,7 +5728,7 @@
             document.getElementById('reelsModal').style.display = 'none';
             document.getElementById('reelsBottomNav').style.display = 'none';
             document.querySelectorAll('#reelsContainer iframe').forEach(f => {
-                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) { _dbg('_closeReelsSilent', e); }
             });
             // Reset reels state agar konten baru saat dibuka kembali
             _reelsLoaded = false;
@@ -5738,7 +5758,7 @@
             document.querySelectorAll('.audio-player-mini').forEach(a => { a.pause(); a.currentTime = 0; });
             document.getElementById('filterOverlay').style.display = 'none';
             document.querySelectorAll('#carouselTrack iframe').forEach(iframe => {
-                try { iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch(e) {}
+                try { iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch (e) { _dbg('_closeSoundtrackSilent', e); }
             });
             if (document.getElementById('movieModal').style.display !== 'block') {
                 document.body.style.overflow = 'auto';
@@ -5985,12 +6005,12 @@
                 if (document.documentElement.requestFullscreen) {
                     await document.documentElement.requestFullscreen();
                 }
-            } catch (e) {}
+            } catch (e) { _warn('enterLandscape', e); }
             try {
                 if (screen.orientation && screen.orientation.lock) {
                     await screen.orientation.lock('landscape');
                 }
-            } catch (e) {}
+            } catch (e) { _warn('enterLandscape', e); }
         }
 
         function buildLsServerList() {
@@ -6059,7 +6079,7 @@
                 if (document.documentElement.requestFullscreen) {
                     await document.documentElement.requestFullscreen();
                 }
-            } catch(e){}
+            } catch (e) { _warn('tryFullscreen', e); }
         }
 
         // --- Auto-landscape saat HP diputar, seperti aplikasi film pada umumnya ---
@@ -6095,7 +6115,7 @@
             try {
                 const v = parseInt(localStorage.getItem('lsVolume'), 10);
                 if (!isNaN(v)) _lsVolume = Math.min(100, Math.max(0, v));
-            } catch(e) {}
+            } catch (e) { _warn('_lsVolInit', e); }
         })();
         function _lsVolTarget() {
             // Trailer = iframe vid-N (YouTube/Dailymotion); streaming = player-frame
@@ -6117,14 +6137,14 @@
                     }
                 } else {
                     // Best-effort untuk sebagian player streaming yang paham postMessage
-                    try { f.contentWindow.postMessage(JSON.stringify({type:'setVolume', volume: v / 100}), '*'); } catch(e) {}
-                    try { f.contentWindow.postMessage(JSON.stringify({event:'command', func:'setVolume', args:[v]}), '*'); } catch(e) {}
+                    try { f.contentWindow.postMessage(JSON.stringify({type:'setVolume', volume: v / 100}), '*'); } catch (e) { _dbg('_lsPostVolume', e); }
+                    try { f.contentWindow.postMessage(JSON.stringify({event:'command', func:'setVolume', args:[v]}), '*'); } catch (e) { _dbg('_lsPostVolume', e); }
                     if (!_lsVolWarned) {
                         _lsVolWarned = true;
                         showToast('Volume diatur dari player (server streaming)');
                     }
                 }
-            } catch(e) {}
+            } catch (e) { _dbg('_lsPostVolume', e); }
         }
         function _lsVolUI(v) {
             const icon = document.getElementById('lsVolIcon');
@@ -6135,7 +6155,7 @@
         function lsSetVolume(v) {
             _lsVolume = Math.min(100, Math.max(0, parseInt(v, 10) || 0));
             _lsMuted = _lsVolume === 0;
-            try { localStorage.setItem('lsVolume', String(_lsVolume)); } catch(e) {}
+            try { localStorage.setItem('lsVolume', String(_lsVolume)); } catch (e) { _warn('lsSetVolume', e); }
             _lsVolUI(_lsVolume);
             _lsPostVolume(_lsVolume);
         }
@@ -6214,7 +6234,7 @@
                 const keys = Object.keys(map);
                 if (keys.length > 200) delete map[keys[0]];
                 localStorage.setItem(RESUME_KEY, JSON.stringify(map));
-            } catch(e) {}
+            } catch (e) { _warn('saveResume', e); }
         }
         function fmtTime(sec) {
             sec = Math.floor(sec || 0);
@@ -6230,7 +6250,7 @@
                 tries++;
                 const f = document.getElementById('vid-0');
                 if (f && f.contentWindow) {
-                    try { f.contentWindow.postMessage(JSON.stringify({event:'command', func:'seekTo', args:[sec, true]}), '*'); } catch(e) {}
+                    try { f.contentWindow.postMessage(JSON.stringify({event:'command', func:'seekTo', args:[sec, true]}), '*'); } catch (e) { _dbg('_resumeTrailerSeek', e); }
                 }
                 if (tries >= 6) {
                     clearInterval(_resumeSeekIv);
@@ -6326,7 +6346,10 @@
                     const res = await fetch(url);
                     const data = await res.json();
                     clearTimeout(timer);
-                    try { sessionStorage.setItem(url, JSON.stringify(data)); } catch(e) {}
+                    // Hanya cache respons sukses; respons error (404/429/dll) tidak disimpan supaya bisa dicoba ulang
+                    if (res.ok) {
+                        try { sessionStorage.setItem(url, JSON.stringify(data)); } catch (e) { _warn('fetchWithCache', e); }
+                    }
                     resolve(data);
                 } catch(e) {
                     clearTimeout(timer);
@@ -6475,7 +6498,7 @@
                                         const el = document.getElementById(titleId);
                                         if (el) el.textContent = enT;
                                     }
-                                }).catch(()=>{});
+                                }).catch(e => _warn('openActorProfile', e));
                         }
                         return `
                         <div class="actor-hl-item" onclick="openModalFromActor(${w.id}, '${w.media_type}')" style="position:relative;flex:0 0 75px;border-radius:8px;overflow:hidden;background:#111;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.5)">
@@ -6546,7 +6569,7 @@
                                         const el = card.querySelector(`#aft-${m.id}-movie`);
                                         if (el) el.textContent = resolved;
                                     }
-                                }).catch(()=>{});
+                                }).catch(e => _warn('openActorProfile', e));
                         }
                         filmGrid.appendChild(card);
                     });
@@ -6606,7 +6629,7 @@
                                         const el = card.querySelector(`#aft-${m.id}-tv`);
                                         if (el) el.textContent = resolved;
                                     }
-                                }).catch(()=>{});
+                                }).catch(e => _warn('openActorProfile', e));
                         }
                         tvGrid.appendChild(card);
                     });
@@ -6684,11 +6707,11 @@
             musicDuckForOtherAudio();
             // Pause/mute semua video dari modal film yang mungkin masih main
             document.querySelectorAll('#carouselTrack iframe').forEach(f => {
-                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
-                try { f.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*'); } catch(e) {}
+                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) { _dbg('openReels', e); }
+                try { f.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*'); } catch (e) { _dbg('openReels', e); }
             });
             document.querySelectorAll('#mainVideoArea iframe').forEach(f => {
-                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) { _dbg('openReels', e); }
                 // Streaming server iframe - mute via src param tidak bisa, tapi remove src momentarily
             });
             const modal = document.getElementById('reelsModal');
@@ -6713,7 +6736,7 @@
             document.body.style.overflow = 'auto';
             // Hentikan semua video yang sedang main
             document.querySelectorAll('#reelsContainer iframe').forEach(f => {
-                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) { _dbg('closeReels', e); }
             });
             // Reset agar setiap buka reels dapat konten baru/acak
             _reelsLoaded = false;
@@ -6937,7 +6960,7 @@
                         if (firstSlide) {
                             const fi = firstSlide.querySelector('iframe');
                             if (fi) {
-                                try { fi.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch(e) {}
+                                try { fi.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch (e) { _dbg('scoreVid', e); }
                             }
                         }
                     }, 1800);
@@ -6963,9 +6986,9 @@
                     if (entry.isIntersecting && entry.intersectionRatio >= 0.8) {
                         // Pakai YT.Player jika tersedia, fallback ke postMessage
                         if (slide._ytPlayer && slide._ytPlayer.playVideo) {
-                            try { slide._ytPlayer.playVideo(); } catch(e) {}
+                            try { slide._ytPlayer.playVideo(); } catch (e) { _dbg('setupReelsAutoplay', e); }
                         } else {
-                            try { iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch(e) {}
+                            try { iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch (e) { _dbg('setupReelsAutoplay', e); }
                         }
                         // Attach YT Player jika belum
                         if (!slide._ytPlayer) attachYTPlayer(iframe, slide);
@@ -6979,9 +7002,9 @@
                             iframe.src = '';
                             wrap.classList.remove('streaming');
                         } else if (slide._ytPlayer && slide._ytPlayer.pauseVideo) {
-                            try { slide._ytPlayer.pauseVideo(); } catch(e) {}
+                            try { slide._ytPlayer.pauseVideo(); } catch (e) { _dbg('setupReelsAutoplay', e); }
                         } else {
-                            try { iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                            try { iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) { _dbg('setupReelsAutoplay', e); }
                         }
                     }
                 });
@@ -7047,7 +7070,7 @@
                         }
                     });
                     slide._ytPlayer = player;
-                } catch(e) {}
+                } catch (e) { _dbg('doAttach', e); }
             };
 
             if (window._ytApiReady) {
@@ -7179,7 +7202,7 @@
                         saveResume(window.currentMediaId, { t: cur });
                     }
                 }
-            } catch(e2) {}
+            } catch (e2) { _warn('fmt', e2); }
         });
         // Stop video/streaming saat tab disembunyikan — tapi BUKAN music iframe
         function stopNonMusicIframes() {
@@ -7188,7 +7211,7 @@
                 if (f.id === 'musicIframe' || f.id === 'musicYtFrame' || f.closest('#musicYtPlayer')) return;
                 const src = f.src || '';
                 if (src.includes('youtube.com') || src.includes('youtu.be')) {
-                    try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                    try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) { _dbg('stopNonMusicIframes', e); }
                 } else if (f.id === 'player-frame') {
                     // Ini player film/series (server streaming), BUKAN trailer (trailer id-nya
                     // "vid-N", beda). Sengaja TIDAK disentuh sama sekali di sini — karena iframe
@@ -7204,7 +7227,7 @@
                 }
             });
             Object.values(window._ytPlayers || {}).forEach(p => {
-                try { if (p && p.pauseVideo) p.pauseVideo(); } catch(e) {}
+                try { if (p && p.pauseVideo) p.pauseVideo(); } catch (e) { _dbg('stopNonMusicIframes', e); }
             });
         }
 
@@ -7233,7 +7256,7 @@
         // jadi begitu user tekan back dari halaman iklan, yang muncul iframe hitam kosong.
         window.addEventListener('pagehide', (e) => {
             if (e.persisted) return;
-            document.querySelectorAll('iframe').forEach(f => { try { f.src = ''; } catch(e) {} });
+            document.querySelectorAll('iframe').forEach(f => { try { f.src = ''; } catch (e) { _dbg('stopNonMusicIframes', e); } });
         });
 
         // Tambah reels ke popstate handler
@@ -7356,7 +7379,7 @@
                         const latin = aka.find(n => n && !isNonLatin(n));
                         if (latin) dirName = latin;
                         else if (pd.name && !isNonLatin(pd.name)) dirName = pd.name;
-                    } catch {}
+                    } catch (_e) { _warn('openReelDetail', _e); }
                 }
 
                 const countries = (d.production_countries || []).map(c => c.name).join(', ') || '—';
@@ -7716,7 +7739,7 @@
                             }).join(''); 
                             drop.style.display = 'block'; 
                         } else { drop.style.display = 'none'; } 
-                    } catch(e){} 
+                    } catch (e) { _warn('initSmartSearch', e); } 
                 }, 300); 
             }); 
             document.addEventListener('click', (e) => { if(!e.target.closest('.search-input-box')) drop.style.display = 'none'; }); 
@@ -7858,7 +7881,7 @@
                             });
                             return;
                         }
-                    } catch(e) {}
+                    } catch (e) { _warn('filterByDate', e); }
                     list.innerHTML = `<div style="text-align:center;padding:60px 20px">
                         <i class="fa-regular fa-calendar-xmark" style="font-size:36px;color:#444;margin-bottom:14px;display:block"></i>
                         <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:6px">No schedule</div>
@@ -7885,7 +7908,7 @@
                                 const origT = enM.original_title || enM.original_name || '';
                                 if (enT && !isNonLatin(enT)) title = enT;
                                 else if (origT && !isNonLatin(origT)) title = origT;
-                            } catch (_) {}
+                            } catch (_) { _warn('filterByDate', _); }
                         }
                     }
                     const releaseDate = m.release_date || m.first_air_date || '';
@@ -8370,7 +8393,7 @@
                                     const titleEl = card.querySelector('.card-title-text');
                                     if (titleEl) titleEl.textContent = finalT;
                                 }
-                            }).catch(()=>{});
+                            }).catch(e => _warn('renderGrid', e));
                         }
                     }
                 }
@@ -8594,14 +8617,14 @@
                 try {
                     const enVids = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${API_KEY}&language=en-US`);
                     rVideos = (enVids.results || []).filter(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
-                } catch(e) {}
+                } catch (e) { _warn('replayTrailer', e); }
 
                 // Step 2: Fallback semua bahasa jika EN kosong
                 if (rVideos.length === 0) {
                     try {
                         const rawVids = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${API_KEY}&include_video_language=en,hi,ko,ja,zh,th,id,ar,ru,null`);
                         rVideos = (rawVids.results || []).filter(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
-                    } catch(e) {}
+                    } catch (e) { _warn('replayTrailer', e); }
                 }
 
                 if (rVideos.length === 0) {
@@ -8694,7 +8717,7 @@
             const actorModal = document.getElementById('actorModal');
             if (actorModal.style.display === 'block') actorModal.style.display = 'none';
             window.currentMediaId = id; window.currentMediaType = type;
-            if (_pipWin) { try { _pipWin.close(); } catch(e) {} } // tutup PiP saat pindah judul
+            if (_pipWin) { try { _pipWin.close(); } catch (e) { _dbg('openModal', e); } } // tutup PiP saat pindah judul
             // State lanjut tonton — diset di awal supaya trailer render bisa langsung memakainya
             _pendingResumeEp = null;
             const _rdInit = getResumeData()[id] || {};
@@ -8796,14 +8819,14 @@
                 try {
                     const enVids = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${API_KEY}&language=en-US`);
                     allVideos = (enVids.results || []).filter(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
-                } catch(e2) {}
+                } catch (e2) { _warn('handleTrailerError', e2); }
             }
             // Fallback 2: jika masih kosong, cari semua bahasa
             if (allVideos.length === 0) {
                 try {
                     const rawVids = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${API_KEY}&include_video_language=en,hi,ko,ja,zh,th,id,ar,ru,null`);
                     allVideos = (rawVids.results || []).filter(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
-                } catch(e3) {}
+                } catch (e3) { _warn('handleTrailerError', e3); }
             }
 
             // FILTER BAHASA: prioritaskan bahasa Inggris, buang yg non-English jika ada EN
@@ -8930,7 +8953,7 @@
                         const latinAka = akaList.find(n => n && !isNonLatin(n) && /[a-zA-Z]/.test(n));
                         if (latinAka) displayName = latinAka;
                     }
-                } catch {}
+                } catch (_e) { _warn('normalizeTitle', _e); }
                 return `<div class="cast-item" onclick="openActorProfile(${c.id})"><div class="cast-img-border"><div class="inner-border">${profileImg}</div></div><span class="cast-name">${displayName}</span>${charName ? `<span style="font-size:8px;color:#555;display:block;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:65px">${charName}</span>` : ''}</div>`;
             }));
             document.getElementById('castContainer').innerHTML = castItems.join('');
@@ -8942,7 +8965,7 @@
                 try {
                     const enFallback = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=en-US`);
                     displayTitle = enFallback.title || enFallback.name || displayTitle;
-                } catch {}
+                } catch (_e) { _warn('normalizeTitle', _e); }
             }
             document.getElementById('mTitle').innerText = displayTitle;
             const _mu = document.getElementById('mModalTitle');
@@ -8978,7 +9001,7 @@
                         const latin = aka.find(n => n && !isNonLatin(n));
                         if (latin) miDirName = latin;
                         else if (pd.name && !isNonLatin(pd.name)) miDirName = pd.name;
-                    } catch {}
+                    } catch (_e) { _warn('normalizeTitle', _e); }
                 }
                 // Writer: cari dari crew (Screenplay, Story, Writer)
                 const miWriters = miCrew.filter(c => ['Writer','Screenplay','Story','Script','Creator'].includes(c.job));
@@ -8990,7 +9013,7 @@
                         const latin = aka.find(n => n && !isNonLatin(n));
                         if (latin) miWriterNames = latin + (miWriters.length > 1 ? ', ...' : '');
                         else if (pw.name && !isNonLatin(pw.name)) miWriterNames = pw.name + (miWriters.length > 1 ? ', ...' : '');
-                    } catch {}
+                    } catch (_e) { _warn('normalizeTitle', _e); }
                 }
                 // Budget & Revenue (hanya untuk movie)
                 const miBudget = (type === 'movie' && dId.budget && dId.budget > 0) ? '$' + dId.budget.toLocaleString('en-US') : (type === 'tv' ? '—' : '—');
@@ -9615,12 +9638,12 @@
                     slides.forEach(s => {
                         const f = s.querySelector('iframe');
                         if (!f) return;
-                        try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
+                        try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) { _dbg('setupSwipe', e); }
                         s.classList.remove('playing');
                     });
                     const newVid = document.getElementById(`vid-${currentIdx}`);
                     if(newVid) {
-                        try { newVid.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch(e) {}
+                        try { newVid.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch (e) { _dbg('setupSwipe', e); }
                         newVid.closest('.carousel-slide')?.classList.add('playing');
                     }
                 } 
@@ -9726,8 +9749,8 @@
             if (!images.length) return;
             // Pause semua video yang sedang main
             document.querySelectorAll('#carouselTrack iframe, #mainVideoArea iframe').forEach(f => {
-                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
-                try { f.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*'); } catch(e) {}
+                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch (e) { _dbg('openLightbox', e); }
+                try { f.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*'); } catch (e) { _dbg('openLightbox', e); }
             });
             _lbIdx = Math.max(0, Math.min(startIdx || 0, images.length - 1));
             const modal = document.getElementById('lightboxModal');
@@ -9793,10 +9816,10 @@
                 document.body.style.overflow = 'hidden';
                 // Un-mute dan auto-play trailer aktif setelah lightbox ditutup
                 document.querySelectorAll('#carouselTrack iframe').forEach((f, i) => {
-                    try { f.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*'); } catch(e) {}
+                    try { f.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*'); } catch (e) { _dbg('closeLightbox', e); }
                     // Play hanya iframe yang aktif (currentIdx)
                     if (i === currentIdx) {
-                        try { f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch(e) {}
+                        try { f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch (e) { _dbg('closeLightbox', e); }
                     }
                 });
             }
@@ -9968,7 +9991,7 @@
                                 const origT = en.original_title || en.original_name || '';
                                 if (enT && !isNonLatin(enT)) title = enT;
                                 else if (origT && !isNonLatin(origT)) title = origT;
-                            } catch {}
+                            } catch (_e) { _warn('resolveTitle', _e); }
                         }
                     }
                     return { ...m, _resolvedTitle: title };
@@ -10183,7 +10206,7 @@
                     const recData = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}/recommendations?api_key=${API_KEY}&language=en-US&page=1`);
                     (recData.results || []).filter(m => m.poster_path && !existIds.has(m.id))
                         .forEach(m => { existIds.add(m.id); items.push({...m, _src:'rec'}); });
-                } catch(e) {}
+                } catch (e) { _warn('loadSimilarMovies', e); }
 
                 // 2. Film dari director yang sama
                 try {
@@ -10197,7 +10220,7 @@
                             .sort((a,b) => (b.vote_average||0) - (a.vote_average||0)).slice(0,5)
                             .forEach(m => { existIds.add(m.id); items.push({...m, _src:'director', _dirName: director.name}); });
                     }
-                } catch(e) {}
+                } catch (e) { _warn('loadSimilarMovies', e); }
 
                 // 3. Fallback discover by genre jika masih kurang
                 if (items.length < 8 && genreIds && genreIds.length > 0) {
@@ -10257,10 +10280,10 @@
                                     const el = document.getElementById(`sct-${m.id}`);
                                     if (el) el.textContent = resolved;
                                 }
-                            }).catch(() => {});
+                            }).catch(e => _warn('loadSimilarMovies', e));
                     }
                 }
-            } catch(e) {}
+            } catch (e) { _warn('loadSimilarMovies', e); }
         }
 
         // ===== POSTER GALLERY =====
@@ -10301,7 +10324,7 @@
                              style="${isBackdrop ? 'height:80px;width:auto' : 'height:110px;width:auto'}">
                     </div>`;
                 }).join('');
-            } catch(e) {}
+            } catch (e) { _warn('loadPosterGallery', e); }
         }
 
         // ===== RATING BADGES in modal (bintang berwarna, angka putih) =====
@@ -10455,7 +10478,7 @@
                             const en = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${m.id}?api_key=${API_KEY}&language=en-US`);
                             const enT = en.title || en.name || '';
                             if (enT && !isNonLatin(enT)) title = enT;
-                        } catch {}
+                        } catch (_e) { _warn('renderExploreGrid', _e); }
                     }
                 }
                 return { ...m, _latinTitle: title, _type: type };
@@ -10683,7 +10706,7 @@
                     pullText.innerText = 'Refreshing...';
                     pullInner.className = 'pull-inner ready';
                     indicator.style.height = '48px';
-                    try { sessionStorage.clear(); } catch(e) {}
+                    try { sessionStorage.clear(); } catch (e) { _warn('initPullToRefresh', e); }
                     await loadFeed(true);
                     renderRecentlyViewed();
                     setTimeout(() => {
@@ -10715,20 +10738,20 @@
         const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2];
         let _playbackRate = 1;
         (function _speedInit() {
-            try { const r = parseFloat(localStorage.getItem('playbackRate')); if (PLAYBACK_RATES.includes(r)) _playbackRate = r; } catch(e) {}
+            try { const r = parseFloat(localStorage.getItem('playbackRate')); if (PLAYBACK_RATES.includes(r)) _playbackRate = r; } catch (e) { _dbg('_speedInit', e); }
         })();
         function _speedApply() {
             const v = document.getElementById(`vid-${currentIdx}`);
-            if (v) { try { v.contentWindow.postMessage(JSON.stringify({event:'command', func:'setPlaybackRate', args:[_playbackRate]}), '*'); } catch(e) {} }
+            if (v) { try { v.contentWindow.postMessage(JSON.stringify({event:'command', func:'setPlaybackRate', args:[_playbackRate]}), '*'); } catch (e) { _dbg('_speedApply', e); } }
             if (_musicFrameWin) { _musicDmPost({command: 'setSpeed', params: [_playbackRate]}); }
-            if (_musicAudio) { try { _musicAudio.playbackRate = _playbackRate; } catch(e) {} }
+            if (_musicAudio) { try { _musicAudio.playbackRate = _playbackRate; } catch (e) { _dbg('_speedApply', e); } }
             const l1 = document.getElementById('speedLabel'); if (l1) l1.innerText = _playbackRate + '×';
             const l2 = document.getElementById('lsSpeedLabel'); if (l2) l2.innerText = _playbackRate + '×';
         }
         function cyclePlaybackSpeed() {
             const i = PLAYBACK_RATES.indexOf(_playbackRate);
             _playbackRate = PLAYBACK_RATES[(i + 1) % PLAYBACK_RATES.length];
-            try { localStorage.setItem('playbackRate', String(_playbackRate)); } catch(e) {}
+            try { localStorage.setItem('playbackRate', String(_playbackRate)); } catch (e) { _dbg('cyclePlaybackSpeed', e); }
             const isStream = activeServerIdx !== 99 && !_musicFrameWin && !_musicAudio;
             showToast(isStream ? 'Kecepatan diatur dari player (streaming)' : `Kecepatan ${_playbackRate}×`);
             _speedApply();
@@ -10739,7 +10762,7 @@
         async function pipVideo() {
             const f = document.getElementById(`vid-${currentIdx}`) || document.getElementById('player-frame');
             if (!f) { showToast('Tidak ada video untuk PiP.'); return; }
-            if (_pipWin) { try { _pipWin.close(); } catch(e) {} return; }
+            if (_pipWin) { try { _pipWin.close(); } catch (e) { _dbg('pipVideo', e); } return; }
             if (!window.documentPictureInPicture) { showToast('PiP didukung di Chrome/Edge (desktop).'); return; }
             try {
                 const win = await window.documentPictureInPicture.requestWindow({ width: 420, height: 260 });
@@ -10793,7 +10816,7 @@
 
         // ---------- LANJUT TONTON DI BERANDA ----------
         function clearAllResume() {
-            try { localStorage.removeItem('resumeData'); } catch(e) {}
+            try { localStorage.removeItem('resumeData'); } catch (e) { _warn('clearAllResume', e); }
             const wrap = document.getElementById('continueWatchingWrap');
             if (wrap) wrap.style.display = 'none';
             showToast('Lanjut Tonton dibersihkan');
@@ -10805,7 +10828,7 @@
                 const r = await fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=en-US`);
                 const t = r.title || r.name || r.original_title || r.original_name || '';
                 if (t && !isNonLatin(t)) return t;
-            } catch(e) {}
+            } catch (e) { _warn('_latinTitle', e); }
             return current || 'Judul';
         }
         async function renderContinueWatching() {
@@ -10822,7 +10845,7 @@
                 let type = v.type || 'movie';
                 const key = `cw_${type}_${id}`;
                 let d = null;
-                try { d = JSON.parse(sessionStorage.getItem(key)); } catch(e) {}
+                try { d = JSON.parse(sessionStorage.getItem(key)); } catch (e) { _warn('renderContinueWatching', e); }
                 if (!d) {
                     // Coba tipe tersimpan, lalu tipe sebaliknya (entri lama mungkin salah tipe)
                     for (const t2 of [type, type === 'tv' ? 'movie' : 'tv']) {
@@ -10834,15 +10857,15 @@
                                 type = t2;
                                 break;
                             }
-                        } catch(e) {}
+                        } catch (e) { _warn('renderContinueWatching', e); }
                     }
                     if (!d) return null;
-                    try { sessionStorage.setItem(`cw_${type}_${id}`, JSON.stringify(d)); } catch(e) {}
+                    try { sessionStorage.setItem(`cw_${type}_${id}`, JSON.stringify(d)); } catch (e) { _warn('renderContinueWatching', e); }
                     // Perbaiki tipe di resumeData agar konsisten
                     try {
                         const m = getResumeData();
                         if (m[id]) { m[id].type = type; localStorage.setItem(RESUME_KEY, JSON.stringify(m)); }
-                    } catch(e) {}
+                    } catch (e) { _warn('renderContinueWatching', e); }
                 }
                 const label = type === 'tv'
                     ? `S${v.s || 1} · E${v.e || 1}`
@@ -10886,7 +10909,7 @@
                 url: url,
                 date: new Date().toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
             });
-            try { localStorage.setItem(DL_KEY, JSON.stringify(lib.slice(0, 100))); } catch(e) {}
+            try { localStorage.setItem(DL_KEY, JSON.stringify(lib.slice(0, 100))); } catch (e) { _warn('addToDownloadLib', e); }
             showToast('Ditambahkan ke Pustaka Unduhan');
         }
         function openDownloadLib() {
@@ -10923,16 +10946,16 @@
         function _fallbackCopy(text, cb) {
             const ta = document.createElement('textarea');
             ta.value = text; document.body.appendChild(ta); ta.select();
-            try { document.execCommand('copy'); cb(); } catch(e) {}
+            try { document.execCommand('copy'); cb(); } catch (e) { _dbg('_fallbackCopy', e); }
             ta.remove();
         }
         function removeDownloadEntry(id) {
             const lib = getDownloadLib().filter(x => x.id !== id);
-            try { localStorage.setItem(DL_KEY, JSON.stringify(lib)); } catch(e) {}
+            try { localStorage.setItem(DL_KEY, JSON.stringify(lib)); } catch (e) { _warn('removeDownloadEntry', e); }
             renderDownloadLib();
         }
         function clearDownloadLib() {
-            try { localStorage.removeItem(DL_KEY); } catch(e) {}
+            try { localStorage.removeItem(DL_KEY); } catch (e) { _warn('clearDownloadLib', e); }
             renderDownloadLib();
         }
 
@@ -10951,7 +10974,7 @@
                 showToast('Ingatkan saya aktif — cek Notifikasi Rilis');
                 if (btn) { btn.style.color = '#e50914'; }
             }
-            try { localStorage.setItem(REMIND_KEY, JSON.stringify(arr.slice(0, 50))); } catch(e) {}
+            try { localStorage.setItem(REMIND_KEY, JSON.stringify(arr.slice(0, 50))); } catch (e) { _warn('toggleReleaseReminder', e); }
             updateNotifBadge();
         }
         function updateNotifBadge() {
@@ -10991,7 +11014,7 @@
                     : `<span style="color:#777">${diff} hari lagi</span>`;
                 return `<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #161616">
                     <div style="width:44px;height:62px;border-radius:8px;overflow:hidden;background:#161616;flex-shrink:0">
-                        ${r.poster ? `<img src="https://image.tmdb.org/t/p/w92${r.poster}" style="width:100%;height:100%;object-fit:cover">` : ''}
+                        ${r.poster ? `<img loading="lazy" decoding="async" src="https://image.tmdb.org/t/p/w92${r.poster}" style="width:100%;height:100%;object-fit:cover">` : ''}
                     </div>
                     <div style="flex:1;min-width:0">
                         <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</div>
@@ -11004,11 +11027,11 @@
         }
         function removeReminder(id) {
             const arr = getReminders().filter(r => r.id !== id);
-            try { localStorage.setItem(REMIND_KEY, JSON.stringify(arr)); } catch(e) {}
+            try { localStorage.setItem(REMIND_KEY, JSON.stringify(arr)); } catch (e) { _warn('removeReminder', e); }
             renderNotifCenter(); updateNotifBadge();
         }
         function clearReminders() {
-            try { localStorage.removeItem(REMIND_KEY); } catch(e) {}
+            try { localStorage.removeItem(REMIND_KEY); } catch (e) { _warn('clearReminders', e); }
             renderNotifCenter(); updateNotifBadge();
         }
 
@@ -11062,9 +11085,9 @@
                 link.rel = 'manifest';
                 link.href = URL.createObjectURL(blob);
                 document.head.appendChild(link);
-            } catch(e) {}
+            } catch (e) { _warn('_pwaInit', e); }
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
+                navigator.serviceWorker.register('sw.js').catch(e => _warn('_pwaInit', e));
             }
         })();
 
@@ -11076,7 +11099,7 @@
     <!-- ===== PUSTAKA UNDUHAN ===== -->
     <div id="downloadLibModal" style="display:none;position:fixed;inset:0;z-index:9950;background:#000;flex-direction:column">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#000;border-bottom:1px solid #161616;flex-shrink:0">
-            <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer" onclick="closeDownloadLib()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeDownloadLib()"></i>
             <span style="font-size:17px;font-weight:800;color:#fff">Pustaka Unduhan</span>
             <span style="flex:1"></span>
             <i class="fa-solid fa-trash-can" style="color:#555;font-size:16px;cursor:pointer" onclick="clearDownloadLib()" title="Hapus semua"></i>
@@ -11087,7 +11110,7 @@
     <!-- ===== PUSAT NOTIFIKASI RILIS ===== -->
     <div id="notifCenterModal" style="display:none;position:fixed;inset:0;z-index:9950;background:#000;flex-direction:column">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#000;border-bottom:1px solid #161616;flex-shrink:0">
-            <i class="fa-solid fa-chevron-left" style="font-size:20px;color:#fff;cursor:pointer" onclick="closeNotifCenter()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeNotifCenter()"></i>
             <span style="font-size:17px;font-weight:800;color:#fff">Notifikasi Rilis</span>
             <span style="flex:1"></span>
             <i class="fa-solid fa-trash-can" style="color:#555;font-size:16px;cursor:pointer" onclick="clearReminders()" title="Hapus semua"></i>
