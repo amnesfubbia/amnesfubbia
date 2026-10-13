@@ -2320,7 +2320,7 @@
             <i class="fa-solid fa-arrow-left btn-icon" onclick="closeSearch()"></i>
             <div class="search-input-box">
                 <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
-                <input type="text" id="searchInp" autocomplete="off" placeholder="Search movies, series, or actors..." onkeydown="if(event.key==='Enter') searchAction()" oninput="handleSearchInput(this.value)">
+                <input type="text" id="searchInp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" placeholder="Search movies, series, or actors..." onkeydown="if(event.key==='Enter') searchAction()" oninput="handleSearchInput(this.value)">
                 <i class="fa-solid fa-xmark text-zinc-500 text-xs cursor-pointer" id="searchClearBtn" style="display:none;padding-left:6px" onclick="clearSearch()"></i>
                 <i class="fa-solid fa-microphone text-zinc-500 text-xs cursor-pointer" id="searchMicBtn" style="padding-left:6px;display:none" onclick="voiceSearch('movie')" title="Cari dengan suara"></i>
                 <div id="smartSearchDropdown" class="no-scrollbar"></div>
@@ -2343,6 +2343,8 @@
         </div>
         <!-- Empty/idle state -->
         <div id="searchEmptyState" style="padding:0 0 40px;">
+            <!-- Riwayat pencarian film -->
+            <div id="filmRecentSearches"></div>
             <!-- Explore tabs — sticky di bawah search bar -->
             <div style="position:sticky;top:54px;z-index:88;background:#000;border-bottom:1px solid #1c1c1c;">
                 <div style="display:flex">
@@ -3937,14 +3939,26 @@
         let _musicFrameWin = null;     // contentWindow iframe Dailymotion
 
         // Cari lagu penuh di Dailymotion (API publik, CORS terbuka, tanpa kunci)
+        let _musicDmErr = '';  // penyebab gagal terakhir ('' = hanya tidak ada hasil)
         async function _musicSearchDm(q) {
+            _musicDmErr = '';
+            const ctrl = new AbortController();
+            const tm = setTimeout(() => ctrl.abort(), 8000);
             try {
-                const r = await fetch(`https://api.dailymotion.com/videos?fields=id,title&search=${encodeURIComponent(q)}&limit=5&family_filter=0`);
-                if (!r.ok) return null;
+                const r = await fetch(`https://api.dailymotion.com/videos?fields=id,title,duration,allow_embed&search=${encodeURIComponent(q)}&limit=10&family_filter=0`, { signal: ctrl.signal });
+                if (!r.ok) { _musicDmErr = 'HTTP ' + r.status; _warn('_musicSearchDm', _musicDmErr); return null; }
                 const d = await r.json();
-                const list = d.list || [];
-                return list.length ? list[0].id : null;
-            } catch(e) { return null; }
+                // Buang video yang tidak boleh di-embed
+                const list = (d.list || []).filter(v => v && v.id && v.allow_embed !== false);
+                if (!list.length) return null;
+                // Utamakan durasi seperti lagu (1,5–10 menit); kalau tidak ada pakai hasil pertama
+                const song = list.find(v => v.duration >= 90 && v.duration <= 600);
+                return (song || list[0]).id;
+            } catch (e) {
+                _musicDmErr = 'network';
+                _warn('_musicSearchDm', e);
+                return null;
+            } finally { clearTimeout(tm); }
         }
         // Kirim perintah kontrol ke iframe Dailymotion
         function _musicDmPost(obj) {
@@ -3972,9 +3986,11 @@
         }
         // Putar lagu penuh via embed Dailymotion
         async function _musicPlayYt(q) {
-            const vidId = await _musicSearchDm(q);
+            let vidId = await _musicSearchDm(q);
+            // Kalau kata "official audio" membuat hasil kosong, coba lagi hanya artis + judul
+            if (!vidId && !_musicDmErr && / - official audio$/.test(q)) vidId = await _musicSearchDm(q.replace(/ - official audio$/, ''));
             if (!vidId) {
-                showToast('Lagu penuh tidak ditemukan — pakai preview 30 detik');
+                showToast(_musicDmErr ? 'Server lagu penuh tidak merespons — pakai preview 30 detik' : 'Lagu penuh tidak ditemukan — pakai preview 30 detik');
                 _musicPlayPreview(_musicCurrentTrack);
                 return;
             }
@@ -3988,7 +4004,7 @@
             const f = document.createElement('iframe');
             f.setAttribute('allow', 'autoplay; fullscreen; encrypted-media; picture-in-picture');
             f.style.cssText = 'width:100%;height:100%;border:0;display:block';
-            f.src = `https://www.dailymotion.com/embed/video/${vidId}?autoplay=1&playsinline=1&queue-enable=0&ui-start-screen-info=0`;
+            f.src = `https://www.dailymotion.com/embed/video/${vidId}?autoplay=1&playsinline=1&queue-enable=0&ui-start-screen-info=0&api=postMessage`;
             ph.appendChild(f);
             _musicShowYtInPlayer(); // pastikan langsung terlihat kalau pemutar penuh sedang terbuka
             // Kirim perintah play/volume/kecepatan setelah contentWindow siap
@@ -3998,8 +4014,8 @@
                 if (f.contentWindow) {
                     _musicFrameWin = f.contentWindow;
                     _musicDmPost({command: 'play'});
-                    _musicDmPost({command: 'volume', params: [_lsVolume / 100]});
-                    _musicDmPost({command: 'setSpeed', params: [_playbackRate]});
+                    _musicDmPost({command: 'volume', parameters: [_lsVolume / 100]});
+                    _musicDmPost({command: 'setSpeed', parameters: [_playbackRate]});
                     clearInterval(iv);
                 }
                 if (tries > 25) clearInterval(iv);
@@ -4212,7 +4228,7 @@
             const rect = bar.getBoundingClientRect();
             const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
             if (_musicFullMode && _musicFrameWin && _musicLastDur > 0) {
-                _musicDmPost({command: 'seek', params: [pct * _musicLastDur]});
+                _musicDmPost({command: 'seek', parameters: [pct * _musicLastDur]});
                 document.getElementById('musicFullProgress').style.width = (pct * 100) + '%';
                 return;
             }
@@ -4221,7 +4237,7 @@
         }
         function musicSetVolume(v) {
             if (_musicFullMode && _musicFrameWin) {
-                _musicDmPost({command: 'volume', params: [(parseInt(v, 10) || 0) / 100]});
+                _musicDmPost({command: 'volume', parameters: [(parseInt(v, 10) || 0) / 100]});
                 return;
             }
             if (_musicAudio) _musicAudio.volume = v / 100;
@@ -5228,6 +5244,33 @@
         let _iptvChannelsCache = null;
         let _iptvLoading = false;
         let _hlsInstance = null;
+        // Pemulihan otomatis kalau stream IPTV putus/macet
+        let _hlsRetry = 0, _hlsRetryTimer = null, _hlsCurUrl = '';
+        const HLS_MAX_RETRY = 4;
+        function _hlsClearRetry() { if (_hlsRetryTimer) { clearTimeout(_hlsRetryTimer); _hlsRetryTimer = null; } }
+        function _hlsHandleError(video, data) {
+            if (!data || !data.fatal) return;            // error non-fatal ditangani hls.js sendiri
+            if (_hlsRetry > HLS_MAX_RETRY) return;       // sudah menyerah, jangan spam
+            if (_hlsRetry === HLS_MAX_RETRY) {
+                _hlsRetry++;
+                showToast('Channel tidak bisa diputar. Coba channel lain.', 3500);
+                return;
+            }
+            _hlsRetry++;
+            if (_hlsRetry === 1) showToast('Siaran terputus, mencoba menyambung ulang…');
+            const inst = _hlsInstance, url = _hlsCurUrl;
+            _hlsClearRetry();
+            _hlsRetryTimer = setTimeout(() => {
+                if (inst !== _hlsInstance) return;       // channel sudah diganti / dihentikan
+                if (data.type === Hls.ErrorTypes.NETWORK_ERROR) inst.startLoad();
+                else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) inst.recoverMediaError();
+                else {
+                    try { inst.destroy(); } catch (e) { _dbg('_hlsHandleError', e); }
+                    _hlsInstance = null;
+                    _playHls(video, url, true);
+                }
+            }, 1500 * _hlsRetry);
+        }
 
         function _isJunkIptvName(name) {
             if (!name) return true;
@@ -5324,9 +5367,12 @@
         }
 
         function _destroyHls() {
+            _hlsClearRetry(); _hlsRetry = 0;
             if (_hlsInstance) { try { _hlsInstance.destroy(); } catch (e) { _dbg('_destroyHls', e); } _hlsInstance = null; }
         }
-        function _playHls(video, url) {
+        function _playHls(video, url, _isRetry) {
+            if (!_isRetry) { _hlsClearRetry(); _hlsRetry = 0; }
+            _hlsCurUrl = url;
             if (window.Hls && Hls.isSupported()) {
                 if (_hlsInstance) {
                     // Pakai ulang instance yang sudah nempel di <video> — jangan destroy/attach ulang
@@ -5337,6 +5383,8 @@
                 }
                 _hlsInstance = new Hls();
                 _hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(e => _dbg('_playHls', e)));
+                _hlsInstance.on(Hls.Events.FRAG_LOADED, () => { _hlsRetry = 0; });
+                _hlsInstance.on(Hls.Events.ERROR, (evt, data) => _hlsHandleError(video, data));
                 _hlsInstance.loadSource(url);
                 _hlsInstance.attachMedia(video);
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
@@ -6864,28 +6912,8 @@
                     } catch(e) { return null; }
                 });
 
-                const results = await Promise.allSettled(videoPromises);
-                const newReels = results
-                    .filter(r => r.status === 'fulfilled' && r.value)
-                    .map(r => r.value);
-
-                if (isNew) container.innerHTML = '';
-
-                if (newReels.length === 0 && isNew) {
-                    container.innerHTML = `
-                        <div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
-                            <i class="fa-regular fa-circle-play" style="font-size:48px;color:#555"></i>
-                            <div style="font-size:14px;font-weight:700;color:#555">Tidak Ada Konten</div>
-                            <div style="font-size:12px;color:#666;text-align:center;padding:0 40px">Gagal memuat trailer</div>
-                        </div>`;
-                    _reelsLoading = false;
-                    return;
-                }
-
-                _reelsData.push(...newReels);
-                _reelsLoaded = true;
-
-                newReels.forEach((reel, reelIdx) => {
+                // Pembuat slide (dipisah agar reel pertama bisa tampil lebih awal)
+                const appendReelSlide = (reel, reelIdx) => {
                     const lib = getReelLibStatus(reel.movieId);
                     const slide = document.createElement('div');
                     slide.className = 'reel-slide';
@@ -6949,12 +6977,10 @@
                             </button>
                         </div>`;
                     container.appendChild(slide);
-                });
+                };
 
-                setupReelsAutoplay();
-                setupReelSwipeLeft();
-                // Manual trigger play untuk slide pertama
-                if (isNew) {
+                // Putar slide pertama secara manual (parameter autoplay saja kadang diblokir)
+                const playFirstReel = () => {
                     setTimeout(() => {
                         const firstSlide = document.querySelector('.reel-slide');
                         if (firstSlide) {
@@ -6964,7 +6990,55 @@
                             }
                         }
                     }, 1800);
+                };
+
+                // Saat Reels dibuka: tampilkan reel pertama begitu SIAP, tanpa menunggu 15 judul selesai semua
+                let firstRendered = false, startIdx = 0;
+                if (isNew) {
+                    for (let i = 0; i < videoPromises.length; i++) {
+                        const r = await videoPromises[i].catch(() => null);
+                        if (r) {
+                            container.innerHTML = '';
+                            _reelsData.push(r);
+                            _reelsLoaded = true;
+                            appendReelSlide(r, 0);
+                            setupReelsAutoplay();
+                            setupReelSwipeLeft();
+                            playFirstReel();
+                            firstRendered = true;
+                            startIdx = i + 1;
+                            break;
+                        }
+                    }
                 }
+
+                const results = await Promise.allSettled(videoPromises.slice(startIdx));
+                const newReels = results
+                    .filter(r => r.status === 'fulfilled' && r.value)
+                    .map(r => r.value);
+
+                if (isNew && !firstRendered) container.innerHTML = '';
+
+                if (newReels.length === 0 && isNew && !firstRendered) {
+                    container.innerHTML = `
+                        <div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
+                            <i class="fa-regular fa-circle-play" style="font-size:48px;color:#555"></i>
+                            <div style="font-size:14px;font-weight:700;color:#555">Tidak Ada Konten</div>
+                            <div style="font-size:12px;color:#666;text-align:center;padding:0 40px">Gagal memuat trailer</div>
+                        </div>`;
+                    _reelsLoading = false;
+                    return;
+                }
+
+                _reelsData.push(...newReels);
+                _reelsLoaded = true;
+                newReels.forEach((reel, i) => appendReelSlide(reel, firstRendered ? i + 1 : i));
+
+                if (newReels.length > 0 || !firstRendered) {
+                    setupReelsAutoplay();
+                    setupReelSwipeLeft();
+                }
+                if (isNew && !firstRendered) playFirstReel();
                 _reelsPage++;
 
             } catch(e) {
@@ -7105,9 +7179,17 @@
         // postMessage dari player musik (Dailymotion) & video trailer (YouTube)
         window.addEventListener('message', e => {
             try {
-                const d = JSON.parse(e.data);
+                let d;
+                if (typeof e.data === 'string' && e.data.charAt(0) !== '{' && _musicFrameWin && e.source === _musicFrameWin) {
+                    // Sebagian versi player mengirim event berformat query-string (event=timeupdate&time=12.3)
+                    const q = new URLSearchParams(e.data);
+                    const num = v => { const n = parseFloat(v); return isNaN(n) ? undefined : n; };
+                    d = { event: q.get('event'), time: num(q.get('time')), progress: num(q.get('progress')), duration: num(q.get('duration')) };
+                } else {
+                    d = JSON.parse(e.data);
+                }
                 // PEMUTAR MUSIK FULL (Dailymotion) — progress, play/pause, selesai
-                if (window._musicFrameWin && e.source === window._musicFrameWin && d && d.event) {
+                if (_musicFrameWin && e.source === _musicFrameWin && d && d.event) {
                     if (d.event === 'timeupdate' && typeof d.time === 'number') {
                         _dmCurTime = d.time;
                         _musicYtGotSignal = true;
@@ -7132,7 +7214,7 @@
                 }
                 if (d.event !== 'infoDelivery' || !d.info) return;
                 // PEMUTAR MUSIK FULL (YouTube) — update progress mini & full player
-                if (window._musicFrameWin && e.source === window._musicFrameWin) {
+                if (_musicFrameWin && e.source === _musicFrameWin) {
                     const cur = typeof d.info.currentTime === 'number' ? d.info.currentTime : 0;
                     const dur = typeof d.info.duration === 'number' ? d.info.duration : 0;
                     if (dur > 0) _musicYtGotSignal = true;
@@ -8436,7 +8518,59 @@
             showSearchEmptyState();
         }
 
+        // ---------- RIWAYAT PENCARIAN FILM ----------
+        const FILM_RECENT_KEY = 'filmRecentSearches';
+        function _filmGetRecent() {
+            try { const a = JSON.parse(localStorage.getItem(FILM_RECENT_KEY) || '[]'); return Array.isArray(a) ? a : []; }
+            catch (e) { _warn('_filmGetRecent', e); return []; }
+        }
+        function _filmSetRecent(arr) {
+            try { localStorage.setItem(FILM_RECENT_KEY, JSON.stringify(arr)); } catch (e) { _warn('_filmSetRecent', e); }
+        }
+        function filmSaveRecentSearch(q) {
+            q = (q || '').trim();
+            if (q.length < 2) return;
+            const recent = _filmGetRecent().filter(x => x.toLowerCase() !== q.toLowerCase());
+            recent.unshift(q);
+            _filmSetRecent(recent.slice(0, 8));
+        }
+        function filmRemoveRecentSearch(q) {
+            _filmSetRecent(_filmGetRecent().filter(x => x !== q));
+            filmRenderRecentSearches();
+        }
+        function filmClearRecentSearches() {
+            _filmSetRecent([]);
+            filmRenderRecentSearches();
+        }
+        function filmRunRecentSearch(q) {
+            const inp = document.getElementById('searchInp');
+            if (!inp) return;
+            inp.value = q;
+            handleSearchInput(q);
+            searchAction();
+        }
+        function filmRenderRecentSearches() {
+            const el = document.getElementById('filmRecentSearches');
+            if (!el) return;
+            const recent = _filmGetRecent();
+            if (!recent.length) { el.innerHTML = ''; return; }
+            const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            el.innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 4px">
+                    <div style="font-size:13px;font-weight:700;color:#eee">Pencarian terakhir</div>
+                    <div onclick="filmClearRecentSearches()" style="font-size:12px;color:#888;cursor:pointer">Hapus semua</div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;padding:8px 16px 4px">
+                    ${recent.map(q => `
+                        <div class="genre-explore-chip" style="display:flex;align-items:center;gap:8px">
+                            <span data-q="${encodeURIComponent(q)}" onclick="filmRunRecentSearch(decodeURIComponent(this.dataset.q))">${esc(q)}</span>
+                            <i class="fa-solid fa-xmark" data-q="${encodeURIComponent(q)}" onclick="filmRemoveRecentSearch(decodeURIComponent(this.dataset.q))" style="font-size:11px;color:#666"></i>
+                        </div>`).join('')}
+                </div>`;
+        }
+
         function showSearchEmptyState() {
+            filmRenderRecentSearches();
             document.getElementById('searchEmptyState').style.display = 'block';
             document.getElementById('searchContent').style.display = 'none';
             document.getElementById('searchTypeTabs').style.display = 'none';
@@ -8508,6 +8642,7 @@
             document.getElementById('calendarHeader').classList.add('hidden');
             document.getElementById('smartSearchDropdown').style.display = 'none';
             showSearchResults();
+            filmSaveRecentSearch(searchQuery);
             loadFeed(true); 
         }
 
@@ -10743,7 +10878,7 @@
         function _speedApply() {
             const v = document.getElementById(`vid-${currentIdx}`);
             if (v) { try { v.contentWindow.postMessage(JSON.stringify({event:'command', func:'setPlaybackRate', args:[_playbackRate]}), '*'); } catch (e) { _dbg('_speedApply', e); } }
-            if (_musicFrameWin) { _musicDmPost({command: 'setSpeed', params: [_playbackRate]}); }
+            if (_musicFrameWin) { _musicDmPost({command: 'setSpeed', parameters: [_playbackRate]}); }
             if (_musicAudio) { try { _musicAudio.playbackRate = _playbackRate; } catch (e) { _dbg('_speedApply', e); } }
             const l1 = document.getElementById('speedLabel'); if (l1) l1.innerText = _playbackRate + '×';
             const l2 = document.getElementById('lsSpeedLabel'); if (l2) l2.innerText = _playbackRate + '×';
