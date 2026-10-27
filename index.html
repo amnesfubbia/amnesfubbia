@@ -1286,7 +1286,7 @@
         /* ===== REEL DETAIL BOTTOM SHEET ===== */
         #reelDetailSheet {
             display: none;
-            position: fixed; bottom: 0; left: 0; right: 0;
+            position: fixed; bottom: 52px; left: 0; right: 0;
             z-index: 9800;
             background: #141414;
             border-radius: 20px 20px 0 0;
@@ -5646,8 +5646,8 @@
             if(window.currentMediaId && window.currentMediaType) {
                 const isTV = window.currentMediaType === 'tv';
                 const downloadUrl = isTV
-                    ? `https://vidvault.ru/tv/${window.currentMediaId}/${activeSeason || 1}/${activeEpisode || 1}`
-                    : `https://vidvault.ru/movie/${window.currentMediaId}`;
+                    ? `https://vidvault.to/tv/${window.currentMediaId}/${activeSeason || 1}/${activeEpisode || 1}`
+                    : `https://vidvault.to/movie/${window.currentMediaId}`;
                 window.open(downloadUrl, '_blank');
                 addToDownloadLib('vidvault', downloadUrl);
             } else {
@@ -5682,7 +5682,7 @@
             const id = window.currentMediaId;
             const s = activeSeason || 1;
             if (!id) { showToast('Media tidak ditemukan.'); return; }
-            const epUrl = `https://vidvault.ru/tv/${id}/${s}/${epNum}`;
+            const epUrl = `https://vidvault.to/tv/${id}/${s}/${epNum}`;
             window.open(epUrl, '_blank');
             addToDownloadLib(`vidvault E${epNum}`, epUrl);
         }
@@ -7630,8 +7630,8 @@
             if (!id || !type) return;
             const isTV = type === 'tv';
             const url = isTV
-                ? `https://vidvault.ru/tv/${id}/1/1`
-                : `https://vidvault.ru/movie/${id}`;
+                ? `https://vidvault.to/tv/${id}/1/1`
+                : `https://vidvault.to/movie/${id}`;
             window.open(url, '_blank');
         }
 
@@ -7661,8 +7661,8 @@
             if (btn && btn.classList) { btn.classList.add('pressed'); setTimeout(() => btn && btn.classList.remove('pressed'), 300); }
             const isTV = _rdsCurrentType === 'tv';
             const url = isTV
-                ? `https://vidvault.ru/tv/${_rdsCurrentId}/1/1`
-                : `https://vidvault.ru/movie/${_rdsCurrentId}`;
+                ? `https://vidvault.to/tv/${_rdsCurrentId}/1/1`
+                : `https://vidvault.to/movie/${_rdsCurrentId}`;
             window.open(url, '_blank');
             addToDownloadLib('vidvault (reels)', url);
         }
