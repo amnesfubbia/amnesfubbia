@@ -134,7 +134,7 @@
         .genre-explore-chip {
             padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
             background: #1a1a1a; border: 1px solid #2a2a2a; color: #666;
-            cursor: pointer; white-space: nowrap; transition: all 0.15s;
+            cursor: pointer; white-space: nowrap; transition: all 0.15s; flex-shrink: 0;
             -webkit-tap-highlight-color: transparent;
         }
         .genre-explore-chip.active { background: #fff; color: #000; border-color: #fff; }
@@ -2354,7 +2354,7 @@
                 </div>
             </div>
             <!-- Genre chips row (shown only on Genres tab) -->
-            <div id="genreChipsRow" style="display:none;flex-wrap:wrap;gap:8px;padding:14px 16px 10px"></div>
+            <div id="genreChipsRow" class="no-scrollbar" style="display:none;flex-wrap:nowrap;align-items:center;gap:8px;padding:10px 16px;position:fixed;left:0;right:0;bottom:52px;z-index:4600;background:#000;border-top:1px solid #1c1c1c;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:pan-x;scrollbar-width:none"></div>
             <!-- Landscape grid: 2 columns -->
             <div id="exploreGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px"></div>
         </div>
@@ -3936,34 +3936,84 @@
         let _musicYtGotSignal = false; // sudah dapat sinyal valid dari player?
         let _musicLastDur = 0;         // durasi lagu penuh terakhir (untuk seek)
         let _dmCurTime = 0;            // posisi waktu terakhir dari event player
-        let _musicFrameWin = null;     // contentWindow iframe Dailymotion
+        let _musicFrameWin = null;     // contentWindow iframe YouTube
 
-        // Cari lagu penuh di Dailymotion (API publik, CORS terbuka, tanpa kunci)
-        let _musicDmErr = '';  // penyebab gagal terakhir ('' = hanya tidak ada hasil)
-        async function _musicSearchDm(q) {
-            _musicDmErr = '';
-            const ctrl = new AbortController();
-            const tm = setTimeout(() => ctrl.abort(), 8000);
-            try {
-                const r = await fetch(`https://api.dailymotion.com/videos?fields=id,title,duration,allow_embed&search=${encodeURIComponent(q)}&limit=10&family_filter=0`, { signal: ctrl.signal });
-                if (!r.ok) { _musicDmErr = 'HTTP ' + r.status; _warn('_musicSearchDm', _musicDmErr); return null; }
-                const d = await r.json();
-                // Buang video yang tidak boleh di-embed
-                const list = (d.list || []).filter(v => v && v.id && v.allow_embed !== false);
-                if (!list.length) return null;
-                // Utamakan durasi seperti lagu (1,5–10 menit); kalau tidak ada pakai hasil pertama
-                const song = list.find(v => v.duration >= 90 && v.duration <= 600);
-                return (song || list[0]).id;
-            } catch (e) {
-                _musicDmErr = 'network';
-                _warn('_musicSearchDm', e);
-                return null;
-            } finally { clearTimeout(tm); }
+        // Cari lagu penuh di YouTube (YouTube Data API v3)
+        // Catatan: key ini terlihat di source HTML. Sebaiknya dibatasi di Google Cloud Console
+        // (API restriction: YouTube Data API v3 saja) supaya tidak bisa dipakai orang lain.
+        const YOUTUBE_API_KEY = 'AIzaSyDJ7sM0LO75TaLTYhsrfwjqT5PkKeq7v5w';
+        let _musicYtErr = '';  // penyebab gagal terakhir ('' = hanya tidak ada hasil)
+        const _musicYtNorm = s => String(s || '').toLowerCase().replace(/&amp;/g, '&').replace(/[^a-z0-9\u00c0-\u024f ]+/g, ' ').replace(/\s+/g, ' ').trim();
+        // Cache hasil pencarian (hemat kuota: 1 pencarian = 100 dari 10.000 unit/hari)
+        const _MUSIC_YT_CACHE_KEY = 'musicYtCache';
+        function _musicYtCacheGet(k) {
+            try { return (JSON.parse(localStorage.getItem(_MUSIC_YT_CACHE_KEY) || '{}'))[k] || ''; } catch (e) { return ''; }
         }
-        // Kirim perintah kontrol ke iframe Dailymotion
-        function _musicDmPost(obj) {
+        function _musicYtCacheSet(k, id) {
+            try {
+                const c = JSON.parse(localStorage.getItem(_MUSIC_YT_CACHE_KEY) || '{}');
+                c[k] = id;
+                const keys = Object.keys(c);
+                if (keys.length > 300) keys.slice(0, keys.length - 300).forEach(x => delete c[x]);
+                localStorage.setItem(_MUSIC_YT_CACHE_KEY, JSON.stringify(c));
+            } catch (e) { _dbg('_musicYtCacheSet', e); }
+        }
+        async function _musicSearchYt(t) {
+            _musicYtErr = '';
+            const rawTitle = String(t.title || '');
+            const cleanTitle = _musicYtNorm(rawTitle.replace(/\(.*?\)|\[.*?\]/g, ' '));
+            const artist = _musicYtNorm(String(t.artist || '').split(/,|&| feat| ft\./i)[0]);
+            if (!cleanTitle) return null;
+            const cacheKey = artist + '|' + cleanTitle;
+            const cached = _musicYtCacheGet(cacheKey);
+            if (cached) return cached;
+            const BAD = /\b(karaoke|cover|remix|reaction|slowed|sped up|nightcore|instrumental|tutorial|lesson|8d|mashup)\b/;
+            const query = `${t.artist || ''} ${rawTitle.replace(/\(.*?\)|\[.*?\]/g, ' ')} official audio`.replace(/\s+/g, ' ').trim();
+            const run = async (withCategory) => {
+                const ctrl = new AbortController();
+                const tm = setTimeout(() => ctrl.abort(), 8000);
+                try {
+                    const url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=8'
+                        + (withCategory ? '&videoCategoryId=10' : '')
+                        + '&q=' + encodeURIComponent(query) + '&key=' + YOUTUBE_API_KEY;
+                    const r = await fetch(url, { signal: ctrl.signal });
+                    if (!r.ok) {
+                        let reason = '';
+                        try { const j = await r.json(); reason = (j.error && j.error.errors && j.error.errors[0] && j.error.errors[0].reason) || ''; } catch (e) {}
+                        _musicYtErr = /quota|rateLimit/i.test(reason) ? 'quota' : ('HTTP ' + r.status + (reason ? ' ' + reason : ''));
+                        _warn('_musicSearchYt', _musicYtErr);
+                        return null;
+                    }
+                    const d = await r.json();
+                    let best = null, bestScore = -99;
+                    for (const it of (d.items || [])) {
+                        if (!it.id || !it.id.videoId) continue;
+                        const vt = _musicYtNorm(it.snippet && it.snippet.title);
+                        const ch = _musicYtNorm(it.snippet && it.snippet.channelTitle);
+                        let sc = 0;
+                        if (vt.includes(cleanTitle)) sc += 3;
+                        if (artist && (vt.includes(artist) || ch.includes(artist))) sc += 2;
+                        if (/topic|vevo|official/.test(ch)) sc += 1;
+                        if (BAD.test(vt) && !BAD.test(cleanTitle)) sc -= 3;
+                        if (sc > bestScore) { bestScore = sc; best = it.id.videoId; }
+                    }
+                    // Minimal ada kecocokan judul atau artis — kalau tidak, lebih baik preview daripada lagu salah
+                    return bestScore >= 2 ? best : null;
+                } catch (e) {
+                    _musicYtErr = 'network';
+                    _warn('_musicSearchYt', e);
+                    return null;
+                } finally { clearTimeout(tm); }
+            };
+            let id = await run(true);
+            if (!id && !_musicYtErr) id = await run(false);
+            if (id) _musicYtCacheSet(cacheKey, id);
+            return id;
+        }
+        // Kirim perintah kontrol ke iframe YouTube (protokol postMessage resmi IFrame API)
+        function _musicYtCmd(func, args) {
             if (!_musicFrameWin) return;
-            try { _musicFrameWin.postMessage(JSON.stringify(obj), '*'); } catch (e) { _dbg('_musicDmPost', e); }
+            try { _musicFrameWin.postMessage(JSON.stringify({ event: 'command', func: func, args: args || '' }), '*'); } catch (e) { _dbg('_musicYtCmd', e); }
         }
         function _musicYtPoll() {
             if (!_musicFrameWin) return;
@@ -3984,14 +4034,16 @@
                 ? '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>'
                 : '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
         }
-        // Putar lagu penuh via embed Dailymotion
-        async function _musicPlayYt(q) {
-            let vidId = await _musicSearchDm(q);
-            // Kalau kata "official audio" membuat hasil kosong, coba lagi hanya artis + judul
-            if (!vidId && !_musicDmErr && / - official audio$/.test(q)) vidId = await _musicSearchDm(q.replace(/ - official audio$/, ''));
+        // Putar lagu penuh via embed YouTube
+        async function _musicPlayYt(t) {
+            const vidId = await _musicSearchYt(t);
+            // Pengguna sudah pindah lagu selama pencarian berlangsung → batalkan
+            if (_musicCurrentTrack !== t) return;
             if (!vidId) {
-                showToast(_musicDmErr ? 'Server lagu penuh tidak merespons — pakai preview 30 detik' : 'Lagu penuh tidak ditemukan — pakai preview 30 detik');
-                _musicPlayPreview(_musicCurrentTrack);
+                showToast(_musicYtErr === 'quota' ? 'Kuota YouTube hari ini habis — pakai preview 30 detik'
+                    : _musicYtErr ? 'Server lagu penuh tidak merespons — pakai preview 30 detik'
+                    : 'Lagu penuh tidak ditemukan — pakai preview 30 detik');
+                _musicPlayPreview(t);
                 return;
             }
             _musicYtGotSignal = false;
@@ -4004,30 +4056,33 @@
             const f = document.createElement('iframe');
             f.setAttribute('allow', 'autoplay; fullscreen; encrypted-media; picture-in-picture');
             f.style.cssText = 'width:100%;height:100%;border:0;display:block';
-            f.src = `https://www.dailymotion.com/embed/video/${vidId}?autoplay=1&playsinline=1&queue-enable=0&ui-start-screen-info=0&api=postMessage`;
+            f.src = `https://www.youtube.com/embed/${vidId}?enablejsapi=1&widgetid=1&autoplay=1&playsinline=1&controls=0&fs=0&rel=0&modestbranding=1&iv_load_policy=3`;
             ph.appendChild(f);
+            _musicFrameWin = f.contentWindow;
             _musicShowYtInPlayer(); // pastikan langsung terlihat kalau pemutar penuh sedang terbuka
-            // Kirim perintah play/volume/kecepatan setelah contentWindow siap
-            let tries = 0;
+            // Jabat tangan "listening" supaya YouTube mengirim event (waktu, durasi, status),
+            // lalu atur volume & kecepatan begitu sinyal pertama diterima.
+            let tries = 0, sentInit = false;
             const iv = setInterval(() => {
                 tries++;
-                if (f.contentWindow) {
-                    _musicFrameWin = f.contentWindow;
-                    _musicDmPost({command: 'play'});
-                    _musicDmPost({command: 'volume', parameters: [_lsVolume / 100]});
-                    _musicDmPost({command: 'setSpeed', parameters: [_playbackRate]});
+                if (_musicFrameWin !== f.contentWindow) { clearInterval(iv); return; } // lagu sudah diganti
+                if (!_musicYtGotSignal) {
+                    try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), '*'); } catch (e) {}
+                } else if (!sentInit) {
+                    sentInit = true;
+                    _musicYtCmd('setVolume', [parseInt(document.getElementById('musicVolumeSlider')?.value, 10) || _lsVolume]);
+                    _musicYtCmd('setPlaybackRate', [_playbackRate]);
                     clearInterval(iv);
                 }
-                if (tries > 25) clearInterval(iv);
-            }, 200);
+                if (tries > 40) clearInterval(iv);
+            }, 500);
             _musicPollIv = setInterval(() => _musicYtPoll(), 1000);
-            // Catatan: TIDAK ada lagi timer yang otomatis fallback ke preview 30 detik.
-            // Sebelumnya ada timer 12 detik yang menganggap "gagal" kalau belum dapat
-            // sinyal event dari player Dailymotion (padahal lagunya sebenarnya tetap
-            // main) — itu penyebab lagu selalu kepotong dan berasa sama kayak preview
-            // 30 detik. Sekarang begitu video ditemukan & di-embed, dibiarkan main
-            // sampai selesai lewat kontrol Dailymotion sendiri.
-            if (_musicYtFailTimer) { clearTimeout(_musicYtFailTimer); _musicYtFailTimer = null; }
+            // Tidak ada fallback otomatis ke preview 30 detik setelah video ditemukan.
+            // Kalau 12 detik belum ada sinyal, cukup beri petunjuk (video mungkin menunggu ketukan).
+            if (_musicYtFailTimer) clearTimeout(_musicYtFailTimer);
+            _musicYtFailTimer = setTimeout(() => {
+                if (!_musicYtGotSignal && _musicFrameWin === f.contentWindow) showToast('Ketuk video untuk memulai pemutaran');
+            }, 12000);
         }
         function _musicStopYt() {
             if (_musicYtFailTimer) { clearTimeout(_musicYtFailTimer); _musicYtFailTimer = null; }
@@ -4084,7 +4139,7 @@
             _musicPlaying = true;
             if (_musicFullMode && t.title) {
                 _musicStopAudio();
-                _musicPlayYt(`${t.artist || ''} ${t.title} - official audio`);
+                _musicPlayYt(t);
             } else {
                 _musicStopYt();
                 _musicPlayPreview(t);
@@ -4151,11 +4206,11 @@
             if (_musicFullMode && _musicFrameWin) {
                 // Mode lagu penuh — pause benar-benar menghentikan suara
                 if (_musicPlaying) {
-                    _musicDmPost({command: 'pause'});
+                    _musicYtCmd('pauseVideo');
                     _musicPlaying = false;
                     _musicYtIcons(false);
                 } else {
-                    _musicDmPost({command: 'play'});
+                    _musicYtCmd('playVideo');
                     _musicPlaying = true;
                     _musicYtIcons(true);
                 }
@@ -4228,7 +4283,7 @@
             const rect = bar.getBoundingClientRect();
             const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
             if (_musicFullMode && _musicFrameWin && _musicLastDur > 0) {
-                _musicDmPost({command: 'seek', parameters: [pct * _musicLastDur]});
+                _musicYtCmd('seekTo', [pct * _musicLastDur, true]);
                 document.getElementById('musicFullProgress').style.width = (pct * 100) + '%';
                 return;
             }
@@ -4237,7 +4292,7 @@
         }
         function musicSetVolume(v) {
             if (_musicFullMode && _musicFrameWin) {
-                _musicDmPost({command: 'volume', parameters: [(parseInt(v, 10) || 0) / 100]});
+                _musicYtCmd('setVolume', [parseInt(v, 10) || 0]);
                 return;
             }
             if (_musicAudio) _musicAudio.volume = v / 100;
@@ -7176,73 +7231,30 @@
             }
         }
 
-        // postMessage dari player musik (Dailymotion) & video trailer (YouTube)
+        // postMessage dari player musik (YouTube) & video trailer (YouTube)
         window.addEventListener('message', e => {
             try {
-                let d;
-                if (typeof e.data === 'string' && e.data.charAt(0) !== '{' && _musicFrameWin && e.source === _musicFrameWin) {
-                    // Sebagian versi player mengirim event berformat query-string (event=timeupdate&time=12.3)
-                    const q = new URLSearchParams(e.data);
-                    const num = v => { const n = parseFloat(v); return isNaN(n) ? undefined : n; };
-                    d = { event: q.get('event'), time: num(q.get('time')), progress: num(q.get('progress')), duration: num(q.get('duration')) };
-                } else {
-                    d = JSON.parse(e.data);
-                }
-                // PEMUTAR MUSIK FULL (Dailymotion) — progress, play/pause, selesai
-                if (_musicFrameWin && e.source === _musicFrameWin && d && d.event) {
-                    if (d.event === 'timeupdate' && typeof d.time === 'number') {
-                        _dmCurTime = d.time;
-                        _musicYtGotSignal = true;
-                    } else if (d.event === 'progress' && typeof d.progress === 'number') {
-                        _musicLastDur = d.progress;
-                    } else if (d.event === 'durationchange' && typeof d.duration === 'number') {
-                        _musicLastDur = d.duration;
-                        _musicYtGotSignal = true;
-                    } else if (d.event === 'playing') {
-                        _musicYtGotSignal = true;
-                        _musicPlaying = true;
-                        _musicYtIcons(true);
-                    } else if (d.event === 'pause') {
-                        _musicPlaying = false;
-                        _musicYtIcons(false);
-                    } else if (d.event === 'ended') {
-                        _musicPlaying = false;
-                        _musicYtIcons(false);
-                        musicNext(); // lagu selesai → lanjut otomatis
-                    }
-                    return;
-                }
-                if (d.event !== 'infoDelivery' || !d.info) return;
-                // PEMUTAR MUSIK FULL (YouTube) — update progress mini & full player
+                const d = JSON.parse(e.data);
+                // PEMUTAR MUSIK FULL (YouTube) — progress, play/pause, selesai
                 if (_musicFrameWin && e.source === _musicFrameWin) {
-                    const cur = typeof d.info.currentTime === 'number' ? d.info.currentTime : 0;
-                    const dur = typeof d.info.duration === 'number' ? d.info.duration : 0;
-                    if (dur > 0) _musicYtGotSignal = true;
-                    _musicLastDur = dur;
-                    const pct = dur > 0 ? (cur / dur * 100) : 0;
-                    const fmtT = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-                    const mp = document.getElementById('musicMiniProgress'); if (mp) mp.style.width = pct + '%';
-                    const fp = document.getElementById('musicFullProgress'); if (fp) fp.style.width = pct + '%';
-                    const ft = document.getElementById('musicFullThumb');   if (ft) ft.style.left = pct + '%';
-                    const cT = document.getElementById('musicFullCurTime'); if (cT) cT.textContent = fmtT(cur);
-                    const dT = document.getElementById('musicFullDurTime'); if (dT) dT.textContent = fmtT(dur);
-                    if (typeof d.info.playerState === 'number') {
-                        if (d.info.playerState === 1 && !_musicPlaying) {
-                            _musicPlaying = true;
-                            document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-pause';
-                            document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>';
-                        } else if (d.info.playerState === 2 && _musicPlaying) {
-                            _musicPlaying = false;
-                            document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-play';
-                            document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
-                        } else if (d.info.playerState === 0 && _musicPlaying) {
-                            // Lagu selesai — lanjut otomatis ke lagu berikutnya
-                            _musicPlaying = false;
-                            musicNext();
-                        }
+                    const info = (d && typeof d.info === 'object' && d.info) ? d.info : {};
+                    let state = (typeof info.playerState === 'number') ? info.playerState : undefined;
+                    if (d && d.event === 'onStateChange' && typeof d.info === 'number') state = d.info;
+                    if (typeof info.duration === 'number' && info.duration > 0) { _musicLastDur = info.duration; _musicYtGotSignal = true; }
+                    if (typeof info.currentTime === 'number') { _dmCurTime = info.currentTime; _musicYtGotSignal = true; }
+                    if (d && (d.event === 'onReady' || d.event === 'initialDelivery')) _musicYtGotSignal = true;
+                    _musicYtPoll();
+                    if (state === 1 && !_musicPlaying) { _musicPlaying = true; _musicYtIcons(true); }
+                    else if (state === 2 && _musicPlaying) { _musicPlaying = false; _musicYtIcons(false); }
+                    else if (state === 0 && _musicPlaying) {
+                        // Lagu selesai — lanjut otomatis ke lagu berikutnya
+                        _musicPlaying = false;
+                        _musicYtIcons(false);
+                        musicNext();
                     }
                     return;
                 }
+                if (!d || d.event !== 'infoDelivery' || !d.info) return;
                 // Hanya proses pesan dari video modal/landscape — abaikan pemutar lain
                 // (musik YouTube, reels) supaya tidak terjadi loop pause/play.
                 const srcWin = e.source;
@@ -10498,6 +10510,7 @@
             if (tt) tt.classList.add('active');
             const gr = document.getElementById('genreChipsRow');
             if (gr) gr.style.display = 'none';
+            const eg0 = document.getElementById('exploreGrid'); if (eg0) eg0.style.paddingBottom = '12px';
             loadExploreTrending();
         }
 
@@ -10506,6 +10519,8 @@
             document.querySelectorAll('[id^="exploreTab-"]').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
             const gr = document.getElementById('genreChipsRow');
+            const eg1 = document.getElementById('exploreGrid');
+            if (eg1) eg1.style.paddingBottom = (tab === 'genres') ? '64px' : '12px';
             if (tab === 'trending') {
                 if (gr) gr.style.display = 'none';
                 loadExploreTrending();
@@ -10878,7 +10893,7 @@
         function _speedApply() {
             const v = document.getElementById(`vid-${currentIdx}`);
             if (v) { try { v.contentWindow.postMessage(JSON.stringify({event:'command', func:'setPlaybackRate', args:[_playbackRate]}), '*'); } catch (e) { _dbg('_speedApply', e); } }
-            if (_musicFrameWin) { _musicDmPost({command: 'setSpeed', parameters: [_playbackRate]}); }
+            if (_musicFrameWin) { _musicYtCmd('setPlaybackRate', [_playbackRate]); }
             if (_musicAudio) { try { _musicAudio.playbackRate = _playbackRate; } catch (e) { _dbg('_speedApply', e); } }
             const l1 = document.getElementById('speedLabel'); if (l1) l1.innerText = _playbackRate + '×';
             const l2 = document.getElementById('lsSpeedLabel'); if (l2) l2.innerText = _playbackRate + '×';
