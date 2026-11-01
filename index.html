@@ -3934,6 +3934,7 @@
         let _musicPollIv = null;       // polling UI progress
         let _musicYtFailTimer = null;  // fallback ke preview kalau lagu gagal
         let _musicYtGotSignal = false; // sudah dapat sinyal valid dari player?
+        let _musicYtState = -2, _musicYtWant = '', _musicYtWantUntil = 0; // status player YouTube terakhir (-2 = belum ada) & perintah yang baru dikirim
         let _musicLastDur = 0;         // durasi lagu penuh terakhir (untuk seek)
         let _dmCurTime = 0;            // posisi waktu terakhir dari event player
         let _musicFrameWin = null;     // contentWindow iframe YouTube
@@ -4047,6 +4048,7 @@
                 return;
             }
             _musicYtGotSignal = false;
+            _musicYtState = -2; _musicYtWant = ''; _musicYtWantUntil = 0;
             _dmCurTime = 0;
             _musicLastDur = 0;
             _musicStopPoll();
@@ -4091,6 +4093,7 @@
             if (ph) ph.innerHTML = '';
             _musicFrameWin = null;
             _musicYtGotSignal = false;
+            _musicYtState = -2; _musicYtWant = ''; _musicYtWantUntil = 0;
             _musicHideYtInPlayer();
         }
         // Tampilkan video YouTube di tengah pemutar penuh (menggantikan poster)
@@ -4123,6 +4126,7 @@
         }
         function _musicPlayPreview(t) {
             if (!t || !t.preview) return;
+            _musicStopYt(); // pastikan tidak ada iframe YouTube lama yang tersisa (tombol play/pause jadi salah sasaran)
             _musicHideYtInPlayer(); // mode preview → tampilkan poster lagi
             _musicStopAudio();
             _musicAudio = new Audio(t.preview);
@@ -4139,6 +4143,7 @@
             _musicPlaying = true;
             if (_musicFullMode && t.title) {
                 _musicStopAudio();
+                _musicStopYt(); // hentikan video lagu sebelumnya & lepas referensi iframe lama
                 _musicPlayYt(t);
             } else {
                 _musicStopYt();
@@ -4204,16 +4209,21 @@
 
         function musicTogglePlay() {
             if (_musicFullMode && _musicFrameWin) {
-                // Mode lagu penuh — pause benar-benar menghentikan suara
-                if (_musicPlaying) {
-                    _musicYtCmd('pauseVideo');
-                    _musicPlaying = false;
-                    _musicYtIcons(false);
-                } else {
-                    _musicYtCmd('playVideo');
-                    _musicPlaying = true;
-                    _musicYtIcons(true);
-                }
+                // Mode lagu penuh — keputusan play/pause berdasar status asli player YouTube
+                // (bukan cuma tebakan lokal), dan perintah diulang sekali kalau belum dituruti.
+                const isPlaying = (_musicYtState === -2) ? _musicPlaying : (_musicYtState === 1 || _musicYtState === 3);
+                _musicYtWant = isPlaying ? 'pause' : 'play';
+                _musicYtWantUntil = Date.now() + 1200;
+                _musicYtCmd(isPlaying ? 'pauseVideo' : 'playVideo');
+                _musicPlaying = !isPlaying;
+                _musicYtIcons(_musicPlaying);
+                const _win = _musicFrameWin;
+                setTimeout(() => {
+                    if (_musicFrameWin !== _win) return;
+                    const nowPlaying = (_musicYtState === 1 || _musicYtState === 3);
+                    if (_musicYtWant === 'pause' && nowPlaying) _musicYtCmd('pauseVideo');
+                    else if (_musicYtWant === 'play' && !nowPlaying && _musicYtState !== -2) _musicYtCmd('playVideo');
+                }, 600);
                 return;
             }
             if (!_musicAudio) return;
@@ -5503,6 +5513,9 @@
         function openTvModal() {
             closeModal(); closeSearch();
             if (document.getElementById('reelsModal').style.display === 'block') _closeReelsSilent();
+            // closeSearch() di atas mengembalikan penanda nav aktif ke "home" di SEMUA nav —
+            // termasuk nav bawah modal TV. Gambar ulang supaya yang menyala memang Live TV.
+            renderBottomNav('tvBottomNav', 'tv', 'closeTvModal');
             document.getElementById('tvSearchInp').value = '';
             document.getElementById('tvSearchBox').style.display = 'none';
             document.getElementById('tvPlayerArea').style.display = 'none';
@@ -7240,6 +7253,12 @@
                     const info = (d && typeof d.info === 'object' && d.info) ? d.info : {};
                     let state = (typeof info.playerState === 'number') ? info.playerState : undefined;
                     if (d && d.event === 'onStateChange' && typeof d.info === 'number') state = d.info;
+                    if (typeof state === 'number') {
+                        _musicYtState = state;
+                        // Abaikan status basi yang masih terkirim sesaat setelah tombol play/pause ditekan
+                        if (Date.now() < _musicYtWantUntil &&
+                            ((_musicYtWant === 'pause' && state === 1) || (_musicYtWant === 'play' && state !== 1 && state !== 3))) state = undefined;
+                    }
                     if (typeof info.duration === 'number' && info.duration > 0) { _musicLastDur = info.duration; _musicYtGotSignal = true; }
                     if (typeof info.currentTime === 'number') { _dmCurTime = info.currentTime; _musicYtGotSignal = true; }
                     if (d && (d.event === 'onReady' || d.event === 'initialDelivery')) _musicYtGotSignal = true;
