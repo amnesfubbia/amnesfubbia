@@ -562,6 +562,18 @@
         }
         #mainVideoArea { aspect-ratio: 16/9; }
         .landscape-active #mainVideoArea { height: 100vh !important; width: 100vw !important; aspect-ratio: auto; }
+        /* LANDSCAPE SEMU — dipakai kalau HP menolak kunci orientasi (auto-rotate mati / browser tidak mendukung).
+           Seluruh overlay diputar 90° lewat CSS; --ls-w/--ls-h diisi dari JS (tinggi & lebar layar portrait). */
+        body.ls-rotated .landscape-overlay {
+            left: 0 !important; top: 0 !important; right: auto !important; bottom: auto !important;
+            margin: 0 !important; max-width: none !important;
+            width: var(--ls-w) !important; height: var(--ls-h) !important;
+            transform-origin: 0 0; transform: rotate(90deg) translateY(-100%);
+        }
+        body.ls-rotated #mainVideoArea { width: var(--ls-w) !important; height: var(--ls-h) !important; }
+        body.ls-rotated .carousel-track { width: var(--ls-w) !important; height: var(--ls-h) !important; }
+        body.ls-rotated .carousel-slide { width: var(--ls-w); height: var(--ls-h); }
+        body.ls-rotated .ls-server-scroll { max-height: calc(var(--ls-h) * 0.4); }
         .landscape-active .carousel-track { width: 100vw !important; height: 100vh !important; }
         .landscape-active .carousel-slide { width: 100vw; height: 100vh; aspect-ratio: auto; }
         .landscape-active .carousel-slide iframe { width: 100%; height: 100%; }
@@ -1654,8 +1666,8 @@
             position: absolute; top: 6px; right: 6px;
             padding: 3px 8px; border-radius: 6px;
             font-size: 8px; font-weight: 900; z-index: 5; letter-spacing: 0.5px;
-            background: linear-gradient(135deg, #1a73e8, #0d47a1);
-            color: #fff; box-shadow: 0 2px 8px rgba(26,115,232,0.5);
+            background: var(--accent, #1a73e8);
+            color: var(--accent-on, #fff); box-shadow: 0 2px 8px rgba(0,0,0,0.5);
             animation: pulse-new 2s infinite;
         }
         @keyframes pulse-new {
@@ -1877,11 +1889,18 @@
         }
 
         /* ===== WARNA AKSEN (dipakai tetap di seluruh app, bukan pengaturan yang bisa diganti user) ===== */
-        :root { --accent: #1a73e8; }
+        :root { --accent: #1a73e8; --accent-on: #fff; }
         .nav-item-wrap.nav-active i, .nav-item-wrap:active i { color: var(--accent) !important; }
         .server-btn.active-link, .ls-srv-btn.active-link { border-color: var(--accent) !important; background: rgba(0,0,0,0.12); }
         .dot.bg-blue-500 { background: var(--accent) !important; }
-        .ep-btn.active-pill { background: var(--accent) !important; border-color: var(--accent) !important; color: #fff !important; }
+        .ep-btn.active-pill { background: var(--accent) !important; border-color: var(--accent) !important; color: var(--accent-on, #fff) !important; }
+        .accent-swatch {
+            width: 30px; height: 30px; border-radius: 50%; padding: 0; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.18); -webkit-tap-highlight-color: transparent;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .accent-swatch:active { transform: scale(0.88); }
+        .accent-swatch.active { box-shadow: 0 0 0 2px #111, 0 0 0 4px #fff; }
     
         /* ===== TOMBOL IKON SERAGAM =====
            Semua tombol ikon di header (back, close, menu, cari) memakai ukuran yang sama:
@@ -1896,6 +1915,35 @@
             -webkit-tap-highlight-color: transparent; touch-action: manipulation;
         }
         .btn-icon:active { background: rgba(255,255,255,0.14); }
+
+        /* ===== HEADER HALAMAN SERAGAM =====
+           Semua header halaman memakai metrik yang sama: tinggi 54px, jarak kiri-kanan 15px,
+           jarak antar-elemen 10px, garis bawah #1c1c1c, judul 14px / 800 / -0.3px.
+           Edit di sini saja kalau ingin mengubah semua header sekaligus. */
+        .about-topbar, .actor-topbar, .mvg-header, .tv-topbar, .notif-topbar, .actor-photos-topbar, .search-header {
+            box-sizing: border-box; height: 54px; padding: 0 15px; gap: 10px;
+            background: #000; border-bottom: 1px solid #1c1c1c;
+            -webkit-backdrop-filter: none; backdrop-filter: none;
+        }
+        .about-topbar-title, .actor-topbar-title, .mvg-title, .tv-topbar-title, .notif-topbar-title, .actor-photos-title {
+            font-size: 14px; font-weight: 800; letter-spacing: -0.3px; line-height: 1.2; color: #fff; margin: 0;
+        }
+        /* Header beranda (logo) — tinggi & jarak samping sama dengan header halaman lain */
+        .top-bar { box-sizing: border-box; height: 54px; padding: 0 15px; margin-bottom: 0; }
+        /* Header Reels (melayang di atas video, tanpa garis) — ukuran, jarak, dan font sama */
+        .reels-topbar { box-sizing: border-box; height: 54px; padding: 0 15px; }
+        .reels-back-btn { padding: 6px; }
+
+        /* ===== LABEL SEKSI & JARAK SERAGAM =====
+           Label seksi (huruf kapital kecil) di semua halaman: 10px / 800 / jarak huruf 2px / abu #666.
+           Jarak samping konten beranda disamakan ke 15px seperti halaman lain. */
+        .recently-label, .similar-label, .about-section-label, .notif-section-label, .rds-section-label, .music-section-label {
+            font-size: 10px; font-weight: 800; letter-spacing: 2px; color: #666; text-transform: uppercase;
+        }
+        .notif-section-label { padding-bottom: 10px; }
+        .profile-info, .highlights-wrapper { padding-left: 15px; padding-right: 15px; }
+        .recently-header { padding-left: 15px; padding-right: 15px; }
+        .recently-scroll { padding-left: 15px; padding-right: 15px; }
     </style>
 </head>
 <body>
@@ -2151,6 +2199,19 @@
         <!-- Pengaturan Tampilan -->
         <div class="about-section-label">Pengaturan Tampilan</div>
         <div class="about-info-list">
+            <div class="about-info-row" style="flex-direction:column;align-items:flex-start;gap:14px">
+                <span class="about-info-label">Warna Aksen</span>
+                <div id="accentSwatches" style="display:flex;flex-wrap:wrap;gap:14px">
+                    <button type="button" class="accent-swatch" data-color="#1a73e8" style="background:#1a73e8" title="Biru" aria-label="Warna aksen Biru" onclick="setAccent('#1a73e8')"></button>
+                    <button type="button" class="accent-swatch" data-color="#ffffff" style="background:#ffffff" title="Putih" aria-label="Warna aksen Putih" onclick="setAccent('#ffffff')"></button>
+                    <button type="button" class="accent-swatch" data-color="#e50914" style="background:#e50914" title="Merah" aria-label="Warna aksen Merah" onclick="setAccent('#e50914')"></button>
+                    <button type="button" class="accent-swatch" data-color="#facc15" style="background:#facc15" title="Kuning" aria-label="Warna aksen Kuning" onclick="setAccent('#facc15')"></button>
+                    <button type="button" class="accent-swatch" data-color="#a78bfa" style="background:#a78bfa" title="Ungu" aria-label="Warna aksen Ungu" onclick="setAccent('#a78bfa')"></button>
+                    <button type="button" class="accent-swatch" data-color="#4caf7d" style="background:#4caf7d" title="Hijau" aria-label="Warna aksen Hijau" onclick="setAccent('#4caf7d')"></button>
+                    <button type="button" class="accent-swatch" data-color="#9ca3af" style="background:#9ca3af" title="Abu-abu" aria-label="Warna aksen Abu-abu" onclick="setAccent('#9ca3af')"></button>
+                    <button type="button" class="accent-swatch" data-color="#f97316" style="background:#f97316" title="Oranye" aria-label="Warna aksen Oranye" onclick="setAccent('#f97316')"></button>
+                </div>
+            </div>
             <div class="about-link-row" onclick="openDownloadLib()">
                 <span class="about-link-label">Pustaka Unduhan</span>
                 <i class="fa-solid fa-chevron-right about-link-arrow"></i>
@@ -2161,6 +2222,20 @@
                 <i class="fa-solid fa-chevron-right about-link-arrow"></i>
             </div>
         </div>
+
+        <!-- Cadangan data -->
+        <div class="about-section-label">Cadangan Data</div>
+        <div class="about-info-list">
+            <div class="about-link-row" onclick="exportBackup()">
+                <span class="about-link-label">Ekspor Cadangan</span>
+                <i class="fa-solid fa-download about-link-arrow"></i>
+            </div>
+            <div class="about-link-row" onclick="document.getElementById('backupFileInput').click()">
+                <span class="about-link-label">Pulihkan dari Cadangan</span>
+                <i class="fa-solid fa-upload about-link-arrow"></i>
+            </div>
+        </div>
+        <input type="file" id="backupFileInput" accept="application/json,.json" style="display:none" onchange="importBackup(this)">
 
         <!-- Data source -->
         <div class="about-section-label">Sumber Data</div>
@@ -2362,9 +2437,9 @@
         <!-- Decade modal (triggered by filter btn when idle) -->
         <div id="decadeModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:20px 16px 60px">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+                <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:-20px -16px 16px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
                     <i class="fa-solid fa-chevron-left btn-icon" onclick="closeDecadeModal()"></i>
-                    <div style="font-size:17px;font-weight:800;color:#fff">Top Rated by Decade</div>
+                    <div style="font-size:14px;font-weight:800;letter-spacing:-0.3px;color:#fff">Top Rated by Decade</div>
                 </div>
                 <!-- Decade + type selector -->
                 <div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none" class="no-scrollbar" id="decadeTabRow"></div>
@@ -2453,9 +2528,10 @@
         </div>
         <div id="modalScrollTop" class="max-w-xl mx-auto pb-20">
             <div class="sticky top-0 bg-black z-[100] border-b border-zinc-900">
-                <div class="px-4 h-[54px] flex items-center">
+                <div class="h-[54px] flex items-center" style="padding:0 15px;gap:10px">
                     <i class="fa-solid fa-chevron-left btn-icon" onclick="closeModal()"></i>
-                    <div class="flex-grow text-center text-[14px] font-bold truncate px-8" id="mTitle"></div>
+                    <div class="flex-grow text-center text-[14px] font-extrabold truncate" style="letter-spacing:-0.3px" id="mTitle"></div>
+                    <div style="width:32px;flex-shrink:0"></div>
                 </div>
                 
                 <div id="castContainer" class="cast-wrapper px-4 no-scrollbar"></div>
@@ -2666,7 +2742,7 @@
 
         <!-- Known For highlights strip -->
         <div class="actor-highlights-wrapper" id="actorKnownForWrapper" style="display:none">
-            <div class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Known For</div>
+            <div class="similar-label" style="padding:0;margin-bottom:12px">Known For</div>
             <div class="actor-highlights-scroll" id="actorKnownFor"></div>
         </div>
 
@@ -2733,9 +2809,9 @@
     <div id="reelsModal">
         <!-- Topbar — tombol back + judul Reels -->
         <div class="reels-topbar">
-            <div style="display:flex;align-items:center;gap:8px;pointer-events:auto">
+            <div style="display:flex;align-items:center;gap:10px;pointer-events:auto">
                 <i class="fa-solid fa-chevron-left reels-back-btn" onclick="closeReels()" style="pointer-events:auto;font-size:20px"></i>
-                <span style="font-size:22px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:-0.5px">Reels</span>
+                <span style="font-size:14px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:-0.3px">Reels</span>
             </div>
             <div style="width:32px"></div>
         </div>
@@ -3163,9 +3239,9 @@
 
     <audio id="musicAudioEl" preload="metadata"></audio>
     <div id="livesportModal" style="display:none;position:fixed;inset:0;z-index:9700;background:#0a0a0a;flex-direction:column">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#000;position:sticky;top:0;z-index:10">
+        <div style="display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c;position:sticky;top:0;z-index:10">
             <i class="fa-solid fa-chevron-left btn-icon" onclick="closeLivesportModal()"></i>
-            <span style="font-size:17px;font-weight:800;color:#fff" id="livesportTitle">Live Sport</span>
+            <span style="font-size:14px;font-weight:800;letter-spacing:-0.3px;color:#fff" id="livesportTitle">Live Sport</span>
         </div>
         <iframe id="livesportIframe" src="" style="flex:1;width:100%;border:none;display:block" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         <nav class="bottom-nav" id="livesportBottomNav" style="position:sticky;bottom:0"></nav>
@@ -4096,26 +4172,48 @@
             _musicYtState = -2; _musicYtWant = ''; _musicYtWantUntil = 0;
             _musicHideYtInPlayer();
         }
+        // Video YouTube di pemutar penuh.
+        // PENTING: iframe TIDAK boleh dipindah di DOM — memindahkan iframe membuat browser memuat ulang
+        // iframe itu dengan contentWindow baru (lagu mulai dari awal & perintah play/pause nyasar ke
+        // window lama yang sudah mati). Jadi wadahnya (#musicYtAnchor) dibiarkan di tempat dan hanya
+        // DIPOSISIKAN (position:fixed) tepat di atas area poster saat pemutar penuh terbuka.
+        const _MUSIC_YT_PARK = 'position:fixed;left:-9999px;top:0;width:640px;height:360px;opacity:0;pointer-events:none;z-index:-1';
+        let _musicYtSyncIv = null, _musicYtLastCss = '';
+        function _musicYtVisibleOk() {
+            const shown = id => { const e = document.getElementById(id); return !!(e && e.style.display && e.style.display !== 'none'); };
+            if (!shown('musicModal') || !shown('musicFullPlayer')) return false;
+            // Layar lain (Equalizer, detail playlist/album/artis, panel antrian/lirik) tampil di atas pemutar penuh
+            return !['musicEqScreen', 'musicPlaylistDetail', 'musicAlbumDetail', 'musicArtistProfile', 'musicPanel'].some(shown);
+        }
+        function _musicYtSync() {
+            const anchor = document.getElementById('musicYtAnchor');
+            const wrap = document.getElementById('musicFullArtWrap');
+            const art = document.getElementById('musicFullArt');
+            if (!anchor || !wrap) return;
+            let css = _MUSIC_YT_PARK, visible = false;
+            if (_musicYtVisibleOk()) {
+                const r = wrap.getBoundingClientRect();
+                if (r.width > 10 && r.height > 10) {
+                    visible = true;
+                    css = `position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;opacity:1;pointer-events:auto;z-index:9750;background:#000;border-radius:14px;overflow:hidden`;
+                }
+            }
+            if (css !== _musicYtLastCss) { anchor.style.cssText = css; _musicYtLastCss = css; }
+            if (art) art.style.opacity = visible ? '0' : '1';
+        }
         // Tampilkan video YouTube di tengah pemutar penuh (menggantikan poster)
         function _musicShowYtInPlayer() {
             const modal = document.getElementById('musicFullPlayer');
             if (!modal || modal.style.display === 'none') return; // pemutar penuh tidak terbuka
-            const player = document.getElementById('musicYtPlayer');
-            const wrap = document.getElementById('musicFullArtWrap');
-            const art = document.getElementById('musicFullArt');
-            if (!player || !wrap) return;
-            if (player.parentElement !== wrap) wrap.appendChild(player);
-            player.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;opacity:1;pointer-events:auto;z-index:3;background:#000;border-radius:14px;overflow:hidden';
-            if (art) art.style.opacity = '0';
+            _musicYtSync();
+            if (!_musicYtSyncIv) _musicYtSyncIv = setInterval(_musicYtSync, 250); // ikuti animasi/rotasi/layar lain
         }
-        // Kembalikan video ke anchor off-screen dan tampilkan poster lagi
+        // Parkir video di luar layar (tetap jalan) dan tampilkan poster lagi
         function _musicHideYtInPlayer() {
-            const player = document.getElementById('musicYtPlayer');
+            if (_musicYtSyncIv) { clearInterval(_musicYtSyncIv); _musicYtSyncIv = null; }
             const anchor = document.getElementById('musicYtAnchor');
             const art = document.getElementById('musicFullArt');
-            if (!player || !anchor) return;
-            if (player.parentElement !== anchor) anchor.appendChild(player);
-            player.style.cssText = 'width:100%;height:100%';
+            if (anchor && _musicYtLastCss !== _MUSIC_YT_PARK) { anchor.style.cssText = _MUSIC_YT_PARK; _musicYtLastCss = _MUSIC_YT_PARK; }
             if (art) art.style.opacity = '1';
         }
         function _musicStopPoll() {
@@ -4817,7 +4915,10 @@
             const track = document.getElementById('lsProgressTrack');
             const rect = track.getBoundingClientRect();
             const clientX = (ev.touches && ev.touches[0] ? ev.touches[0].clientX : ev.clientX);
-            const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+            const clientY = (ev.touches && ev.touches[0] ? ev.touches[0].clientY : ev.clientY);
+            // Landscape semu: sumbu horizontal tampilan = sumbu vertikal layar
+            const rawRatio = _lsRotated() ? (clientY - rect.top) / rect.height : (clientX - rect.left) / rect.width;
+            const ratio = Math.min(1, Math.max(0, rawRatio));
             const targetTime = ratio * _lsLastDuration;
             const iframe = document.getElementById(`vid-${currentIdx}`);
             try {
@@ -6085,6 +6186,7 @@
             lsTitle.innerText = document.getElementById('mTitle').innerText;
             lsSub.innerText = activeServerIdx === 99 ? `Trailer · amnesfubbia` : `Server ${activeServerIdx} · amnesfubbia`;
 
+            _lsEntering = true;
             document.body.classList.add('landscape-active');
             overlay.style.display = 'block';
             buildLsServerList();
@@ -6127,6 +6229,27 @@
                     await screen.orientation.lock('landscape');
                 }
             } catch (e) { _warn('enterLandscape', e); }
+            // Kalau layar ternyata tetap portrait (lock ditolak / auto-rotate mati) → landscape semu lewat CSS
+            setTimeout(() => { _lsEnsureLandscape(); _lsEntering = false; }, 450);
+        }
+
+        // ===== LANDSCAPE SEMU (fallback saat HP menolak kunci orientasi) =====
+        let _lsEntering = false;
+        function _lsRotated() { return document.body.classList.contains('ls-rotated'); }
+        function _lsSyncRotSize() {
+            const r = document.documentElement.style;
+            r.setProperty('--ls-w', window.innerHeight + 'px');
+            r.setProperty('--ls-h', window.innerWidth + 'px');
+        }
+        function _lsSetRotated(on) {
+            if (on) _lsSyncRotSize();
+            document.body.classList.toggle('ls-rotated', !!on);
+        }
+        function _lsEnsureLandscape() {
+            const overlay = document.getElementById('landscapeOverlay');
+            if (!overlay || overlay.style.display !== 'block') return;
+            const realLandscape = window.matchMedia('(orientation: landscape)').matches;
+            _lsSetRotated(!realLandscape);
         }
 
         function buildLsServerList() {
@@ -6212,8 +6335,11 @@
             const inLandscape = overlay && overlay.style.display === 'block';
             if (isTouch && isLandscape && modalOpen && !inLandscape) {
                 enterLandscape();
-            } else if (isTouch && !isLandscape && inLandscape) {
-                closeLandscapeSilently();
+            } else if (inLandscape) {
+                if (_lsEntering) return;                       // sedang masuk landscape — tunggu selesai (fullscreen memicu resize)
+                if (isLandscape) _lsSetRotated(false);         // HP benar-benar diputar → pakai landscape asli
+                else if (_lsRotated()) _lsSyncRotSize();       // landscape semu tetap, sesuaikan ukuran
+                else if (isTouch) closeLandscapeSilently();    // kembali ke portrait → keluar
             }
         }
         window.addEventListener('orientationchange', () => {
@@ -6319,9 +6445,10 @@
             }, { passive: true });
             overlay.addEventListener('touchend', e => {
                 if (!sx && !sy) return;
-                const dx = e.changedTouches[0].clientX - sx;
-                const dy = e.changedTouches[0].clientY - sy;
+                let dx = e.changedTouches[0].clientX - sx;
+                let dy = e.changedTouches[0].clientY - sy;
                 sx = 0; sy = 0;
+                if (_lsRotated()) { const t = dx; dx = dy; dy = -t; } // sumbu layar → sumbu tampilan yang diputar
                 if (Math.abs(dy) >= 60 && Math.abs(dy) > Math.abs(dx) * 1.2) {
                     closeLandscapeSilently(); // swipe atas/bawah = keluar landscape
                 }
@@ -6391,10 +6518,90 @@
         // (modifikasi perilaku _tryNextServerOnFail — lihat fungsi aslinya)
 
         // ===== TAMPILAN: LIGHT MODE & WARNA AKSEN =====
+        // ===== CADANGAN DATA (favorit, riwayat, resume, unduhan, pengaturan) =====
+        const BACKUP_SKIP = ['musicYtCache']; // cache pencarian, tidak perlu dicadangkan
+        function exportBackup() {
+            const data = {};
+            try {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    if (BACKUP_SKIP.includes(k)) continue;
+                    data[k] = localStorage.getItem(k);
+                }
+            } catch (e) { _warn('exportBackup', e); }
+            const payload = JSON.stringify({ app: 'amnesfubbia', v: 1, savedAt: new Date().toISOString(), data: data });
+            try {
+                const blob = new Blob([payload], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'amnesfubbia-cadangan-' + new Date().toISOString().slice(0, 10) + '.json';
+                document.body.appendChild(a); a.click(); a.remove();
+                setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+            } catch (e) { _warn('exportBackup', e); }
+            // Cadangan juga disalin ke clipboard, jaga-jaga kalau unduhan diblokir oleh WebView
+            try { if (navigator.clipboard) navigator.clipboard.writeText(payload).catch(() => {}); } catch (e) {}
+            showToast('Cadangan dibuat (diunduh / disalin)');
+        }
+        function importBackup(input) {
+            const f = input && input.files && input.files[0];
+            if (!f) return;
+            const rd = new FileReader();
+            rd.onload = () => {
+                try {
+                    const obj = JSON.parse(String(rd.result || ''));
+                    if (!obj || obj.app !== 'amnesfubbia' || !obj.data || typeof obj.data !== 'object') throw new Error('format');
+                    const keys = Object.keys(obj.data);
+                    if (!keys.length) throw new Error('kosong');
+                    if (!confirm('Pulihkan ' + keys.length + ' data dari cadangan?\nData di perangkat ini akan ditimpa.')) return;
+                    keys.forEach(k => { if (typeof obj.data[k] === 'string') localStorage.setItem(k, obj.data[k]); });
+                    showToast('Cadangan dipulihkan — memuat ulang…');
+                    setTimeout(() => location.reload(), 900);
+                } catch (e) { _warn('importBackup', e); showToast('File cadangan tidak valid'); }
+            };
+            rd.onerror = () => showToast('Gagal membaca file');
+            rd.readAsText(f);
+            input.value = '';
+        }
+
+        // ===== MODE OFFLINE RINGAN (butuh file sw.js di folder yang sama dengan index.html) =====
+        if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(e => _dbg('serviceWorker', e));
+            });
+        }
+
+        // ===== WARNA AKSEN (tema tetap hitam; hanya warna sorotan yang berganti) =====
+        const ACCENT_KEY = 'accentColor';
+        function _accentOn(hex) {
+            // Teks di atas warna aksen: hitam kalau warnanya terang (putih/kuning/abu), putih kalau gelap
+            const n = parseInt(hex.slice(1), 16), r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255;
+            return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#000' : '#fff';
+        }
+        function applyAccent(color) {
+            if (!/^#[0-9a-f]{6}$/i.test(color)) color = '#1a73e8';
+            const root = document.documentElement.style;
+            root.setProperty('--accent', color);
+            root.setProperty('--accent-on', _accentOn(color));
+            document.querySelectorAll('.accent-swatch').forEach(el => {
+                el.classList.toggle('active', (el.getAttribute('data-color') || '').toLowerCase() === color.toLowerCase());
+            });
+        }
+        function setAccent(color) {
+            applyAccent(color);
+            try { localStorage.setItem(ACCENT_KEY, color); } catch (e) {}
+        }
+        (function _accentInit() {
+            let c = '#1a73e8';
+            try { c = localStorage.getItem(ACCENT_KEY) || c; } catch (e) {}
+            applyAccent(c);
+        })();
+
         function handleLsBack() { window.history.back(); }
 
         function closeLandscapeSilently() {
+            _lsEntering = false;
             document.body.classList.remove('landscape-active');
+            document.body.classList.remove('ls-rotated');
             const overlay = document.getElementById('landscapeOverlay');
             overlay.style.display = 'none';
             // close server panel if open
@@ -10970,7 +11177,9 @@
                     lastTap = 0;
                     const rect = area.getBoundingClientRect();
                     const x = e.changedTouches[0].clientX;
-                    const dir = (x - rect.left) < rect.width / 2 ? -1 : 1;
+                    const y = e.changedTouches[0].clientY;
+                    const leftHalf = _lsRotated() ? (y - rect.top) < rect.height / 2 : (x - rect.left) < rect.width / 2;
+                    const dir = leftHalf ? -1 : 1;
                     if (activeServerIdx === 99) {
                         modalVideoCmd(dir < 0 ? 'back10' : 'fwd10');
                         showToast(dir < 0 ? '−10 detik' : '+10 detik');
