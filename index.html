@@ -230,7 +230,7 @@
         .ig-date { color: #a8a8a8; font-size: 11px; text-transform: uppercase; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: #000; border-top: 1px solid #1c1c1c; display: flex; justify-content: space-around; align-items: center; padding: 0; height: 52px; z-index: 9000; }
-        .bottom-nav i { color: #a8a8a8; transition: color 0.3s; font-size: 20px; }
+        .bottom-nav i { color: #a8a8a8; transition: color 0.3s; font-size: 24px; }
         .bottom-nav i.active-nav { color: #fff; }
 
         /* ===== SAFE AREA INSET FIX (Android status bar) ===== */
@@ -902,7 +902,7 @@
         /* Music modal — labeled bottom nav (Home/Cari/Koleksi/Playlist) */
         .music-bottom-nav { height: 62px !important; padding-top:4px; position:absolute !important; bottom:0; left:0; right:0; z-index:40 !important; }
         .music-nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; color:#666; }
-        .music-nav-item i { font-size:19px; color:#666; transition:color 0.2s; }
+        .music-nav-item i { font-size:24px; color:#666; transition:color 0.2s; }
         .music-nav-item span { font-size:10px; font-weight:600; color:#666; transition:color 0.2s; }
         .music-nav-item.music-nav-active i, .music-nav-item.music-nav-active span { color:#fff; }
         .music-pill { flex-shrink:0; padding:8px 18px; border-radius:20px; background:#1a1a1a; color:#888; font-size:12px; font-weight:700; cursor:pointer; border:1px solid #1e1e1e; }
@@ -2044,8 +2044,8 @@
             --ig-home: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M3%2011.2%2012%203l9%208.2V20a1%201%200%200%201-1%201h-5v-6a3%203%200%200%200-6%200v6H4a1%201%200%200%201-1-1z'/%3E%3C/svg%3E");
             --ig-home-f: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23000'%20stroke='%23000'%20stroke-width='1'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M3%2011.2%2012%203l9%208.2V20a1%201%200%200%201-1%201h-5v-6a3%203%200%200%200-6%200v6H4a1%201%200%200%201-1-1z'/%3E%3C/svg%3E");
             --ig-search: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='11'%20cy='11'%20r='7.5'/%3E%3Cpath%20d='m21%2021-4.8-4.8'/%3E%3C/svg%3E");
-            --ig-reels: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='3'%20y='3'%20width='18'%20height='18'%20rx='5'/%3E%3Cpath%20d='M3.5%208.5h17M9%203.2l3%205.3M15%203.2l3%205.3'/%3E%3Cpath%20d='M10.5%2012.3v5.4l4.6-2.7z'%20fill='%23000'%20stroke-width='1.5'/%3E%3C/svg%3E");
-            --ig-reels-f: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23000'%20stroke='%23000'%20stroke-width='1'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20fill-rule='evenodd'%20d='M8%203h8a5%205%200%200%201%205%205v8a5%205%200%200%201-5%205H8a5%205%200%200%201-5-5V8a5%205%200%200%201%205-5zM3.5%208h17v1.4h-17zM10.5%2012.3v5.4l4.6-2.7z'/%3E%3C/svg%3E");
+            --ig-reels: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='3'%20y='3'%20width='18'%20height='18'%20rx='5.5'/%3E%3Cpath%20d='M10%208.6v6.8c0%20.6.65.95%201.15.65l5.3-3.4a.76.76%200%200%200%200-1.3l-5.3-3.4c-.5-.3-1.15.05-1.15.65z'/%3E%3C/svg%3E");
+            --ig-reels-f: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23000'%20stroke='%23000'%20stroke-width='1'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20fill-rule='evenodd'%20d='M8.5%203h7A5.5%205.5%200%200%201%2021%208.5v7a5.5%205.5%200%200%201-5.5%205.5h-7A5.5%205.5%200%200%201%203%2015.5v-7A5.5%205.5%200%200%201%208.5%203zM10%208.6v6.8c0%20.6.65.95%201.15.65l5.3-3.4a.76.76%200%200%200%200-1.3l-5.3-3.4c-.5-.3-1.15.05-1.15.65z'/%3E%3C/svg%3E");
             --ig-cam: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='2.5'%20y='6'%20width='13'%20height='12'%20rx='3'/%3E%3Cpath%20d='m15.5%2010.5%206-3.5v10l-6-3.5'/%3E%3C/svg%3E");
             --ig-cam-f: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23000'%20stroke='%23000'%20stroke-width='1'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M5.5%206h7a3%203%200%200%201%203%203v6a3%203%200%200%201-3%203h-7a3%203%200%200%201-3-3V9a3%203%200%200%201%203-3zM16.5%2010.4l5-3v9.2l-5-3z'/%3E%3C/svg%3E");
             --ig-note: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M9%2018V5l11-2v13'/%3E%3Ccircle%20cx='6'%20cy='18'%20r='3'/%3E%3Ccircle%20cx='17'%20cy='16'%20r='3'/%3E%3C/svg%3E");
@@ -2081,6 +2081,61 @@
         .nav-item-wrap.nav-active .fa-clapperboard::before { -webkit-mask-image: var(--ig-reels-f); mask-image: var(--ig-reels-f); }
         .nav-item-wrap.nav-active .fa-tv::before { -webkit-mask-image: var(--ig-cam-f); mask-image: var(--ig-cam-f); }
         .nav-item-wrap.nav-active .fa-music::before, .music-nav-item.music-nav-active .fa-music::before { -webkit-mask-image: var(--ig-note-f); mask-image: var(--ig-note-f); }
+
+        /* ===== RONDE 9: ikon penghargaan (medali bergaya garis) ===== */
+        :root { --ig-award: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='12'%20cy='9'%20r='6'/%3E%3Cpath%20d='m12%206.3.9%201.9%202.1.3-1.5%201.5.4%202.1-1.9-1-1.9%201%20.4-2.1L9%208.5l2.1-.3z'%20stroke-width='1.4'/%3E%3Cpath%20d='M8.6%2014%207%2022l5-3%205%203-1.6-8'/%3E%3C/svg%3E"); }
+        .fa-award::before {
+            content: '' !important; display: inline-block; width: 1em; height: 1em; vertical-align: -0.125em;
+            background-color: currentColor; -webkit-mask: var(--ig-award) center/contain no-repeat; mask: var(--ig-award) center/contain no-repeat;
+        }
+        .aw-cat { font-size: 12px; font-weight: 800; color: #fff; margin: 20px 0 4px; letter-spacing: -0.2px; }
+
+        /* ===== RONDE 11: ikon mengikuti tampilan Instagram terbaru ===== */
+        :root {
+            --ig-vhigh: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M11%205%206%209H2v6h4l5%204z'/%3E%3Cpath%20d='M15.5%208.5a5%205%200%200%201%200%207M19%205a10%2010%200%200%201%200%2014'/%3E%3C/svg%3E");
+            --ig-vlow: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M11%205%206%209H2v6h4l5%204z'/%3E%3Cpath%20d='M15.5%208.5a5%205%200%200%201%200%207'/%3E%3C/svg%3E");
+            --ig-vmute: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M11%205%206%209H2v6h4l5%204z'/%3E%3Cpath%20d='m16%209%206%206M22%209l-6%206'/%3E%3C/svg%3E");
+            --ig-repost: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='m17%202%203%203-3%203'/%3E%3Cpath%20d='M4%2011V9a4%204%200%200%201%204-4h12'/%3E%3Cpath%20d='m7%2022-3-3%203-3'/%3E%3Cpath%20d='M20%2013v2a4%204%200%200%201-4%204H4'/%3E%3C/svg%3E");
+        }
+        .fa-volume-high::before, .fa-volume-low::before, .fa-volume-xmark::before, .fa-repeat::before {
+            content: '' !important; display: inline-block; width: 1em; height: 1em; vertical-align: -0.125em;
+            background-color: currentColor; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+            -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain;
+        }
+        .fa-volume-high::before { -webkit-mask-image: var(--ig-vhigh); mask-image: var(--ig-vhigh); }
+        .fa-volume-low::before { -webkit-mask-image: var(--ig-vlow); mask-image: var(--ig-vlow); }
+        .fa-volume-xmark::before { -webkit-mask-image: var(--ig-vmute); mask-image: var(--ig-vmute); }
+        .fa-repeat::before { -webkit-mask-image: var(--ig-repost); mask-image: var(--ig-repost); }
+        /* Centang biru terverifikasi bentuk segel seperti Instagram */
+        .ig-verified { display: inline-block; width: 15px; height: 15px; flex-shrink: 0; background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpolygon%20points='12.00,1.60%2015.21,4.24%2019.35,4.65%2019.76,8.79%2022.40,12.00%2019.76,15.21%2019.35,19.35%2015.21,19.76%2012.00,22.40%208.79,19.76%204.65,19.35%204.24,15.21%201.60,12.00%204.24,8.79%204.65,4.65%208.79,4.24'%20fill='%230095f6'%20stroke='%230095f6'%20stroke-width='2.2'%20stroke-linejoin='round'/%3E%3Cpath%20d='m7.8%2012.4%202.8%202.8%205.6-6'%20fill='none'%20stroke='%23fff'%20stroke-width='2.2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat; }
+
+        /* ===== RONDE 12: hero home, jarak poster, rapikan Terakhir Dilihat ===== */
+        .profile-header { position: relative; }
+        .profile-header.has-hero .top-bar { position: absolute; top: 0; left: 0; right: 0; z-index: 20; background: linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0)); }
+        .home-hero { position: relative; width: 100%; aspect-ratio: 6 / 5; max-height: 520px; overflow: hidden; background: #000; }
+        .hero-track { position: absolute; inset: 0; }
+        .hero-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; cursor: pointer; pointer-events: none; -webkit-tap-highlight-color: transparent; }
+        .hero-slide.active { opacity: 1; pointer-events: auto; }
+        .hero-slide img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; display: block; }
+        .hero-slide::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 24%, rgba(0,0,0,0) 38%, rgba(0,0,0,0.85) 78%, #000 100%); }
+        .hero-info { position: absolute; left: 15px; right: 15px; bottom: 28px; z-index: 2; }
+        .hero-title { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.15; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.6); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .hero-meta span { background: rgba(30,30,30,0.8); color: #eee; border-radius: 6px; padding: 5px 11px; font-size: 12px; font-weight: 600; }
+        .hero-over { margin-top: 12px; font-size: 13px; line-height: 1.45; color: #ddd; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .hero-dots { position: absolute; left: 0; right: 0; bottom: 9px; z-index: 3; display: flex; justify-content: center; gap: 6px; }
+        .hero-dot { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.35); transition: width 0.3s, background 0.3s; cursor: pointer; }
+        .hero-dot.active { width: 16px; background: #fff; }
+        .action-buttons { margin-top: 12px; padding: 0 15px; }
+        /* filter jenis (Film/Serial/Short) di panel filter */
+        .type-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+        #filterBar .stat-item { flex-direction: row; justify-content: center; }
+        #filterBar .stat-val { display: none; }
+        #filterBar .stat-item.active-stat { background: var(--accent); border-color: var(--accent); color: var(--accent-on, #fff); }
+        /* poster grid: ada celah antar poster & jarak samping 15px */
+        .movie-grid { gap: 8px; padding: 8px 15px 68px; }
+        .movie-grid .post-card { border-radius: 8px; overflow: hidden; }
+        #recentlyViewedWrapper { padding: 12px 0 15px; }
     </style>
 </head>
 <body>
@@ -2239,33 +2294,6 @@
                 </div>
             </div>
             <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#1a201a">
-                    <i class="fa-solid fa-earth-americas" style="color:#ffca28"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Streaming Multi-Server dengan Auto-Skip</div>
-                    <div class="about-feat-desc">Server streaming yang diuji aman dari redirect iklan (sandbox browser). Kalau satu server gagal dimuat, otomatis pindah ke server berikutnya.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#1a2020">
-                    <i class="fa-solid fa-download" style="color:#34d399"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Unduh Multi-Server per Episode</div>
-                    <div class="about-feat-desc">3 server unduhan untuk film dan serial, termasuk per episode, dengan Pustaka Unduhan untuk mencatat yang sudah diunduh.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#1a1a2a">
-                    <i class="fa-solid fa-tv" style="color:#a78bfa"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Live TV Indonesia &amp; Dunia</div>
-                    <div class="about-feat-desc">Tab Embed (channel TV nasional &amp; lokal), IPTV (ratusan channel dari playlist terbuka), dan Favorit, ditambah Live Sport &amp; Highlight.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a2020">
                     <i class="fa-solid fa-video" style="color:#34d399"></i>
                 </div>
@@ -2285,7 +2313,7 @@
             </div>
             <div class="about-feature-row">
                 <div class="about-feat-icon-wrap" style="background:#1a1a20">
-                    <i class="fa-solid fa-trophy" style="color:#facc15"></i>
+                    <i class="fa-solid fa-award" style="color:#facc15"></i>
                 </div>
                 <div class="about-feat-text">
                     <div class="about-feat-title">Penghargaan &amp; Festival</div>
@@ -2299,15 +2327,6 @@
                 <div class="about-feat-text">
                     <div class="about-feat-title">Telusuri Sutradara, Penulis &amp; Studio</div>
                     <div class="about-feat-desc">Ketuk nama sutradara, penulis, atau studio di halaman film untuk melihat film dan serial lain dari mereka.</div>
-                </div>
-            </div>
-            <div class="about-feature-row">
-                <div class="about-feat-icon-wrap" style="background:#2a1a1a">
-                    <i class="fa-solid fa-box-archive" style="color:#e57373"></i>
-                </div>
-                <div class="about-feat-text">
-                    <div class="about-feat-title">Cadangan Data Tanpa Akun</div>
-                    <div class="about-feat-desc">Bookmark, Suka, dan riwayat tontonan tersimpan di perangkat, bisa diekspor dan dipulihkan lewat file cadangan tanpa perlu membuat akun.</div>
                 </div>
             </div>
         </div>
@@ -2365,7 +2384,7 @@
             </div>
             <div class="about-info-row">
                 <span class="about-info-label">Trailer & Teaser</span>
-                <span class="about-info-value">YouTube / Dailymotion</span>
+                <span class="about-info-value">YouTube / iTunes</span>
             </div>
             <div class="about-info-row">
                 <span class="about-info-label">Streaming Server</span>
@@ -2439,27 +2458,20 @@
             <div class="top-bar">
                 <div class="ig-logo-wrapper" onclick="backToHome()">
                     <h1 class="ig-logo">amnesfubbia</h1>
-                    <i class="fa-solid fa-circle-check" style="color:#0095f6;font-size:13px"></i>
+                    <i class="ig-verified"></i>
                     <i class="fa-solid fa-chevron-down text-[10px] ml-0.5" onclick="event.stopPropagation(); openNotif()" style="cursor:pointer" title="Film Baru Hari Ini"></i>
                     <span class="dot-notify"></span>
                 </div>
                 <div class="flex gap-5">
-                    <i class="fa-solid fa-trophy btn-icon" onclick="openAwardsModal()" title="Penghargaan &amp; Festival"></i>
+                    <i class="fa-solid fa-award btn-icon" onclick="openAwardsModal()" title="Penghargaan &amp; Festival"></i>
                     <i class="fa-regular fa-calendar btn-icon" onclick="openComingSoon()"></i>
                     <i class="fa-solid fa-bars btn-icon" onclick="toggleSideMenu()"></i>
                 </div>
             </div>
 
-            <div class="profile-info">
-                <div class="profile-pic-container">
-                    <div class="profile-pic-logo"><img src="amnesfubbia.png" alt="Logo"></div>
-                    <div class="add-story-btn"><i class="fa-solid fa-plus"></i></div>
-                </div>
-                <div class="stats">
-                    <div class="stat-item" id="stat-movie" onclick="setFilter('type', 'movie', this)"><span class="stat-val">25.4rb</span><span class="stat-label">movie</span></div>
-                    <div class="stat-item" id="stat-tv" onclick="setFilter('type', 'tv', this)"><span class="stat-val">8.2rb</span><span class="stat-label">tv</span></div>
-                    <div class="stat-item" id="stat-short" onclick="setFilter('type', 'short', this)"><span class="stat-val">1.5rb</span><span class="stat-label">short</span></div>
-                </div>
+            <div class="home-hero" id="homeHero" style="display:none">
+                <div class="hero-track" id="heroTrack"></div>
+                <div class="hero-dots" id="heroDots"></div>
             </div>
 
             <div class="action-buttons">
@@ -2474,6 +2486,11 @@
                     <button class="pill" id="btnGenre" onclick="toggleFilter(event, 'genreDropdown')">Genre <i class="fa-solid fa-caret-down"></i></button>
                     <button class="pill" id="yearBtn" onclick="toggleFilter(event, 'yearDropdown')">Tahun <i class="fa-solid fa-caret-down"></i></button>
                     <button class="pill" id="btnRating" onclick="toggleFilter(event, 'ratingDropdown')">Rating <i class="fa-solid fa-caret-down"></i></button>
+                </div>
+                <div class="pill-grid type-pills">
+                    <div class="stat-item pill" id="stat-movie" onclick="setFilter('type', 'movie', this)"><span class="stat-val">25.4rb</span><span class="stat-label">Film</span></div>
+                    <div class="stat-item pill" id="stat-tv" onclick="setFilter('type', 'tv', this)"><span class="stat-val">8.2rb</span><span class="stat-label">Serial</span></div>
+                    <div class="stat-item pill" id="stat-short" onclick="setFilter('type', 'short', this)"><span class="stat-val">1.5rb</span><span class="stat-label">Short</span></div>
                 </div>
             </div>
         </div>
@@ -2636,7 +2653,7 @@
         <div id="creditsModal" style="display:none;position:fixed;inset:0;z-index:8500;background:#000;overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:0 15px 68px">
                 <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:0 -15px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('credits', closeCreditsModal)"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('credits', () => closeCreditsModal(true))"></i>
                     <div style="flex:1;min-width:0">
                         <div id="creditsTitle" style="font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
                         <div id="creditsSub" style="font-size:11px;color:#8e8e8e;margin-top:1px"></div>
@@ -2652,13 +2669,15 @@
                 <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:0 -15px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
                     <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('awards', closeAwardsModal)"></i>
                     <div style="flex:1;min-width:0;font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff;line-height:1.2">Penghargaan &amp; Festival</div>
-                    <i class="fa-solid fa-trophy" style="color:#f5c518;font-size:16px"></i>
+                    <i class="fa-solid fa-award" style="color:#f5c518;font-size:18px"></i>
                 </div>
                 <div id="awardsChips" class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;margin:12px -15px 0;padding:0 15px;scrollbar-width:none"></div>
+                <div id="awardsYears" class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;margin:10px -15px 0;padding:0 15px;scrollbar-width:none"></div>
                 <input id="awardsSearchInp" type="text" placeholder="Cari penghargaan atau festival lain..." oninput="_awardsSearchInput(this.value)" autocomplete="off"
                     style="width:100%;box-sizing:border-box;margin-top:12px;height:38px;padding:0 14px;border-radius:10px;background:#111;border:1px solid #2a2a2a;color:#fff;font-size:13px;outline:none">
                 <div id="awardsSuggest" style="display:none;margin-top:8px;background:#0d0d0d;border:1px solid #1c1c1c;border-radius:10px;overflow:hidden"></div>
                 <div id="awardsInfo" style="font-size:11px;color:#8e8e8e;margin-top:12px;line-height:1.5"></div>
+                <div id="awardsGroups" class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;margin:12px -15px 0;padding:0 15px;scrollbar-width:none"></div>
                 <div id="awardsList"></div>
                 <div style="font-size:10px;color:#555;text-align:center;margin-top:20px">Sumber data: Wikidata · data bisa belum lengkap untuk beberapa tahun</div>
             </div>
@@ -2701,14 +2720,6 @@
                         </div>
                         <!-- controls row -->
                         <div style="display:flex;align-items:center;justify-content:space-around;padding:0 6px">
-                            <!-- lock -->
-                            <button onclick="lockScreen()" style="background:none;border:none;color:#fff;font-size:18px;padding:4px 8px;cursor:pointer" title="Kunci">
-                                <i class="fa-solid fa-lock-open"></i>
-                            </button>
-                            <!-- prev slide -->
-                            <button onclick="modalVideoCmd('prev')" style="background:none;border:none;color:#fff;font-size:20px;padding:4px 8px;cursor:pointer" title="Sebelumnya">
-                                <i class="fa-solid fa-backward-step"></i>
-                            </button>
                             <!-- rewind 10s -->
                             <button onclick="modalVideoCmd('back10')" style="background:none;border:none;color:#fff;font-size:20px;padding:4px 8px;cursor:pointer;position:relative" title="-10s">
                                 <i class="fa-solid fa-rotate-left"></i>
@@ -2722,10 +2733,6 @@
                             <button onclick="modalVideoCmd('fwd10')" style="background:none;border:none;color:#fff;font-size:20px;padding:4px 8px;cursor:pointer;position:relative" title="+10s">
                                 <i class="fa-solid fa-rotate-right"></i>
                                 <span style="font-size:8px;font-weight:800;position:absolute;bottom:2px;right:4px">10</span>
-                            </button>
-                            <!-- next slide -->
-                            <button onclick="modalVideoCmd('next')" style="background:none;border:none;color:#fff;font-size:20px;padding:4px 8px;cursor:pointer" title="Berikutnya">
-                                <i class="fa-solid fa-forward-step"></i>
                             </button>
                             <!-- kecepatan putar -->
                             <button onclick="cyclePlaybackSpeed()" style="background:none;border:none;color:#fff;padding:4px 8px;cursor:pointer" title="Kecepatan putar">
@@ -3423,7 +3430,41 @@
         let isLsPaused = false, isLsMuted = false, lsControlTimer;
         let currentImdbId = ""; 
         let lastTrailerSources = []; 
-        let currentDailymotionId = ""; 
+        let currentTrailerVideoUrl = "";   // pratinjau trailer (iTunes) untuk tombol Trailer
+        let _trailerBlobUrl = "";
+        // Halaman pemutar video sederhana (hitam, kontrol bawaan) untuk dimuat di iframe pemutar
+        // Pemutar ini memahami perintah yang sama dengan YouTube (play, pause, seekTo, volume, kecepatan)
+        // dan mengirim waktu/durasi/status balik ke aplikasi, jadi tombol kontrol layar ikut berfungsi.
+        function _trailerPageUrl(src) {
+            const html = '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+                + '<body style="margin:0;background:#000;height:100vh"><video id="v" src="' + src + '" controls autoplay playsinline style="width:100%;height:100%;background:#000;object-fit:contain"></video>'
+                + '<script>'
+                + 'var v=document.getElementById("v");'
+                + 'function send(){try{parent.postMessage(JSON.stringify({event:"infoDelivery",info:{currentTime:v.currentTime||0,duration:v.duration||0,playerState:v.ended?0:(v.paused?2:1)}}),"*")}catch(e){}}'
+                + 'setInterval(send,500);'
+                + 'v.addEventListener("loadedmetadata",function(){var p=v.play();if(p&&p.catch)p.catch(function(){})});'
+                + 'addEventListener("message",function(e){var d;try{d=JSON.parse(e.data)}catch(_){return}'
+                + 'if(!d||d.event!=="command")return;var a=d.args||[];'
+                + 'switch(d.func){case"playVideo":v.play();break;case"pauseVideo":v.pause();break;case"seekTo":v.currentTime=a[0];break;'
+                + 'case"setVolume":v.volume=Math.min(1,Math.max(0,a[0]/100));break;case"mute":v.muted=true;break;case"unMute":v.muted=false;break;'
+                + 'case"setPlaybackRate":v.playbackRate=a[0];break;}});'
+                + '<\/script></body></html>';
+            return 'srcdoc:' + html;
+        }
+        // Ambil data lintas-origin lewat JSONP (tidak terhalang CORS)
+        function _jsonp(url, timeout) {
+            return new Promise((resolve, reject) => {
+                const cb = '_jp' + Math.random().toString(36).slice(2);
+                const sc = document.createElement('script');
+                const clean = () => { clearTimeout(timer); delete window[cb]; sc.remove(); };
+                const timer = setTimeout(() => { clean(); reject(new Error('timeout')); }, timeout || 7000);
+                window[cb] = d => { clean(); resolve(d); };
+                sc.onerror = () => { clean(); reject(new Error('jsonp')); };
+                sc.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + cb;
+                document.head.appendChild(sc);
+            });
+        }
+        let _trailerAltState = 'none'; // 'loading' | 'ok' | 'none'
         
         let activeServerIdx = 1;
         let activeEpisode = 1;
@@ -3441,7 +3482,7 @@
             } catch(e) { return null; }
         }
         function saveLastWorkingServer(mediaId, srvIdx) {
-            if (!mediaId || srvIdx === 99) return; // 99 = trailer/dailymotion, bukan server streaming
+            if (!mediaId || srvIdx === 99) return; // 99 = trailer alternatif, bukan server streaming
             try {
                 const map = JSON.parse(localStorage.getItem(LAST_SERVER_KEY) || '{}');
                 map[mediaId] = srvIdx;
@@ -3480,6 +3521,7 @@
             });
             initModalSwipeGestures();
             initTvModalSwipe();
+            try { loadHomeHero(); } catch (e) { _dbg('hero', e); }
             renderAllNavs();
         };
 
@@ -5029,7 +5071,7 @@
                 // (di dalam modal), BUKAN pencarian film/series global.
                 if (containerId === 'tvBottomNav' && item.action === 'search') {
                     return `<div id="${containerId}-${item.id}" class="nav-item-wrap" onclick="focusTvSearch()">
-                        <i class="${item.icon} cursor-pointer" style="font-size:20px"></i>
+                        <i class="${item.icon} cursor-pointer" style="font-size:24px"></i>
                     </div>`;
                 }
                 // Active item: tidak perlu closeFunc (sudah di sini)
@@ -5037,7 +5079,7 @@
                     ? `${closeFunc}(); _navAction('${item.action}')`
                     : `_navAction('${item.action}')`;
                 return `<div id="${containerId}-${item.id}" class="nav-item-wrap ${isActive ? 'nav-active' : ''}" onclick="${onclick}">
-                    <i class="${item.icon} cursor-pointer" style="font-size:20px"></i>
+                    <i class="${item.icon} cursor-pointer" style="font-size:24px"></i>
                 </div>`;
             }).join('');
         }
@@ -5079,7 +5121,7 @@
         let _modalMuted = false;
         function modalVideoCmd(cmd) {
             const slides = document.querySelectorAll('.carousel-slide');
-            const iframe = document.getElementById(`vid-${currentIdx}`);
+            const iframe = _trailerIframe();
             function postMsg(fn, args) {
                 try { iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:fn,args:args||''}), '*'); } catch (e) { _dbg('postMsg', e); }
             }
@@ -5094,9 +5136,9 @@
                     document.getElementById('lsPlayBtn').className = 'fa-solid fa-pause ls-btn';
                 }
             } else if (cmd === 'back10') {
-                postMsg('seekBy', [-10]);
+                postMsg('seekTo', [Math.max(0, (_trailerCur || 0) - 10), true]);
             } else if (cmd === 'fwd10') {
-                postMsg('seekBy', [10]);
+                postMsg('seekTo', [Math.min(_trailerDur || ((_trailerCur || 0) + 10), (_trailerCur || 0) + 10), true]);
             } else if (cmd === 'prev' || cmd === 'next') {
                 const dir = cmd === 'next' ? 1 : -1;
                 const newIdx = currentIdx + dir;
@@ -5119,6 +5161,26 @@
             }
         }
 
+        // ===== Kontrol trailer: tentukan apakah yang sedang tampil adalah trailer yang bisa dikendalikan =====
+        // Trailer YouTube di carousel (belum ada pemutar server streaming) atau trailer alternatif (server 99).
+        let _trailerCur = 0, _trailerDur = 0;
+        function _trailerMode() {
+            if (activeServerIdx === 99) return true;
+            return !document.getElementById('player-frame') && !!document.getElementById('vid-' + currentIdx);
+        }
+        function _trailerIframe() {
+            return document.getElementById('vid-' + currentIdx) || (activeServerIdx === 99 ? document.getElementById('player-frame') : null);
+        }
+        // Jabat tangan "listening" supaya YouTube mengirim waktu, durasi & status ke aplikasi
+        function _ytListen(f) {
+            let tries = 0;
+            const iv = setInterval(() => {
+                tries++;
+                if (!f || !f.isConnected || tries > 30) { clearInterval(iv); return; }
+                try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), '*'); } catch (e) {}
+            }, 500);
+        }
+
         // Landscape play/pause
         let _lsPaused = false;
         let _lsPausedSrc = '';
@@ -5134,25 +5196,25 @@
         function lsPlayPause() {
             // Streaming pihak ketiga tidak bisa dikontrol play/pause-nya lewat JS
             // (beda origin, tanpa API) — logika di bawah ini hanya untuk trailer (YouTube).
-            if (activeServerIdx !== 99) return;
+            if (!_trailerMode()) return;
             const icon = document.getElementById('lsPlayBtn');
-            modalVideoCmd('playpause');
-            _modalPlaying = !_modalPlaying;
+            modalVideoCmd('playpause'); // sudah membalik status _modalPlaying
             icon.className = _modalPlaying ? 'fa-solid fa-pause ls-btn' : 'fa-solid fa-play ls-btn';
             icon.style.cssText = 'font-size:26px;border:2px solid #fff;border-radius:50%;padding:10px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;box-sizing:border-box';
         }
 
         let _lsLastDuration = 0;
         function lsSeek(sec) {
-            if (activeServerIdx === 99) {
-                // Trailer (YouTube) — seek via postMessage
-                const iframe = document.getElementById(`vid-${currentIdx}`);
-                try { iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'seekBy',args:[sec]}), '*'); } catch (e) { _dbg('lsSeek', e); }
+            if (_trailerMode()) {
+                // Trailer — seek via postMessage (YouTube tidak punya perintah seekBy, jadi pakai seekTo)
+                const iframe = _trailerIframe();
+                const target = Math.min(_trailerDur || Infinity, Math.max(0, (_trailerCur || 0) + sec));
+                try { iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'seekTo',args:[target, true]}), '*'); } catch (e) { _dbg('lsSeek', e); }
             }
             // Streaming — seek tidak bisa, abaikan
         }
         function lsSeekToTap(ev) {
-            if (activeServerIdx !== 99 || !_lsLastDuration) return; // hanya trailer, butuh durasi valid
+            if (!_trailerMode() || !_lsLastDuration) return; // hanya trailer, butuh durasi valid
             const track = document.getElementById('lsProgressTrack');
             const rect = track.getBoundingClientRect();
             const clientX = (ev.touches && ev.touches[0] ? ev.touches[0].clientX : ev.clientX);
@@ -5161,7 +5223,7 @@
             const rawRatio = _lsRotated() ? (clientY - rect.top) / rect.height : (clientX - rect.left) / rect.width;
             const ratio = Math.min(1, Math.max(0, rawRatio));
             const targetTime = ratio * _lsLastDuration;
-            const iframe = document.getElementById(`vid-${currentIdx}`);
+            const iframe = _trailerIframe();
             try {
                 iframe && iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'seekTo',args:[targetTime, true]}), '*');
                 // Update UI langsung supaya terasa responsif, tidak menunggu postMessage berikutnya
@@ -6253,7 +6315,7 @@
 
             // Modal karya Director/Writer/Studio
             const _crm = document.getElementById('creditsModal');
-            if (_crm && _crm.style.display === 'block') { _crm.style.display = 'none'; return; }
+            if (_crm && _crm.style.display === 'block') { _crm.style.display = 'none'; _resumeFilmTrailer(); return; }
 
             // Decade modal (z-index tertinggi, cek paling awal)
             if (document.getElementById('decadeModal') && document.getElementById('decadeModal').style.display === 'block') {
@@ -6468,7 +6530,7 @@
             // server streaming pihak ketiga tidak mengirim data waktu, jadi disembunyikan daripada nampilkan bar mati.
             // Tombol tengah (play/pause) cuma berfungsi untuk trailer — disembunyikan untuk streaming
             // supaya baris kontrol rapi (kunci layar sudah ada di ikon kanan atas, tidak perlu duplikat).
-            const _isTrailer = activeServerIdx === 99;
+            const _isTrailer = _trailerMode();
             if (lsProgressArea) lsProgressArea.style.display = _isTrailer ? 'flex' : 'none';
             document.querySelectorAll('.ls-seek-btn').forEach(b => b.style.display = _isTrailer ? 'inline-flex' : 'none');
             const _lspb = document.getElementById('lsPlayBtn');
@@ -6529,7 +6591,7 @@
                 const active = (i === activeServerIdx) ? 'active-link' : '';
                 html += `<div class="ls-srv-btn ${active}" onclick="event.stopPropagation(); lsChangeServer(${i}, this)">Server ${i}</div>`;
             }
-            if (currentDailymotionId) {
+            if (currentTrailerVideoUrl) {
                 html += `<div class="ls-srv-btn ${activeServerIdx === 99 ? 'active-link' : ''}" onclick="event.stopPropagation(); lsChangeServer(99, this)">Trailer</div>`;
             }
             scroll.innerHTML = html;
@@ -6631,8 +6693,8 @@
         })();
         function _lsVolTarget() {
             // Trailer = iframe vid-N (YouTube/Dailymotion); streaming = player-frame
-            return activeServerIdx === 99
-                ? document.getElementById(`vid-${currentIdx}`)
+            return _trailerMode()
+                ? _trailerIframe()
                 : document.getElementById('player-frame');
         }
         function _lsPostVolume(v) {
@@ -6640,13 +6702,10 @@
             if (!f || !f.contentWindow) return;
             try {
                 const src = f.src || '';
-                if (activeServerIdx === 99) {
-                    if (src.includes('youtube') || src.includes('youtu.be')) {
-                        f.contentWindow.postMessage(JSON.stringify({event:'command', func:'setVolume', args:[v]}), '*');
-                        f.contentWindow.postMessage(JSON.stringify({event:'command', func: v === 0 ? 'mute' : 'unMute', args: []}), '*');
-                    } else if (src.includes('dailymotion')) {
-                        f.contentWindow.postMessage(JSON.stringify({command:'volume', params:[v / 100]}), '*');
-                    }
+                if (_trailerMode()) {
+                    // YouTube dan pemutar trailer alternatif memakai format perintah yang sama
+                    f.contentWindow.postMessage(JSON.stringify({event:'command', func:'setVolume', args:[v]}), '*');
+                    f.contentWindow.postMessage(JSON.stringify({event:'command', func: v === 0 ? 'mute' : 'unMute', args: []}), '*');
                 } else {
                     // Best-effort untuk sebagian player streaming yang paham postMessage
                     try { f.contentWindow.postMessage(JSON.stringify({type:'setVolume', volume: v / 100}), '*'); } catch (e) { _dbg('_lsPostVolume', e); }
@@ -7055,6 +7114,7 @@
         }
 
         async function openActorProfile(actorId) {
+            _pauseFilmTrailer();
             window._currentActorId = actorId;
             window._currentOpenActorId = actorId; // Simpan untuk back navigation dari film
             lastTrailerSources = [];
@@ -7888,6 +7948,7 @@
                 if (lTime) lTime.textContent = fmt(cur);
                 if (lDur) lDur.textContent = fmt(dur);
                 _lsLastDuration = dur;
+                _trailerCur = cur; _trailerDur = dur;
                 // Simpan posisi trailer (YouTube) untuk fitur lanjut tonton — tiap ~6 detik
                 if (activeServerIdx === 99 && window.currentMediaId && typeof cur === 'number') {
                     const now = Date.now();
@@ -9463,6 +9524,7 @@
                     slideDiv.className = 'carousel-slide';
                     slideDiv.innerHTML = `<iframe id="vid-${i}" src="${embedUrl}" class="w-full h-full" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe><div class="yt-overlay-mask" onclick="void(0)"></div>`;
                     track.appendChild(slideDiv);
+                    _ytListen(slideDiv.querySelector('iframe'));
                     setTimeout(() => { slideDiv.classList.add('playing'); }, 3000);
                     if (vidsToDisplay.length > 1) {
                         dots.innerHTML += `<div class="dot w-1.5 h-1.5 rounded-full ${i===0?'bg-blue-500':'bg-zinc-700'}"></div>`;
@@ -9478,6 +9540,7 @@
         }
 
         async function openModal(id, type) {
+            _filmPausedByOverlay = false;
             musicDuckForOtherAudio();
             const actorModal = document.getElementById('actorModal');
             if (actorModal.style.display === 'block') actorModal.style.display = 'none';
@@ -9670,6 +9733,7 @@
                     slideDiv.className = 'carousel-slide';
                     slideDiv.innerHTML = `<iframe id="vid-${i}" src="${embedUrl}" class="w-full h-full" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe><div class="yt-overlay-mask" onclick="void(0)"></div>`;
                     track.appendChild(slideDiv);
+                    _ytListen(slideDiv.querySelector('iframe'));
                     setTimeout(() => { slideDiv.classList.add('playing'); }, 3000);
                     if(vidsToDisplay.length > 1) { dots.innerHTML += `<div class="dot w-1.5 h-1.5 rounded-full ${i===currentIdx?'bg-blue-500':'bg-zinc-700'}"></div>`; }
                 });
@@ -9683,24 +9747,33 @@
                 await handleTrailerError();
             }
 
-            // Fetch Dailymotion secara background — tidak blokir render konten utama
-            currentDailymotionId = "";
+            // Trailer alternatif (iTunes Preview — video langsung, tanpa iklan) di latar belakang
+            currentTrailerVideoUrl = "";
+            _trailerAltState = 'loading';
             (async () => {
+                const myId = id;
                 try {
-                    const qName = dEn.title || dEn.name || dId.title || dId.name;
-                    const qYear = (dId.release_date || dId.first_air_date || "").split('-')[0];
-                    const searchQueryDaily = encodeURIComponent(`${qName} ${qYear} official trailer`);
-                    const dailyData = await new Promise((resolve, reject) => {
-                        const timer = setTimeout(() => reject(new Error('timeout')), 5000);
-                        fetch(`https://api.dailymotion.com/videos?search=${searchQueryDaily}&fields=id,title&limit=1`)
-                            .then(r => r.json())
-                            .then(d => { clearTimeout(timer); resolve(d); })
-                            .catch(e => { clearTimeout(timer); reject(e); });
-                    });
-                    if (dailyData.list && dailyData.list.length > 0) {
-                        currentDailymotionId = dailyData.list[0].id;
+                    const names = [...new Set([dEn.title || dEn.name, dId.title || dId.name, dId.original_title || dId.original_name].filter(Boolean))];
+                    const qYear = parseInt((dId.release_date || dId.first_air_date || "").split('-')[0], 10);
+                    const isTvItem = type === 'tv';
+                    const norm = t => String(t || '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim();
+                    const nameOf = r => norm(isTvItem ? String(r.collectionName || r.artistName || '').replace(/,?\s*(season|book|series)\s*\d+.*$/i, '') : (r.trackName || r.collectionName));
+                    let pick = null;
+                    for (const qName of names) {
+                        const data = await _jsonp(`https://itunes.apple.com/search?term=${encodeURIComponent(qName)}&media=${isTvItem ? 'tvShow' : 'movie'}&entity=${isTvItem ? 'tvSeason' : 'movie'}&limit=25`, 7000);
+                        const target = norm(qName);
+                        const cands = (data.results || []).filter(r => r.previewUrl);
+                        const yr = r => parseInt(String(r.releaseDate || '').slice(0, 4), 10);
+                        const yearOk = r => !qYear || !yr(r) || Math.abs(yr(r) - qYear) <= 1;
+                        pick = cands.find(r => nameOf(r) === target && yearOk(r))
+                            || cands.find(r => nameOf(r) === target)
+                            || cands.find(r => nameOf(r).startsWith(target + ' ') && yearOk(r));
+                        if (pick) break;
                     }
-                } catch(e) { currentDailymotionId = ""; }
+                    if (window.currentMediaId !== myId) return;
+                    if (pick) { currentTrailerVideoUrl = String(pick.previewUrl).replace('http://', 'https://'); _trailerAltState = 'ok'; }
+                    else _trailerAltState = 'none';
+                } catch (e) { currentTrailerVideoUrl = ""; _trailerAltState = 'none'; _dbg('itunesTrailer', e); }
             })();
 
             // Render cast dengan nama Latin (fetch person detail jika nama non-Latin)
@@ -10041,7 +10114,8 @@
             
             const newIframe = document.createElement('iframe');
             newIframe.id = "player-frame";
-            newIframe.src = finalUrl;
+            if (typeof finalUrl === 'string' && finalUrl.indexOf('srcdoc:') === 0) newIframe.srcdoc = finalUrl.slice(7);
+            else newIframe.src = finalUrl;
             newIframe.className = "w-full h-full";
             newIframe.allowFullscreen = true;
             newIframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer');
@@ -10149,6 +10223,7 @@
         }
         
         function changeServer(srvIdx, el) {
+            if (srvIdx === 99 && !currentTrailerVideoUrl) { showToast(_trailerAltState === 'loading' ? 'Sedang mencari trailer alternatif…' : 'Trailer alternatif tidak tersedia untuk judul ini'); return; }
             if (!_isAutoAdvancing) _autoAdvanceCount = 0; // reset hitungan cuma kalau user pilih manual
             activeServerIdx = srvIdx;
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active-link'));
@@ -10227,7 +10302,7 @@
                 case 45: url = `https://production-player.vidrift.pages.dev/embed/${type}/${id}${seriesSuffix}`; break;
                 case 46: url = `https://primesrc.me/embed/${type}/${id}${seriesSuffix}`; break;
                 case 47: url = `https://fmovies4u.com/embed/${type}/${id}${seriesSuffix}`; break;
-                case 99: url = `https://www.dailymotion.com/embed/video/${currentDailymotionId}`; break;     default: url = type === 'tv'
+                case 99: url = _trailerPageUrl(currentTrailerVideoUrl); break;     default: url = type === 'tv'
                     ? `https://cinesrc.st/embed/tv/${id}?season=${s}&episode=${e}`
                     : `https://cinesrc.st/embed/movie/${id}`;
             }
@@ -11387,6 +11462,27 @@
             openDecadeModal();
         }
 
+        // ===== JEDA TRAILER saat layar lain menutupi modal film =====
+        let _filmPausedByOverlay = false;
+        function _pauseFilmTrailer() {
+            const mm = document.getElementById('movieModal');
+            if (!mm || mm.style.display !== 'block') return;
+            document.querySelectorAll('#carouselTrack iframe').forEach(f => {
+                try { f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); _filmPausedByOverlay = true; }
+                catch (e) { _dbg('pauseFilmTrailer', e); }
+            });
+        }
+        function _resumeFilmTrailer() {
+            if (!_filmPausedByOverlay) return;
+            _filmPausedByOverlay = false;
+            const mm = document.getElementById('movieModal');
+            if (!mm || mm.style.display !== 'block') return;
+            document.querySelectorAll('#carouselTrack iframe').forEach(f => {
+                try { f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); }
+                catch (e) { _dbg('resumeFilmTrailer', e); }
+            });
+        }
+
         // ===== RIWAYAT TOMBOL BACK =====
         // Modal yang ditutup lewat tombol panah ikut membuang entri riwayat miliknya,
         // supaya tombol back HP tidak perlu ditekan dua kali.
@@ -11459,7 +11555,82 @@
             }
         }, true);
 
-        // ===== PENGHARGAAN & FESTIVAL (Wikidata) =====
+        // ===== HERO HOME: carousel otomatis (5 film, ganti tiap 6 detik) =====
+        let _heroItems = [], _heroIdx = 0, _heroTimer = null, _heroMoved = false, _heroBound = false;
+        async function loadHomeHero() {
+            const hero = document.getElementById('homeHero');
+            if (!hero) return;
+            try {
+                const d = await fetchWithCache(`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&language=en-US`);
+                const items = (d.results || []).filter(m => (m.media_type === 'movie' || m.media_type === 'tv') && m.backdrop_path).slice(0, 5);
+                if (!items.length) return;
+                _heroItems = items;
+                const esc = t => String(t || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+                document.getElementById('heroTrack').innerHTML = items.map((m, i) => {
+                    const title = esc(m.title || m.name);
+                    const year = (m.release_date || m.first_air_date || '').split('-')[0];
+                    const rating = m.vote_average ? m.vote_average.toFixed(1) : '';
+                    const votes = m.vote_count ? Number(m.vote_count).toLocaleString('id-ID') : '';
+                    return `<div class="hero-slide ${i === 0 ? 'active' : ''}" data-id="${m.id}" data-type="${m.media_type}" onclick="_heroOpen(this)">
+                        <img src="https://image.tmdb.org/t/p/w1280${m.backdrop_path}" alt="" ${i === 0 ? '' : 'loading="lazy"'}>
+                        <div class="hero-info">
+                            <div class="hero-title">${title}</div>
+                            <div class="hero-meta">
+                                ${year ? `<span>${year}</span>` : ''}
+                                ${rating ? `<span><i class="fa-solid fa-star" style="color:#f5c518"></i> ${rating}${votes ? ` (${votes} suara)` : ''}</span>` : ''}
+                                ${m.original_language ? `<span>${esc(m.original_language.toUpperCase())}</span>` : ''}
+                            </div>
+                            <div class="hero-over">${esc(m.overview)}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+                document.getElementById('heroDots').innerHTML = items.map((_, i) => `<span class="hero-dot ${i === 0 ? 'active' : ''}" onclick="_heroGo(${i}); _heroStart()"></span>`).join('');
+                hero.style.display = 'block';
+                hero.parentElement.classList.add('has-hero');
+                _heroIdx = 0;
+                _heroStart();
+                _heroBindTouch();
+            } catch (e) { _warn('loadHomeHero', e); }
+        }
+        function _heroGo(i) {
+            const n = _heroItems.length;
+            if (!n) return;
+            _heroIdx = (i + n) % n;
+            document.querySelectorAll('#heroTrack .hero-slide').forEach((el, k) => el.classList.toggle('active', k === _heroIdx));
+            document.querySelectorAll('#heroDots .hero-dot').forEach((el, k) => el.classList.toggle('active', k === _heroIdx));
+        }
+        function _heroStart() {
+            clearInterval(_heroTimer);
+            _heroTimer = setInterval(() => {
+                const mp = document.getElementById('mainProfile');
+                if (document.hidden || !mp || mp.style.display === 'none') return;
+                _heroGo(_heroIdx + 1);
+            }, 6000);
+        }
+        function _heroOpen(el) {
+            if (_heroMoved) { _heroMoved = false; return; }
+            openModal(el.dataset.id, el.dataset.type);
+        }
+        function _heroBindTouch() {
+            if (_heroBound) return;
+            const hero = document.getElementById('homeHero');
+            if (!hero) return;
+            _heroBound = true;
+            let x0 = 0, y0 = 0;
+            hero.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; e.stopPropagation(); }, { passive: true });
+            hero.addEventListener('touchend', e => {
+                const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+                e.stopPropagation();
+                if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+                    _heroMoved = true;
+                    setTimeout(() => { _heroMoved = false; }, 350);
+                    _heroGo(_heroIdx + (dx < 0 ? 1 : -1));
+                    _heroStart();
+                }
+            }, { passive: true });
+        }
+
+        // ===== PENGHARGAAN & FESTIVAL (Wikidata) — per tahun & per kategori =====
         const AWARD_CEREMONIES = [
             { k: 'oscar',  label: 'Oscar',        q: 'Academy Award for Best Picture' },
             { k: 'globe',  label: 'Golden Globe', q: 'Golden Globe Award for Best Motion Picture – Drama' },
@@ -11470,13 +11641,26 @@
             { k: 'emmy',   label: 'Emmy',         q: 'Primetime Emmy Award for Outstanding Drama Series' },
             { k: 'citra',  label: 'Piala Citra (FFI)', q: 'Citra Award for Best Picture' }
         ];
-        let _awardsReq = 0, _awardsKey = null, _awardsRows = [], _awardsYears = 8, _awardsSearchTimer = null;
+        const AWARD_GROUP_ORDER = ['Film', 'Sutradara', 'Aktor', 'Aktris', 'Animasi', 'Penulisan', 'Musik', 'Teknis', 'Lainnya'];
+        let _awardsReq = 0, _awardsKey = null, _awardsCur = null, _awardsYear = new Date().getFullYear(), _awardsRows = [], _awardsGroup = 'Semua', _awardsSearchTimer = null;
         const _awardsRowsCache = {};
         async function _wdSearch(term, limit) {
             const url = 'https://www.wikidata.org/w/api.php?action=wbsearchentities&type=item&language=en&format=json&origin=*&limit=' + (limit || 7) + '&search=' + encodeURIComponent(term);
             const res = await fetch(url);
             const j = await res.json();
             return j.search || [];
+        }
+        function _awardGroupOf(cat) {
+            const c = String(cat || '').toLowerCase();
+            if (/actress/.test(c)) return 'Aktris';
+            if (/\bactor\b|performance by an actor|male lead|male supporting/.test(c)) return 'Aktor';
+            if (/animat/.test(c)) return 'Animasi';
+            if (/director|directing/.test(c)) return 'Sutradara';
+            if (/screenplay|writing|writer|script/.test(c)) return 'Penulisan';
+            if (/music|song|score/.test(c)) return 'Musik';
+            if (/cinematograph|editing|effects|design|sound|makeup|hairstyl|costume|production/.test(c)) return 'Teknis';
+            if (/picture|film|feature|series|movie|drama|comedy|documentary|palme|lion|bear|motion|short/.test(c)) return 'Film';
+            return 'Lainnya';
         }
         function openAwardsModal() {
             const m = document.getElementById('awardsModal');
@@ -11489,7 +11673,7 @@
             if (!chips.children.length) {
                 chips.innerHTML = AWARD_CEREMONIES.map(c => `<div class="decade-tab-chip" id="awChip-${c.k}" onclick="selectAward('${c.k}')">${c.label}</div>`).join('');
             }
-            if (!_awardsKey) selectAward(AWARD_CEREMONIES[0].k);
+            if (!_awardsKey && !_awardsCur) selectAward(AWARD_CEREMONIES[0].k);
         }
         function closeAwardsModal(silent) {
             const m = document.getElementById('awardsModal');
@@ -11510,7 +11694,9 @@
                 const norm = t => String(t || '').toLowerCase().replace(/[–—-]/g, '-').trim();
                 const hit = hits.find(h => norm(h.label) === norm(c.q)) || hits[0];
                 if (!hit) { _awardsShowMsg('Penghargaan tidak ditemukan.'); return; }
-                await _awardsLoad(hit.id, hit.label, hit.description, req);
+                _awardsCur = { qid: hit.id, label: hit.label, desc: hit.description || '' };
+                _awardsYear = new Date().getFullYear();
+                await _awardsFetchYear(req, true);
             } catch (e) { _warn('selectAward', e); if (req === _awardsReq) _awardsShowMsg('Gagal memuat data penghargaan.'); }
         }
         async function pickAward(qid, label, desc) {
@@ -11518,71 +11704,125 @@
             document.querySelectorAll('#awardsChips .decade-tab-chip').forEach(e => e.classList.remove('active'));
             const sg = document.getElementById('awardsSuggest'); if (sg) sg.style.display = 'none';
             const req = ++_awardsReq;
+            _awardsCur = { qid, label, desc: desc || '' };
+            _awardsYear = new Date().getFullYear();
             _awardsShowLoading();
-            try { await _awardsLoad(qid, label, desc, req); }
+            try { await _awardsFetchYear(req, true); }
             catch (e) { _warn('pickAward', e); if (req === _awardsReq) _awardsShowMsg('Gagal memuat data penghargaan.'); }
+        }
+        async function selectAwardYear(y) {
+            if (!_awardsCur) return;
+            _awardsYear = y;
+            const req = ++_awardsReq;
+            try { await _awardsFetchYear(req, false); }
+            catch (e) { _warn('selectAwardYear', e); if (req === _awardsReq) _awardsShowMsg('Gagal memuat data penghargaan.'); }
         }
         function _awardsShowLoading() {
             document.getElementById('awardsInfo').textContent = 'Memuat...';
+            document.getElementById('awardsGroups').innerHTML = '';
             document.getElementById('awardsList').innerHTML = Array(6).fill('<div class="sk" style="width:100%;height:38px;border-radius:8px;margin-top:8px"></div>').join('');
         }
         function _awardsShowMsg(t) {
             document.getElementById('awardsInfo').textContent = '';
+            document.getElementById('awardsGroups').innerHTML = '';
             document.getElementById('awardsList').innerHTML = `<div style="padding:30px 0;text-align:center;color:#666;font-size:12px">${t}</div>`;
         }
-        async function _awardsLoad(qid, label, desc, req) {
-            let rows = _awardsRowsCache[qid];
-            if (!rows) {
-                const q = `SELECT ?filmLabel ?kind ?year ?tm ?tt WHERE { { ?film p:P166 ?s. ?s ps:P166 wd:${qid}. BIND("won" AS ?kind) OPTIONAL { ?s pq:P585 ?d } } UNION { ?film p:P1411 ?s. ?s ps:P1411 wd:${qid}. BIND("nom" AS ?kind) OPTIONAL { ?s pq:P585 ?d } } BIND(YEAR(?d) AS ?year) OPTIONAL { ?film wdt:P4947 ?tm } OPTIONAL { ?film wdt:P4983 ?tt } SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } } ORDER BY DESC(?year) LIMIT 600`;
+        function _awardsRenderYears() {
+            const now = new Date().getFullYear();
+            document.getElementById('awardsYears').innerHTML = Array.from({ length: 16 }, (_, i) => now - i)
+                .map(y => `<div class="decade-tab-chip ${y === _awardsYear ? 'active' : ''}" onclick="selectAwardYear(${y})">${y}</div>`).join('');
+        }
+        async function _awardsQuery(qid, y) {
+            const run = async q => {
                 const ctrl = new AbortController();
-                const timer = setTimeout(() => ctrl.abort(), 20000);
+                const timer = setTimeout(() => ctrl.abort(), 30000);
                 const res = await fetch('https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent(q), { headers: { Accept: 'application/sparql-results+json' }, signal: ctrl.signal });
                 clearTimeout(timer);
                 if (!res.ok) throw new Error('sparql ' + res.status);
-                const j = await res.json();
-                const seen = new Set();
-                rows = (j.results.bindings || []).map(b => ({
-                    name: b.filmLabel ? b.filmLabel.value : '',
-                    kind: b.kind.value,
-                    year: b.year ? b.year.value : '',
-                    tm: b.tm ? b.tm.value : '',
-                    tt: b.tt ? b.tt.value : ''
-                })).filter(r => {
-                    if (!r.name || /^Q\d+$/.test(r.name)) return false;
-                    const k = r.kind + '|' + r.name + '|' + r.year;
-                    if (seen.has(k)) return false;
-                    seen.add(k); return true;
-                });
-                _awardsRowsCache[qid] = rows;
+                return (await res.json()).results.bindings || [];
+            };
+            const val = (b, k) => (b[k] ? b[k].value : '');
+            // 1) semua kategori dari lembaga/festival yang sama dengan penghargaan utama
+            let rows = (await run(`SELECT ?awardLabel ?recLabel ?workLabel ?kind ?rtm ?rtt ?wtm ?wtt WHERE {
+                wd:${qid} wdt:P1027 ?org. ?award wdt:P1027 ?org.
+                { ?rec p:P166 ?s. ?s ps:P166 ?award. BIND("won" AS ?kind) }
+                UNION
+                { ?rec p:P1411 ?s. ?s ps:P1411 ?award. BIND("nom" AS ?kind) }
+                ?s pq:P585 ?d. FILTER(YEAR(?d) = ${y})
+                OPTIONAL { ?s pq:P1686 ?work. OPTIONAL { ?work wdt:P4947 ?wtm } OPTIONAL { ?work wdt:P4983 ?wtt } }
+                OPTIONAL { ?rec wdt:P4947 ?rtm } OPTIONAL { ?rec wdt:P4983 ?rtt }
+                SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+            } LIMIT 1500`)).map(b => ({ cat: val(b, 'awardLabel'), name: val(b, 'recLabel'), work: val(b, 'workLabel'), kind: val(b, 'kind'), tm: val(b, 'wtm') || val(b, 'rtm'), tt: val(b, 'wtt') || val(b, 'rtt') }));
+            // 2) cadangan: hanya penghargaan utama itu sendiri
+            if (!rows.length) {
+                rows = (await run(`SELECT ?awardLabel ?recLabel ?kind ?rtm ?rtt WHERE {
+                    BIND(wd:${qid} AS ?award)
+                    { ?rec p:P166 ?s. ?s ps:P166 wd:${qid}. BIND("won" AS ?kind) }
+                    UNION
+                    { ?rec p:P1411 ?s. ?s ps:P1411 wd:${qid}. BIND("nom" AS ?kind) }
+                    ?s pq:P585 ?d. FILTER(YEAR(?d) = ${y})
+                    OPTIONAL { ?rec wdt:P4947 ?rtm } OPTIONAL { ?rec wdt:P4983 ?rtt }
+                    SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+                } LIMIT 300`)).map(b => ({ cat: val(b, 'awardLabel'), name: val(b, 'recLabel'), work: '', kind: val(b, 'kind'), tm: val(b, 'rtm'), tt: val(b, 'rtt') }));
             }
+            const seen = new Map();
+            rows.filter(r => r.name && r.cat && !/^Q\d+$/.test(r.name)).forEach(r => {
+                const k = r.cat + '|' + r.name + '|' + r.work;
+                const old = seen.get(k);
+                if (!old || (old.kind === 'nom' && r.kind === 'won')) seen.set(k, r); // pemenang menggantikan catatan nominasi yang sama
+            });
+            return [...seen.values()];
+        }
+        async function _awardsFetchYear(req, autoPrev) {
+            const cur = _awardsCur;
+            if (!cur) return;
+            _awardsRenderYears();
+            _awardsShowLoading();
+            const key = cur.qid + '|' + _awardsYear;
+            let rows = _awardsRowsCache[key];
+            if (!rows) { rows = await _awardsQuery(cur.qid, _awardsYear); _awardsRowsCache[key] = rows; }
             if (req !== _awardsReq) return;
+            if (!rows.length && autoPrev && _awardsYear > new Date().getFullYear() - 2) { _awardsYear--; return _awardsFetchYear(req, autoPrev); }
             _awardsRows = rows;
-            _awardsYears = 8;
-            const wins = rows.filter(r => r.kind === 'won').length;
-            document.getElementById('awardsInfo').innerHTML = `<b style="color:#ddd">${_escAttr(label)}</b>${desc ? ' — ' + _escAttr(desc) : ''}<br>${wins} pemenang · ${rows.length - wins} nominasi tercatat`;
+            _awardsGroup = 'Semua';
+            _awardsRenderYears();
             _awardsRender();
         }
+        function setAwardsGroup(g) { _awardsGroup = g; _awardsRender(); }
         function _awardsRender() {
-            const list = document.getElementById('awardsList');
+            const cur = _awardsCur;
             const rows = _awardsRows;
-            if (!rows.length) { _awardsShowMsg('Belum ada data untuk penghargaan ini.'); return; }
-            const byYear = {};
-            rows.forEach(r => { (byYear[r.year || '0'] = byYear[r.year || '0'] || []).push(r); });
-            const years = Object.keys(byYear).sort((a, b) => (b === '0') - (a === '0') || b - a);
-            const shown = years.slice(0, _awardsYears);
+            const info = document.getElementById('awardsInfo');
+            if (!rows.length) {
+                _awardsShowMsg(`Belum ada data untuk ${_awardsYear}. Coba pilih tahun lain.`);
+                if (cur) info.innerHTML = `<b style="color:#ddd">${_escAttr(cur.label)}</b>`;
+                return;
+            }
+            const byCat = {};
+            rows.forEach(r => { (byCat[r.cat] = byCat[r.cat] || []).push(r); });
+            const cats = Object.keys(byCat).map(c => ({ name: c, group: _awardGroupOf(c), items: byCat[c] }))
+                .sort((a, b) => AWARD_GROUP_ORDER.indexOf(a.group) - AWARD_GROUP_ORDER.indexOf(b.group) || a.name.localeCompare(b.name));
+            const wins = rows.filter(r => r.kind === 'won').length;
+            info.innerHTML = `<b style="color:#ddd">${_escAttr(cur.label)}</b>${cur.desc ? ' — ' + _escAttr(cur.desc) : ''}<br>Tahun ${_awardsYear} · ${cats.length} kategori · ${wins} pemenang · ${rows.length - wins} nominasi`;
+            const groupsPresent = AWARD_GROUP_ORDER.filter(g => cats.some(c => c.group === g));
+            if (_awardsGroup !== 'Semua' && !groupsPresent.includes(_awardsGroup)) _awardsGroup = 'Semua';
+            document.getElementById('awardsGroups').innerHTML = (groupsPresent.length > 1
+                ? ['Semua', ...groupsPresent].map(g => `<div class="decade-tab-chip ${g === _awardsGroup ? 'active' : ''}" onclick="setAwardsGroup('${g}')">${g}</div>`).join('') : '');
             const rowHTML = r => {
                 const id = r.tm || r.tt;
                 const type = r.tm ? 'movie' : 'tv';
                 const click = id ? `onclick="closeAwardsModal(true); document.body.style.overflow='auto'; openModal(${id},'${type}')"` : '';
+                const label = _escAttr(r.name) + (r.work && r.work !== r.name ? ` <span style="color:#777">— ${_escAttr(r.work)}</span>` : '');
                 return `<div class="aw-row ${id ? 'clickable' : ''}" ${click}>
                     <i class="${r.kind === 'won' ? 'fa-solid fa-trophy' : 'fa-regular fa-star'}" style="color:${r.kind === 'won' ? '#f5c518' : '#666'}"></i>
-                    <span>${_escAttr(r.name)}</span><span class="aw-tag">${r.kind === 'won' ? 'Pemenang' : 'Nominasi'}</span></div>`;
+                    <span>${label}</span><span class="aw-tag">${r.kind === 'won' ? 'Pemenang' : 'Nominasi'}</span></div>`;
             };
-            list.innerHTML = shown.map(y => {
-                const items = byYear[y].slice().sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'won' ? -1 : 1));
-                return `<div class="aw-year">${y === '0' ? 'TAHUN TIDAK DIKETAHUI' : y}</div>${items.map(rowHTML).join('')}`;
-            }).join('') + (years.length > shown.length
-                ? `<div class="toggle-btn" style="text-align:center;margin-top:16px;padding:8px" onclick="_awardsYears += 8; _awardsRender()">Tampilkan lebih banyak</div>` : '');
+            document.getElementById('awardsList').innerHTML = cats
+                .filter(c => _awardsGroup === 'Semua' || c.group === _awardsGroup)
+                .map(c => {
+                    const items = c.items.slice().sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'won' ? -1 : 1));
+                    return `<div class="aw-cat">${_escAttr(c.name)}</div>${items.map(rowHTML).join('')}`;
+                }).join('');
         }
         function _awardsSearchInput(v) {
             clearTimeout(_awardsSearchTimer);
@@ -11607,6 +11847,7 @@
         function _creditsShell(title, sub) {
             const m = document.getElementById('creditsModal');
             if (!m) return false;
+            _pauseFilmTrailer();
             m.style.display = 'block';
             m.scrollTop = 0;
             document.getElementById('creditsTitle').textContent = title;
@@ -11616,9 +11857,10 @@
             history.pushState({ view: 'credits' }, '');
             return true;
         }
-        function closeCreditsModal() {
+        function closeCreditsModal(resume) {
             const m = document.getElementById('creditsModal');
             if (m) m.style.display = 'none';
+            if (resume) _resumeFilmTrailer();
         }
         function _creditsPrep(list, type) {
             const seen = new Set();
