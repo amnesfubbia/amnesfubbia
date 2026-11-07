@@ -2136,6 +2136,21 @@
         .movie-grid { gap: 8px; padding: 8px 15px 68px; }
         .movie-grid .post-card { border-radius: 8px; overflow: hidden; }
         #recentlyViewedWrapper { padding: 12px 0 15px; }
+
+        /* ===== RONDE 13: sembunyikan back kiri atas, filter jenis, Terakhir Dilihat landscape ===== */
+        .bk-none { display: none !important; }
+        .bk-ghost { visibility: hidden !important; pointer-events: none !important; }
+        /* Film / Serial / Short = font sama dengan Negara / Genre / Tahun / Rating */
+        #filterBar .stat-item.pill { font-size: 10px; font-weight: 800; padding: 7px 0; text-transform: uppercase; color: #fff; }
+        #filterBar .stat-item .stat-label { font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; }
+        #filterBar .stat-item.pill:not(.active-stat) { color: #fff; }
+        /* Terakhir Dilihat: kartu landscape */
+        #recentlyScroll { gap: 10px; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: 10px; }
+        .rv-card { flex: 0 0 calc(50% - 5px); scroll-snap-align: start; position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; cursor: pointer; background: #111; -webkit-tap-highlight-color: transparent; }
+        .rv-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .rv-shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.1) 60%); }
+        .rv-title { position: absolute; left: 10px; right: 10px; bottom: 12px; font-size: 12px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rv-card .recently-del { top: 8px; right: 8px; }
     </style>
 </head>
 <body>
@@ -2181,7 +2196,7 @@
             <!-- TOP: back + title -->
             <div class="ls-top">
                 <div class="ls-top-left">
-                    <i class="fa-solid fa-chevron-left ls-btn ls-btn-back" onclick="event.stopPropagation(); handleLsBack()"></i>
+                    <i class="fa-solid fa-chevron-left ls-btn ls-btn-back bk-ghost" onclick="event.stopPropagation(); handleLsBack()"></i>
                     <div class="ls-title-row">
                         <div id="lsTitle" class="ls-title-text"></div>
                         <div id="lsSubtitle" class="ls-subtitle-text">amnesfubbia</div>
@@ -2248,7 +2263,7 @@
     <div id="sideMenu">
         <!-- Sticky top bar -->
         <div class="about-topbar">
-            <i class="fa-solid fa-chevron-left about-close-btn btn-icon" onclick="toggleSideMenu()"></i>
+            <i class="fa-solid fa-chevron-left about-close-btn btn-icon bk-ghost" onclick="toggleSideMenu()"></i>
             <div class="about-topbar-title">Tentang Aplikasi</div>
             <div style="width:32px"></div>
         </div>
@@ -2495,7 +2510,7 @@
             </div>
         </div>
 
-        <div class="highlights-wrapper no-scrollbar"><div class="highlights-container no-scrollbar" id="highlightList"></div></div>
+        <div id="highlightList" style="display:none"></div>
 
         <div id="continueWatchingWrap" style="display:none">
             <div class="recently-header">
@@ -2524,7 +2539,7 @@
 
     <div id="searchOverlay">
         <div class="search-header">
-            <i class="fa-solid fa-arrow-left btn-icon" onclick="_manualClose('search', closeSearch)"></i>
+            <i class="fa-solid fa-arrow-left btn-icon bk-none" onclick="_manualClose('search', closeSearch)"></i>
             <div class="search-input-box">
                 <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
                 <input type="text" id="searchInp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" placeholder="Cari film, serial, atau aktor..." onkeydown="if(event.key==='Enter') searchAction()" oninput="handleSearchInput(this.value)">
@@ -2570,7 +2585,7 @@
         <div id="decadeModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:20px 15px 60px">
                 <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:-20px -15px 12px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('decade', closeDecadeModal)"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="_manualClose('decade', closeDecadeModal)"></i>
                     <div style="font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff">Rating Tertinggi per Dekade</div>
                 </div>
                 <!-- Decade + type selector -->
@@ -2626,7 +2641,7 @@
     <!-- Modal Movieografi -->
     <div id="movieografiModal">
         <div class="mvg-header">
-            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeMovieografi()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="closeMovieografi()"></i>
             <div>
                 <div class="mvg-title">Movieografi</div>
                 <div class="mvg-actor-name" id="mvgActorName"></div>
@@ -2653,7 +2668,7 @@
         <div id="creditsModal" style="display:none;position:fixed;inset:0;z-index:8500;background:#000;overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:0 15px 68px">
                 <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:0 -15px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('credits', () => closeCreditsModal(true))"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="_manualClose('credits', () => closeCreditsModal(true))"></i>
                     <div style="flex:1;min-width:0">
                         <div id="creditsTitle" style="font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
                         <div id="creditsSub" style="font-size:11px;color:#8e8e8e;margin-top:1px"></div>
@@ -2667,7 +2682,7 @@
         <div id="awardsModal" style="display:none;position:fixed;inset:0;z-index:8500;background:#000;overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:0 15px 68px">
                 <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:0 -15px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('awards', closeAwardsModal)"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="_manualClose('awards', closeAwardsModal)"></i>
                     <div style="flex:1;min-width:0;font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff;line-height:1.2">Penghargaan &amp; Festival</div>
                     <i class="fa-solid fa-award" style="color:#f5c518;font-size:18px"></i>
                 </div>
@@ -2677,6 +2692,7 @@
                     style="width:100%;box-sizing:border-box;margin-top:12px;height:38px;padding:0 14px;border-radius:10px;background:#111;border:1px solid #2a2a2a;color:#fff;font-size:13px;outline:none">
                 <div id="awardsSuggest" style="display:none;margin-top:8px;background:#0d0d0d;border:1px solid #1c1c1c;border-radius:10px;overflow:hidden"></div>
                 <div id="awardsInfo" style="font-size:11px;color:#8e8e8e;margin-top:12px;line-height:1.5"></div>
+                <div id="awardsNote" style="font-size:11px;color:#8e8e8e;margin-top:8px;min-height:0"></div>
                 <div id="awardsGroups" class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;margin:12px -15px 0;padding:0 15px;scrollbar-width:none"></div>
                 <div id="awardsList"></div>
                 <div style="font-size:10px;color:#555;text-align:center;margin-top:20px">Sumber data: Wikidata · data bisa belum lengkap untuk beberapa tahun</div>
@@ -2695,7 +2711,7 @@
         <div id="modalScrollTop" class="max-w-xl mx-auto pb-20">
             <div class="sticky top-0 bg-black z-[100] border-b border-zinc-900">
                 <div class="h-[54px] flex items-center" style="padding:0 15px;gap:10px">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('modal', closeModal)"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon bk-ghost" onclick="_manualClose('modal', closeModal)"></i>
                     <div class="flex-grow text-center text-[14px] font-extrabold truncate" style="letter-spacing:-0.3px" id="mTitle"></div>
                     <div style="width:32px;flex-shrink:0"></div>
                 </div>
@@ -2843,7 +2859,7 @@
 
         <!-- Sticky top bar -->
         <div class="actor-topbar">
-            <i class="fa-solid fa-chevron-left actor-topbar-icon btn-icon" onclick="_manualClose('actor', closeActorModal)"></i>
+            <i class="fa-solid fa-chevron-left actor-topbar-icon btn-icon bk-ghost" onclick="_manualClose('actor', closeActorModal)"></i>
             <div class="actor-topbar-title" id="actorHeaderTitle"></div>
             <i class="fa-solid fa-ellipsis actor-topbar-icon"></i>
         </div>
@@ -2919,7 +2935,7 @@
 
     <div id="tvModal">
         <div class="tv-topbar">
-            <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('tv', closeTvModal)"></i>
+            <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="_manualClose('tv', closeTvModal)"></i>
             <div class="tv-live-dot"></div>
             <div class="tv-topbar-title" id="tvTopbarTitle">Embed</div>
             <i class="fa-solid fa-magnifying-glass btn-icon" style="color:#8e8e8e" id="tvSearchIcon" onclick="focusTvSearch()"></i>
@@ -2969,7 +2985,7 @@
         <!-- Topbar — tombol back + judul Reels -->
         <div class="reels-topbar">
             <div style="display:flex;align-items:center;gap:10px;pointer-events:auto">
-                <i class="fa-solid fa-chevron-left reels-back-btn" onclick="_manualClose('reels', closeReels)" style="pointer-events:auto;font-size:20px"></i>
+                <i class="fa-solid fa-chevron-left reels-back-btn bk-none" onclick="_manualClose('reels', closeReels)" style="pointer-events:auto;font-size:20px"></i>
                 <span style="font-size:16px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:-0.3px">Reels</span>
             </div>
             <div style="width:32px"></div>
@@ -3056,7 +3072,7 @@
     <!-- ===== NOTIFIKASI FILM BARU ===== -->
     <div id="notifModal">
         <div class="notif-topbar">
-            <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('notif', closeNotif)"></i>
+            <i class="fa-solid fa-chevron-left btn-icon bk-ghost" onclick="_manualClose('notif', closeNotif)"></i>
             <div class="notif-topbar-title">Film Baru Hari Ini</div>
             <span class="notif-date-badge" id="notifDateBadge"></span>
         </div>
@@ -3069,7 +3085,7 @@
     <!-- ===== FOTO PEMERAN ===== -->
     <div id="actorPhotosModal">
         <div class="actor-photos-topbar">
-            <i class="fa-solid fa-chevron-left btn-icon" onclick="_manualClose('actorPhotos', closeActorPhotos)"></i>
+            <i class="fa-solid fa-chevron-left btn-icon bk-ghost" onclick="_manualClose('actorPhotos', closeActorPhotos)"></i>
             <div class="actor-photos-title" id="actorPhotosTitle">Foto</div>
             <div style="width:32px"></div>
         </div>
@@ -3185,7 +3201,7 @@
                     <div id="musicPlDetailArt" style="position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(0.55)"></div>
                     <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.3),#000 95%)"></div>
                     <div style="position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between">
-                        <i class="fa-solid fa-chevron-left btn-icon" onclick="musicClosePlaylistDetail()"></i>
+                        <i class="fa-solid fa-chevron-left btn-icon bk-ghost" onclick="musicClosePlaylistDetail()"></i>
                         <i class="fa-solid fa-ellipsis" style="font-size:18px;color:#fff;cursor:pointer;padding:6px"></i>
                     </div>
                 </div>
@@ -3209,7 +3225,7 @@
         <div id="musicAlbumDetail" style="display:none;position:absolute;top:0;left:0;right:0;bottom:62px;z-index:30;background:#000;flex-direction:column;overflow:hidden">
             <div style="flex:1;overflow-y:auto;padding-bottom:160px">
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="musicCloseAlbumDetail()"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon bk-ghost" onclick="musicCloseAlbumDetail()"></i>
                     <i id="musicAlbumLikeBtn" class="fa-regular fa-heart" style="font-size:19px;color:#666;cursor:pointer;padding:6px" onclick="musicToggleAlbumLike()"></i>
                 </div>
                 <div style="text-align:center;padding:6px 20px 0">
@@ -3239,7 +3255,7 @@
                     </div>
                     <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.15),#000 95%)"></div>
                     <div style="position:absolute;top:16px;left:16px">
-                        <i class="fa-solid fa-chevron-left btn-icon" onclick="musicCloseArtistProfile()"></i>
+                        <i class="fa-solid fa-chevron-left btn-icon bk-ghost" onclick="musicCloseArtistProfile()"></i>
                     </div>
                     <div style="position:absolute;bottom:14px;left:20px;right:20px">
                         <div id="musicArtistName" style="font-size:22px;font-weight:900;color:#fff"></div>
@@ -3266,7 +3282,7 @@
         <div id="musicEqScreen" style="display:none;position:absolute;top:0;left:0;right:0;bottom:62px;z-index:30;background:#000;flex-direction:column;overflow:hidden">
             <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 4px;flex-shrink:0">
                 <div style="display:flex;align-items:center;gap:14px">
-                    <i class="fa-solid fa-chevron-left btn-icon" onclick="musicCloseEqScreen()"></i>
+                    <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="musicCloseEqScreen()"></i>
                     <span style="font-size:20px;font-weight:800;color:#fff">Equalizer</span>
                 </div>
                 <label style="position:relative;display:inline-block;width:44px;height:26px">
@@ -3400,7 +3416,7 @@
     <audio id="musicAudioEl" preload="metadata"></audio>
     <div id="livesportModal" style="display:none;position:fixed;inset:0;z-index:9700;background:#0a0a0a;flex-direction:column">
         <div style="display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c;position:sticky;top:0;z-index:10">
-            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeLivesportModal()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="closeLivesportModal()"></i>
             <span style="font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff" id="livesportTitle">Live Sport</span>
         </div>
         <iframe id="livesportIframe" src="" style="flex:1;width:100%;border:none;display:block" allow="autoplay; encrypted-media" allowfullscreen></iframe>
@@ -3514,7 +3530,7 @@
         });
 
         window.onload = () => {
-            initFilters(); initHighlights(); loadFeed(); setupSwipe(); initSmartSearch(); initTvChannels();
+            initFilters(); loadFeed(); setupSwipe(); initSmartSearch(); initTvChannels();
             loadYTApi();
             window.addEventListener('scroll', () => { 
                 document.getElementById('backToTop').style.display = window.scrollY > 500 ? 'flex' : 'none'; 
@@ -6308,6 +6324,12 @@
             // Pilihan Season / dialog kustom (tutup dulu sebelum modal di belakangnya)
             const _sheet = document.querySelector('.app-ov');
             if (_sheet) { _sheet.remove(); return; }
+
+            // Pustaka Unduhan & Notifikasi Rilis (paling atas)
+            const _dlm = document.getElementById('downloadLibModal');
+            if (_dlm && _dlm.style.display === 'flex') { closeDownloadLib(); return; }
+            const _ncm = document.getElementById('notifCenterModal');
+            if (_ncm && _ncm.style.display === 'flex') { closeNotifCenter(); return; }
 
             // Modal Penghargaan & Festival
             const _awm = document.getElementById('awardsModal');
@@ -11044,14 +11066,50 @@
             if (!wrapper || !scroll) return;
             if (!items.length) { wrapper.style.display = 'none'; return; }
             wrapper.style.display = 'block';
-            scroll.innerHTML = items.map((item, idx) => `
-                <div class="recently-item" onclick="openModal(${item.id}, '${item.type}')">
-                    <img class="recently-img" src="https://image.tmdb.org/t/p/w185${item.poster || ''}"
-                         onerror="this.style.background='#0d0d0d'" loading="lazy">
+            const esc = t => String(t || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+            // Kartu landscape 16:9 seperti Lanjut Tonton, tanpa tombol play & garis progres
+            scroll.innerHTML = items.map((item, idx) => {
+                const bg = item.backdrop || item.poster || '';
+                return `
+                <div class="rv-card" onclick="openModal(${item.id}, '${item.type}')">
+                    ${bg ? `<img src="https://image.tmdb.org/t/p/w500${bg}" loading="lazy" onerror="this.style.display='none'">` : ''}
+                    <div class="rv-shade"></div>
+                    <div class="rv-title">${esc(item.title)}</div>
                     <div class="recently-del" onclick="event.stopPropagation(); deleteRecentlyViewed(${idx})">
                         <i class="fa-solid fa-xmark"></i>
                     </div>
-                </div>`).join('');
+                </div>`;
+            }).join('');
+            // Data lama hanya menyimpan poster — lengkapi judul & backdrop di latar belakang
+            if (items.some(it => it.backdrop === undefined)) _rvEnrich();
+        }
+        let _rvEnriching = false;
+        async function _rvEnrich() {
+            if (_rvEnriching) return;
+            _rvEnriching = true;
+            try {
+                const items = JSON.parse(localStorage.getItem(RV_KEY) || '[]');
+                const upd = {};
+                await Promise.all(items.filter(it => it.backdrop === undefined).map(async it => {
+                    try {
+                        const r = await fetchWithCache(`https://api.themoviedb.org/3/${it.type === 'tv' ? 'tv' : 'movie'}/${it.id}?api_key=${API_KEY}&language=id-ID`);
+                        if (r && !r.status_code) {
+                            upd[it.id] = { backdrop: r.backdrop_path || '', title: await _latinTitle(it.type === 'tv' ? 'tv' : 'movie', it.id, r.title || r.name || '') };
+                        } else upd[it.id] = { backdrop: '', title: it.title || '' };
+                    } catch (e) { _warn('rvEnrich', e); }
+                }));
+                if (Object.keys(upd).length) {
+                    const cur = JSON.parse(localStorage.getItem(RV_KEY) || '[]');
+                    cur.forEach(it => { if (upd[it.id]) { it.backdrop = upd[it.id].backdrop; it.title = upd[it.id].title; } });
+                    localStorage.setItem(RV_KEY, JSON.stringify(cur));
+                }
+            } catch (e) { _warn('rvEnrich', e); }
+            _rvEnriching = false;
+            // gambar ulang hanya bila semua data sudah lengkap, supaya tidak berulang
+            try {
+                const left = JSON.parse(localStorage.getItem(RV_KEY) || '[]').some(it => it.backdrop === undefined);
+                if (!left) renderRecentlyViewed();
+            } catch (e) { _warn('rvEnrich', e); }
         }
 
         function deleteRecentlyViewed(idx) {
@@ -11689,10 +11747,16 @@
             const req = ++_awardsReq;
             _awardsShowLoading();
             try {
-                const hits = await _wdSearch(c.q, 7);
+                let hit = null;
+                try { hit = JSON.parse(localStorage.getItem('aw1q:' + key) || 'null'); } catch (e) {}
+                if (!hit) {
+                    const hits = await _wdSearch(c.q, 7);
+                    if (req !== _awardsReq) return;
+                    const norm = t => String(t || '').toLowerCase().replace(/[–—-]/g, '-').trim();
+                    hit = hits.find(h => norm(h.label) === norm(c.q)) || hits[0];
+                    if (hit) { try { localStorage.setItem('aw1q:' + key, JSON.stringify({ id: hit.id, label: hit.label, description: hit.description || '' })); } catch (e) {} }
+                }
                 if (req !== _awardsReq) return;
-                const norm = t => String(t || '').toLowerCase().replace(/[–—-]/g, '-').trim();
-                const hit = hits.find(h => norm(h.label) === norm(c.q)) || hits[0];
                 if (!hit) { _awardsShowMsg('Penghargaan tidak ditemukan.'); return; }
                 _awardsCur = { qid: hit.id, label: hit.label, desc: hit.description || '' };
                 _awardsYear = new Date().getFullYear();
@@ -11732,39 +11796,30 @@
             document.getElementById('awardsYears').innerHTML = Array.from({ length: 16 }, (_, i) => now - i)
                 .map(y => `<div class="decade-tab-chip ${y === _awardsYear ? 'active' : ''}" onclick="selectAwardYear(${y})">${y}</div>`).join('');
         }
-        async function _awardsQuery(qid, y) {
-            const run = async q => {
+        // Jalankan query SPARQL dengan batas waktu & ulang otomatis bila server sibuk
+        async function _wdRun(q, timeoutMs, retries) {
+            for (let a = 0; a <= retries; a++) {
                 const ctrl = new AbortController();
-                const timer = setTimeout(() => ctrl.abort(), 30000);
-                const res = await fetch('https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent(q), { headers: { Accept: 'application/sparql-results+json' }, signal: ctrl.signal });
-                clearTimeout(timer);
-                if (!res.ok) throw new Error('sparql ' + res.status);
-                return (await res.json()).results.bindings || [];
-            };
-            const val = (b, k) => (b[k] ? b[k].value : '');
-            // 1) semua kategori dari lembaga/festival yang sama dengan penghargaan utama
-            let rows = (await run(`SELECT ?awardLabel ?recLabel ?workLabel ?kind ?rtm ?rtt ?wtm ?wtt WHERE {
-                wd:${qid} wdt:P1027 ?org. ?award wdt:P1027 ?org.
-                { ?rec p:P166 ?s. ?s ps:P166 ?award. BIND("won" AS ?kind) }
-                UNION
-                { ?rec p:P1411 ?s. ?s ps:P1411 ?award. BIND("nom" AS ?kind) }
-                ?s pq:P585 ?d. FILTER(YEAR(?d) = ${y})
-                OPTIONAL { ?s pq:P1686 ?work. OPTIONAL { ?work wdt:P4947 ?wtm } OPTIONAL { ?work wdt:P4983 ?wtt } }
-                OPTIONAL { ?rec wdt:P4947 ?rtm } OPTIONAL { ?rec wdt:P4983 ?rtt }
-                SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-            } LIMIT 1500`)).map(b => ({ cat: val(b, 'awardLabel'), name: val(b, 'recLabel'), work: val(b, 'workLabel'), kind: val(b, 'kind'), tm: val(b, 'wtm') || val(b, 'rtm'), tt: val(b, 'wtt') || val(b, 'rtt') }));
-            // 2) cadangan: hanya penghargaan utama itu sendiri
-            if (!rows.length) {
-                rows = (await run(`SELECT ?awardLabel ?recLabel ?kind ?rtm ?rtt WHERE {
-                    BIND(wd:${qid} AS ?award)
-                    { ?rec p:P166 ?s. ?s ps:P166 wd:${qid}. BIND("won" AS ?kind) }
-                    UNION
-                    { ?rec p:P1411 ?s. ?s ps:P1411 wd:${qid}. BIND("nom" AS ?kind) }
-                    ?s pq:P585 ?d. FILTER(YEAR(?d) = ${y})
-                    OPTIONAL { ?rec wdt:P4947 ?rtm } OPTIONAL { ?rec wdt:P4983 ?rtt }
-                    SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-                } LIMIT 300`)).map(b => ({ cat: val(b, 'awardLabel'), name: val(b, 'recLabel'), work: '', kind: val(b, 'kind'), tm: val(b, 'rtm'), tt: val(b, 'rtt') }));
+                const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+                try {
+                    const res = await fetch('https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent(q), { headers: { Accept: 'application/sparql-results+json' }, signal: ctrl.signal });
+                    clearTimeout(timer);
+                    if (res.ok) return (await res.json()).results.bindings || [];
+                    if (res.status !== 429 && res.status < 500) throw new Error('sparql ' + res.status);
+                } catch (e) { clearTimeout(timer); if (a === retries) throw e; }
+                await new Promise(r => setTimeout(r, 1200));
             }
+            return [];
+        }
+        const _awVal = (b, k) => (b[k] ? b[k].value : '');
+        function _awCacheGet(key) {
+            try { const v = JSON.parse(localStorage.getItem('aw1:' + key) || 'null'); return (v && Array.isArray(v.rows) && Date.now() - v.t < 7 * 864e5) ? v.rows : null; } catch (e) { return null; }
+        }
+        function _awCacheSet(key, rows) {
+            if (!rows.length || rows.length > 600) return;
+            try { localStorage.setItem('aw1:' + key, JSON.stringify({ t: Date.now(), rows })); } catch (e) { /* kuota penuh — abaikan */ }
+        }
+        function _awDedupe(rows) {
             const seen = new Map();
             rows.filter(r => r.name && r.cat && !/^Q\d+$/.test(r.name)).forEach(r => {
                 const k = r.cat + '|' + r.name + '|' + r.work;
@@ -11773,20 +11828,74 @@
             });
             return [...seen.values()];
         }
+        // 1) Cepat: hanya penghargaan utama (mis. Best Picture) pada tahun itu
+        async function _awardsQuickRows(qid, y, label) {
+            const rows = await _wdRun(`SELECT ?recLabel ?kind ?rtm ?rtt WHERE {
+                { ?rec p:P166 ?s. ?s ps:P166 wd:${qid}. BIND("won" AS ?kind) }
+                UNION
+                { ?rec p:P1411 ?s. ?s ps:P1411 wd:${qid}. BIND("nom" AS ?kind) }
+                ?s pq:P585 ?d. FILTER(YEAR(?d) = ${y})
+                OPTIONAL { ?rec wdt:P4947 ?rtm } OPTIONAL { ?rec wdt:P4983 ?rtt }
+                SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+            } LIMIT 300`, 15000, 1);
+            return _awDedupe(rows.map(b => ({ cat: label, name: _awVal(b, 'recLabel'), work: '', kind: _awVal(b, 'kind'), tm: _awVal(b, 'rtm'), tt: _awVal(b, 'rtt') })));
+        }
+        // 2) Lengkap: semua kategori dari lembaga/festival yang sama
+        async function _awardsFullRows(qid, y) {
+            const rows = await _wdRun(`SELECT ?awardLabel ?recLabel ?workLabel ?kind ?rtm ?rtt ?wtm ?wtt WHERE {
+                wd:${qid} wdt:P1027 ?org. ?award wdt:P1027 ?org.
+                { ?rec p:P166 ?s. ?s ps:P166 ?award. BIND("won" AS ?kind) }
+                UNION
+                { ?rec p:P1411 ?s. ?s ps:P1411 ?award. BIND("nom" AS ?kind) }
+                ?s pq:P585 ?d. FILTER(YEAR(?d) = ${y})
+                OPTIONAL { ?s pq:P1686 ?work. OPTIONAL { ?work wdt:P4947 ?wtm } OPTIONAL { ?work wdt:P4983 ?wtt } }
+                OPTIONAL { ?rec wdt:P4947 ?rtm } OPTIONAL { ?rec wdt:P4983 ?rtt }
+                SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+            } LIMIT 1200`, 25000, 1);
+            return _awDedupe(rows.map(b => ({ cat: _awVal(b, 'awardLabel'), name: _awVal(b, 'recLabel'), work: _awVal(b, 'workLabel'), kind: _awVal(b, 'kind'), tm: _awVal(b, 'wtm') || _awVal(b, 'rtm'), tt: _awVal(b, 'wtt') || _awVal(b, 'rtt') })));
+        }
+        function _awardsNote(html) {
+            const n = document.getElementById('awardsNote');
+            if (n) n.innerHTML = html || '';
+        }
+        function _awardsRetry() {
+            if (!_awardsCur) return;
+            delete _awardsRowsCache[_awardsCur.qid + '|' + _awardsYear];
+            try { localStorage.removeItem('aw1:' + _awardsCur.qid + '|' + _awardsYear); } catch (e) {}
+            const req = ++_awardsReq;
+            _awardsFetchYear(req, false).catch(e => { _warn('awardsRetry', e); });
+        }
         async function _awardsFetchYear(req, autoPrev) {
             const cur = _awardsCur;
             if (!cur) return;
             _awardsRenderYears();
+            _awardsNote('');
+            const y = _awardsYear;
+            const key = cur.qid + '|' + y;
+            const done = rows => { _awardsRows = rows; _awardsGroup = 'Semua'; _awardsRenderYears(); _awardsRender(); };
+            // Cache: tampil seketika
+            const cached = _awardsRowsCache[key] || _awCacheGet(key);
+            if (cached) { _awardsRowsCache[key] = cached; done(cached); return; }
             _awardsShowLoading();
-            const key = cur.qid + '|' + _awardsYear;
-            let rows = _awardsRowsCache[key];
-            if (!rows) { rows = await _awardsQuery(cur.qid, _awardsYear); _awardsRowsCache[key] = rows; }
+            let quick = [], quickFailed = false, fullFailed = false;
+            try { quick = await _awardsQuickRows(cur.qid, y, cur.label); } catch (e) { quickFailed = true; _warn('awardsQuick', e); }
             if (req !== _awardsReq) return;
-            if (!rows.length && autoPrev && _awardsYear > new Date().getFullYear() - 2) { _awardsYear--; return _awardsFetchYear(req, autoPrev); }
-            _awardsRows = rows;
-            _awardsGroup = 'Semua';
-            _awardsRenderYears();
-            _awardsRender();
+            if (quick.length) { done(quick); _awardsNote('Memuat kategori lengkap…'); }
+            let full = [];
+            try { full = await _awardsFullRows(cur.qid, y); } catch (e) { fullFailed = true; _warn('awardsFull', e); }
+            if (req !== _awardsReq) return;
+            if (full.length) { _awardsRowsCache[key] = full; _awCacheSet(key, full); done(full); _awardsNote(''); return; }
+            if (quick.length) {
+                _awardsRowsCache[key] = quick; _awCacheSet(key, quick);
+                _awardsNote(fullFailed ? 'Kategori lengkap gagal dimuat — baru penghargaan utama yang tampil. <span class="toggle-btn" onclick="_awardsRetry()">Coba lagi</span>' : 'Hanya penghargaan utama yang tercatat untuk tahun ini.');
+                return;
+            }
+            if (quickFailed && fullFailed) {
+                _awardsShowMsg('Gagal memuat data penghargaan. Server Wikidata sedang sibuk atau koneksi bermasalah.<br><span class="toggle-btn" style="display:inline-block;margin-top:12px" onclick="_awardsRetry()">Coba lagi</span>');
+                return;
+            }
+            if (autoPrev && y > new Date().getFullYear() - 2) { _awardsYear = y - 1; return _awardsFetchYear(req, autoPrev); }
+            done([]);
         }
         function setAwardsGroup(g) { _awardsGroup = g; _awardsRender(); }
         function _awardsRender() {
@@ -12305,7 +12414,7 @@
             if (!valid.length) { wrap.style.display = 'none'; return; }
             wrap.style.display = 'block';
             // Kartu landscape 16:9 — 2 kartu terlihat, sisanya digeser (scroll snap)
-            scroll.style.cssText = 'display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 16px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x';
+            scroll.style.cssText = 'display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 15px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x';
             scroll.innerHTML = valid.map(c => {
                 const bg = c.d.backdrop || c.d.poster;
                 return `
@@ -12343,6 +12452,7 @@
         function openDownloadLib() {
             document.getElementById('downloadLibModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
+            history.pushState({ view: 'dlLib' }, '');
             renderDownloadLib();
         }
         function closeDownloadLib() {
@@ -12422,6 +12532,7 @@
         function openNotifCenter() {
             document.getElementById('notifCenterModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
+            history.pushState({ view: 'notifCenter' }, '');
             renderNotifCenter();
         }
         function closeNotifCenter() {
@@ -12527,7 +12638,7 @@
     <!-- ===== PUSTAKA UNDUHAN ===== -->
     <div id="downloadLibModal" style="display:none;position:fixed;inset:0;z-index:9950;background:#000;flex-direction:column">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#000;border-bottom:1px solid #161616;flex-shrink:0">
-            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeDownloadLib()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="closeDownloadLib()"></i>
             <span style="font-size:17px;font-weight:800;color:#fff">Pustaka Unduhan</span>
             <span style="flex:1"></span>
             <i class="fa-solid fa-trash-can" style="color:#555;font-size:16px;cursor:pointer" onclick="clearDownloadLib()" title="Hapus semua"></i>
@@ -12538,7 +12649,7 @@
     <!-- ===== PUSAT NOTIFIKASI RILIS ===== -->
     <div id="notifCenterModal" style="display:none;position:fixed;inset:0;z-index:9950;background:#000;flex-direction:column">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#000;border-bottom:1px solid #161616;flex-shrink:0">
-            <i class="fa-solid fa-chevron-left btn-icon" onclick="closeNotifCenter()"></i>
+            <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="closeNotifCenter()"></i>
             <span style="font-size:17px;font-weight:800;color:#fff">Notifikasi Rilis</span>
             <span style="flex:1"></span>
             <i class="fa-solid fa-trash-can" style="color:#555;font-size:16px;cursor:pointer" onclick="clearReminders()" title="Hapus semua"></i>
