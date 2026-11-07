@@ -2151,6 +2151,23 @@
         .rv-shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.1) 60%); }
         .rv-title { position: absolute; left: 10px; right: 10px; bottom: 12px; font-size: 12px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .rv-card .recently-del { top: 8px; right: 8px; }
+        .aw-catbtn { align-items: center; gap: 10px; margin-top: 12px; height: 42px; padding: 0 14px; border-radius: 10px; background: #111; border: 1px solid #2a2a2a; font-size: 13px; color: #fff; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .aw-catbtn:active { background: #181818; }
+
+        /* ===== RONDE 15: hero pemeran, latar blur Reels, samakan Terakhir Dilihat ===== */
+        .actor-hero { position: relative; padding-top: 22px; overflow: hidden; background: #000; }
+        .actor-hero .actor-cover-blur { display: block; position: absolute; inset: 0; background-size: cover; background-position: center 25%; filter: brightness(0.6); }
+        .actor-hero .actor-cover-blur.is-portrait { filter: blur(18px) brightness(0.5); transform: scale(1.2); }
+        .actor-hero .actor-cover-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.35) 45%, #000 100%); }
+        .actor-hero .actor-profile-row { margin-top: 0; }
+        .actor-hero .actor-stats-bar, .actor-hero .actor-bio-block { position: relative; z-index: 10; }
+        .actor-hero .actor-stats-bar { border-bottom: none; }
+        .actor-hero .actor-bio-block { padding-bottom: 14px; }
+        .reel-slide { isolation: isolate; }
+        .reel-bg { position: absolute; inset: -30px; z-index: -1; background-size: cover; background-position: center; filter: blur(30px) brightness(0.45) saturate(1.2); pointer-events: none; }
+        .reel-btn-watch, .reel-btn-detail { background: rgba(255,255,255,0.1); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+        #recentlyScroll, #continueWatchingScroll { gap: 10px; padding: 2px 15px 10px; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; touch-action: pan-x; }
+        #recentlyViewedWrapper, #continueWatchingWrap { padding-left: 0; padding-right: 0; }
     </style>
 </head>
 <body>
@@ -2687,13 +2704,12 @@
                     <i class="fa-solid fa-award" style="color:#f5c518;font-size:18px"></i>
                 </div>
                 <div id="awardsChips" class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;margin:12px -15px 0;padding:0 15px;scrollbar-width:none"></div>
-                <div id="awardsYears" class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;margin:10px -15px 0;padding:0 15px;scrollbar-width:none"></div>
                 <input id="awardsSearchInp" type="text" placeholder="Cari penghargaan atau festival lain..." oninput="_awardsSearchInput(this.value)" autocomplete="off"
                     style="width:100%;box-sizing:border-box;margin-top:12px;height:38px;padding:0 14px;border-radius:10px;background:#111;border:1px solid #2a2a2a;color:#fff;font-size:13px;outline:none">
                 <div id="awardsSuggest" style="display:none;margin-top:8px;background:#0d0d0d;border:1px solid #1c1c1c;border-radius:10px;overflow:hidden"></div>
                 <div id="awardsInfo" style="font-size:11px;color:#8e8e8e;margin-top:12px;line-height:1.5"></div>
                 <div id="awardsNote" style="font-size:11px;color:#8e8e8e;margin-top:8px;min-height:0"></div>
-                <div id="awardsGroups" class="no-scrollbar" style="display:flex;gap:8px;overflow-x:auto;margin:12px -15px 0;padding:0 15px;scrollbar-width:none"></div>
+                <div id="awardsCatBtn" class="aw-catbtn" style="display:none" onclick="openAwardCats()"></div>
                 <div id="awardsList"></div>
                 <div style="font-size:10px;color:#555;text-align:center;margin-top:20px">Sumber data: Wikidata · data bisa belum lengkap untuk beberapa tahun</div>
             </div>
@@ -2864,12 +2880,10 @@
             <i class="fa-solid fa-ellipsis actor-topbar-icon"></i>
         </div>
 
-        <!-- Cover with blurred background -->
-        <div class="actor-cover">
+        <!-- Hero pemeran: satu slide (tidak berganti) — latar backdrop film terpopuler -->
+        <div class="actor-hero">
             <div class="actor-cover-blur" id="actorCoverBlur"></div>
             <div class="actor-cover-overlay"></div>
-        </div>
-
         <!-- Profile pic + name row -->
         <div class="actor-profile-row">
             <div class="actor-pic-wrapper">
@@ -2901,18 +2915,20 @@
             </div>
         </div>
 
-        <!-- Action buttons (IG style) -->
-        <div class="actor-action-row">
-            <div class="actor-btn-follow" onclick="openMovieografi(window._currentActorId)">Movieografi</div>
-            <div class="actor-btn-msg" id="actorImdbBtn" onclick="openActorImdb()">IMDb</div>
-            <div class="actor-btn-sq" onclick="openActorPhotos()" title="Foto"><i class="fa-regular fa-images"></i></div>
-        </div>
-
         <!-- Bio block -->
         <div class="actor-bio-block">
             <div class="actor-bio-name" id="actorNameBio"></div>
             <div class="actor-bio-text" id="actorBiography"></div>
             <div class="actor-bio-meta" id="actorBioMeta"></div>
+        </div>
+
+        </div>
+
+        <!-- Action buttons (IG style) -->
+        <div class="actor-action-row">
+            <div class="actor-btn-follow" onclick="openMovieografi(window._currentActorId)">Movieografi</div>
+            <div class="actor-btn-msg" id="actorImdbBtn" onclick="openActorImdb()">IMDb</div>
+            <div class="actor-btn-sq" onclick="openActorPhotos()" title="Foto"><i class="fa-regular fa-images"></i></div>
         </div>
 
         <!-- Terkenal Lewat highlights strip -->
@@ -5109,6 +5125,7 @@
             musicRenderNav('home');
         }
         function _navAction(target) {
+            try { const _nm = document.getElementById('notifModal'); if (_nm && _nm.style.display === 'block') { _nm.style.display = 'none'; document.body.style.overflow = 'auto'; } } catch (e) { _dbg('_navAction', e); }
             try { closeAwardsModal(true); document.body.style.overflow = 'auto'; } catch (e) { _dbg('_navAction', e); }
             try { closeCreditsModal(); } catch (e) { _dbg('_navAction', e); }
             // Tutup semua modal yang mungkin terbuka
@@ -6410,7 +6427,9 @@
 
             // Notifikasi
             if (document.getElementById('notifModal') && document.getElementById('notifModal').style.display === 'block') {
-                closeNotif();
+                document.getElementById('notifModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+                updateActiveNav('home');
                 return;
             }
 
@@ -6436,6 +6455,7 @@
             // Reels modal — pakai silent agar tidak reset state & tidak push history baru
             if (document.getElementById('reelsModal').style.display === 'block') {
                 _closeReelsSilent();
+                updateActiveNav('home');
                 return;
             }
 
@@ -6506,12 +6526,14 @@
             // TV modal
             if (document.getElementById('tvModal').style.display === 'block') {
                 _closeTvModalSilent();
+                updateActiveNav('home');
                 return;
             }
 
             // Search overlay
             if (document.getElementById('searchOverlay').style.display === 'block') {
                 _closeSearchSilent();
+                updateActiveNav('home');
                 return;
             }
 
@@ -7181,6 +7203,7 @@
                 const imgPath = details.profile_path ? `https://image.tmdb.org/t/p/w500${details.profile_path}` : 'amnesfubbia.png';
                 document.getElementById('actorPic').src = imgPath;
                 document.getElementById('actorCoverBlur').style.backgroundImage = `url('${imgPath}')`;
+                document.getElementById('actorCoverBlur').classList.add('is-portrait'); // cadangan: foto diburamkan
 
                 // Nama aktor — gunakan Latin dari also_known_as jika nama asli non-Latin
                 let actorDisplayName = details.name;
@@ -7203,6 +7226,13 @@
 
                 // Stats
                 const allCast = credits.cast || [];
+                // Latar hero: backdrop dari karya paling populer (bila ada)
+                const _bd = allCast.filter(c => c.backdrop_path).sort((x, y) => (y.popularity || 0) - (x.popularity || 0))[0];
+                if (_bd) {
+                    const _el = document.getElementById('actorCoverBlur');
+                    _el.classList.remove('is-portrait');
+                    _el.style.backgroundImage = `url('https://image.tmdb.org/t/p/w780${_bd.backdrop_path}')`;
+                }
                 const movieCount = allCast.filter(c => c.media_type === 'movie').length;
                 const tvCount = allCast.filter(c => c.media_type === 'tv').length;
                 document.getElementById('statWorks').innerText = allCast.length;
@@ -7659,6 +7689,7 @@
                     const synTransId = `reel-trans-${reel.movieId}`;
 
                     slide.innerHTML = `
+                        ${reel.poster ? `<div class="reel-bg" style="background-image:url('https://image.tmdb.org/t/p/w342${reel.poster}')"></div>` : ''}
                         <div class="reel-header-text">
                             <div class="reel-title">${reel.title}</div>
                             <div class="reel-meta-inline">
@@ -8458,6 +8489,7 @@
         }
 
         function backToHome() {
+            try { const _nm = document.getElementById('notifModal'); if (_nm && _nm.style.display === 'block') { _nm.style.display = 'none'; document.body.style.overflow = 'auto'; } } catch (e) { _dbg('backToHome', e); }
             closeModal(); closeSearch(); closeD(); closeActorModal(); closeTvModal();
             if(document.getElementById('reelsModal').style.display === 'block') closeReels();
             currentGenre = ''; currentYear = ''; currentCountry = ''; currentRating = ''; currentSchedule = 'trending'; 
@@ -11688,7 +11720,7 @@
             }, { passive: true });
         }
 
-        // ===== PENGHARGAAN & FESTIVAL (Wikidata) — per tahun & per kategori =====
+        // ===== PENGHARGAAN & FESTIVAL (Wikidata) — per kategori, query ringan =====
         const AWARD_CEREMONIES = [
             { k: 'oscar',  label: 'Oscar',        q: 'Academy Award for Best Picture' },
             { k: 'globe',  label: 'Golden Globe', q: 'Golden Globe Award for Best Motion Picture – Drama' },
@@ -11700,7 +11732,7 @@
             { k: 'citra',  label: 'Piala Citra (FFI)', q: 'Citra Award for Best Picture' }
         ];
         const AWARD_GROUP_ORDER = ['Film', 'Sutradara', 'Aktor', 'Aktris', 'Animasi', 'Penulisan', 'Musik', 'Teknis', 'Lainnya'];
-        let _awardsReq = 0, _awardsKey = null, _awardsCur = null, _awardsYear = new Date().getFullYear(), _awardsRows = [], _awardsGroup = 'Semua', _awardsSearchTimer = null;
+        let _awardsReq = 0, _awardsKey = null, _awardsCur = null, _awardsCats = [], _awardsCat = null, _awardsRows = [], _awardsYearsShown = 6, _awardsSearchTimer = null;
         const _awardsRowsCache = {};
         async function _wdSearch(term, limit) {
             const url = 'https://www.wikidata.org/w/api.php?action=wbsearchentities&type=item&language=en&format=json&origin=*&limit=' + (limit || 7) + '&search=' + encodeURIComponent(term);
@@ -11719,6 +11751,29 @@
             if (/cinematograph|editing|effects|design|sound|makeup|hairstyl|costume|production/.test(c)) return 'Teknis';
             if (/picture|film|feature|series|movie|drama|comedy|documentary|palme|lion|bear|motion|short/.test(c)) return 'Film';
             return 'Lainnya';
+        }
+        // Query SPARQL dengan batas waktu & ulang otomatis bila server sibuk
+        async function _wdRun(q, timeoutMs, retries) {
+            for (let a = 0; a <= retries; a++) {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+                try {
+                    const res = await fetch('https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent(q), { headers: { Accept: 'application/sparql-results+json' }, signal: ctrl.signal });
+                    clearTimeout(timer);
+                    if (res.ok) return (await res.json()).results.bindings || [];
+                    if (res.status !== 429 && res.status < 500) throw new Error('sparql ' + res.status);
+                } catch (e) { clearTimeout(timer); if (a === retries) throw e; }
+                await new Promise(r => setTimeout(r, 1200));
+            }
+            return [];
+        }
+        const _awVal = (b, k) => (b[k] ? b[k].value : '');
+        function _awCacheGet(key, maxAgeDays) {
+            try { const v = JSON.parse(localStorage.getItem('aw2:' + key) || 'null'); return (v && Array.isArray(v.rows) && Date.now() - v.t < (maxAgeDays || 7) * 864e5) ? v.rows : null; } catch (e) { return null; }
+        }
+        function _awCacheSet(key, rows) {
+            if (!rows.length || rows.length > 700) return;
+            try { localStorage.setItem('aw2:' + key, JSON.stringify({ t: Date.now(), rows })); } catch (e) { /* kuota penuh — abaikan */ }
         }
         function openAwardsModal() {
             const m = document.getElementById('awardsModal');
@@ -11748,19 +11803,17 @@
             _awardsShowLoading();
             try {
                 let hit = null;
-                try { hit = JSON.parse(localStorage.getItem('aw1q:' + key) || 'null'); } catch (e) {}
+                try { hit = JSON.parse(localStorage.getItem('aw2q:' + key) || 'null'); } catch (e) {}
                 if (!hit) {
                     const hits = await _wdSearch(c.q, 7);
                     if (req !== _awardsReq) return;
                     const norm = t => String(t || '').toLowerCase().replace(/[–—-]/g, '-').trim();
                     hit = hits.find(h => norm(h.label) === norm(c.q)) || hits[0];
-                    if (hit) { try { localStorage.setItem('aw1q:' + key, JSON.stringify({ id: hit.id, label: hit.label, description: hit.description || '' })); } catch (e) {} }
+                    if (hit) { try { localStorage.setItem('aw2q:' + key, JSON.stringify({ id: hit.id, label: hit.label, description: hit.description || '' })); } catch (e) {} }
                 }
                 if (req !== _awardsReq) return;
                 if (!hit) { _awardsShowMsg('Penghargaan tidak ditemukan.'); return; }
-                _awardsCur = { qid: hit.id, label: hit.label, desc: hit.description || '' };
-                _awardsYear = new Date().getFullYear();
-                await _awardsFetchYear(req, true);
+                await _awardsStart(hit.id, hit.label, hit.description || '', req);
             } catch (e) { _warn('selectAward', e); if (req === _awardsReq) _awardsShowMsg('Gagal memuat data penghargaan.'); }
         }
         async function pickAward(qid, label, desc) {
@@ -11768,155 +11821,140 @@
             document.querySelectorAll('#awardsChips .decade-tab-chip').forEach(e => e.classList.remove('active'));
             const sg = document.getElementById('awardsSuggest'); if (sg) sg.style.display = 'none';
             const req = ++_awardsReq;
-            _awardsCur = { qid, label, desc: desc || '' };
-            _awardsYear = new Date().getFullYear();
             _awardsShowLoading();
-            try { await _awardsFetchYear(req, true); }
+            try { await _awardsStart(qid, label, desc || '', req); }
             catch (e) { _warn('pickAward', e); if (req === _awardsReq) _awardsShowMsg('Gagal memuat data penghargaan.'); }
         }
-        async function selectAwardYear(y) {
-            if (!_awardsCur) return;
-            _awardsYear = y;
+        // Mulai: tampilkan penghargaan utama dulu (ringan), daftar kategori dimuat paralel di latar
+        async function _awardsStart(qid, label, desc, req) {
+            _awardsCur = { qid, label, desc };
+            _awardsCat = { qid, label };
+            _awardsCats = [{ qid, label }];
+            _awardsRenderCatBtn();
+            const catsP = _awardsLoadCats(qid).catch(e => { _warn('awardsCats', e); return null; });
+            await _awardsLoadCategory(qid, label, req);
+            const cats = await catsP;
+            if (req !== _awardsReq || !cats || !cats.length) return;
+            if (!cats.some(c => c.qid === qid)) cats.unshift({ qid, label });
+            _awardsCats = cats;
+            _awardsRenderCatBtn();
+        }
+        async function _awardsLoadCats(qid) {
+            const cached = _awCacheGet('c:' + qid, 14);
+            let list = cached;
+            if (!list) {
+                const rows = await _wdRun(`SELECT ?award ?awardLabel WHERE { wd:${qid} wdt:P1027 ?org. ?award wdt:P1027 ?org. SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } } LIMIT 400`, 15000, 1);
+                list = rows.map(b => ({ qid: _awVal(b, 'award').split('/').pop(), label: _awVal(b, 'awardLabel') }))
+                    .filter(c => c.qid && c.label && !/^Q\d+$/.test(c.label));
+                _awCacheSet('c:' + qid, list);
+            }
+            return list.map(c => ({ ...c, group: _awardGroupOf(c.label) }))
+                .sort((a, b) => AWARD_GROUP_ORDER.indexOf(a.group) - AWARD_GROUP_ORDER.indexOf(b.group) || a.label.localeCompare(b.label));
+        }
+        // Semua tahun untuk SATU kategori — query kecil dan cepat
+        async function _awardsCatRows(qid) {
+            const rows = await _wdRun(`SELECT ?recLabel ?workLabel ?kind ?year ?rtm ?rtt ?wtm ?wtt WHERE {
+                { ?rec p:P166 ?s. ?s ps:P166 wd:${qid}. BIND("won" AS ?kind) }
+                UNION
+                { ?rec p:P1411 ?s. ?s ps:P1411 wd:${qid}. BIND("nom" AS ?kind) }
+                OPTIONAL { ?s pq:P585 ?d } BIND(YEAR(?d) AS ?year)
+                OPTIONAL { ?s pq:P1686 ?work. OPTIONAL { ?work wdt:P4947 ?wtm } OPTIONAL { ?work wdt:P4983 ?wtt } }
+                OPTIONAL { ?rec wdt:P4947 ?rtm } OPTIONAL { ?rec wdt:P4983 ?rtt }
+                SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+            } LIMIT 900`, 20000, 1);
+            const seen = new Map();
+            rows.map(b => ({ name: _awVal(b, 'recLabel'), work: _awVal(b, 'workLabel'), kind: _awVal(b, 'kind'), year: _awVal(b, 'year'), tm: _awVal(b, 'wtm') || _awVal(b, 'rtm'), tt: _awVal(b, 'wtt') || _awVal(b, 'rtt') }))
+                .filter(r => r.name && !/^Q\d+$/.test(r.name)).forEach(r => {
+                    const k = r.year + '|' + r.name + '|' + r.work;
+                    const old = seen.get(k);
+                    if (!old || (old.kind === 'nom' && r.kind === 'won')) seen.set(k, r);
+                });
+            return [...seen.values()];
+        }
+        async function _awardsLoadCategory(qid, label, req) {
+            _awardsCat = { qid, label };
+            _awardsRenderCatBtn();
+            let rows = _awardsRowsCache[qid] || _awCacheGet(qid, 7);
+            if (!rows) {
+                _awardsShowLoading();
+                try { rows = await _awardsCatRows(qid); }
+                catch (e) {
+                    _warn('awardsCat', e);
+                    if (req === _awardsReq) _awardsShowMsg('Gagal memuat data penghargaan. Server Wikidata sedang sibuk atau koneksi bermasalah.<br><span class="toggle-btn" style="display:inline-block;margin-top:12px" onclick="_awardsRetry()">Coba lagi</span>');
+                    return;
+                }
+                _awardsRowsCache[qid] = rows;
+                _awCacheSet(qid, rows);
+            } else _awardsRowsCache[qid] = rows;
+            if (req !== _awardsReq) return;
+            _awardsRows = rows;
+            _awardsYearsShown = 6;
+            _awardsRender();
+        }
+        function _awardsRetry() {
+            if (!_awardsCat) return;
+            delete _awardsRowsCache[_awardsCat.qid];
+            try { localStorage.removeItem('aw2:' + _awardsCat.qid); } catch (e) {}
             const req = ++_awardsReq;
-            try { await _awardsFetchYear(req, false); }
-            catch (e) { _warn('selectAwardYear', e); if (req === _awardsReq) _awardsShowMsg('Gagal memuat data penghargaan.'); }
+            _awardsLoadCategory(_awardsCat.qid, _awardsCat.label, req);
         }
         function _awardsShowLoading() {
             document.getElementById('awardsInfo').textContent = 'Memuat...';
-            document.getElementById('awardsGroups').innerHTML = '';
             document.getElementById('awardsList').innerHTML = Array(6).fill('<div class="sk" style="width:100%;height:38px;border-radius:8px;margin-top:8px"></div>').join('');
         }
         function _awardsShowMsg(t) {
             document.getElementById('awardsInfo').textContent = '';
-            document.getElementById('awardsGroups').innerHTML = '';
             document.getElementById('awardsList').innerHTML = `<div style="padding:30px 0;text-align:center;color:#666;font-size:12px">${t}</div>`;
         }
-        function _awardsRenderYears() {
-            const now = new Date().getFullYear();
-            document.getElementById('awardsYears').innerHTML = Array.from({ length: 16 }, (_, i) => now - i)
-                .map(y => `<div class="decade-tab-chip ${y === _awardsYear ? 'active' : ''}" onclick="selectAwardYear(${y})">${y}</div>`).join('');
+        function _awardsRenderCatBtn() {
+            const btn = document.getElementById('awardsCatBtn');
+            if (!btn || !_awardsCat) return;
+            btn.style.display = 'flex';
+            const many = _awardsCats.length > 1;
+            btn.innerHTML = `<span style="color:#777;font-size:11px;font-weight:700;letter-spacing:1px">KATEGORI</span><b style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_escAttr(_awardsCat.label)}</b>${many ? '<i class="fa-solid fa-chevron-down" style="font-size:11px;color:#888"></i>' : ''}`;
+            btn.style.pointerEvents = many ? 'auto' : 'none';
         }
-        // Jalankan query SPARQL dengan batas waktu & ulang otomatis bila server sibuk
-        async function _wdRun(q, timeoutMs, retries) {
-            for (let a = 0; a <= retries; a++) {
-                const ctrl = new AbortController();
-                const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-                try {
-                    const res = await fetch('https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent(q), { headers: { Accept: 'application/sparql-results+json' }, signal: ctrl.signal });
-                    clearTimeout(timer);
-                    if (res.ok) return (await res.json()).results.bindings || [];
-                    if (res.status !== 429 && res.status < 500) throw new Error('sparql ' + res.status);
-                } catch (e) { clearTimeout(timer); if (a === retries) throw e; }
-                await new Promise(r => setTimeout(r, 1200));
-            }
-            return [];
-        }
-        const _awVal = (b, k) => (b[k] ? b[k].value : '');
-        function _awCacheGet(key) {
-            try { const v = JSON.parse(localStorage.getItem('aw1:' + key) || 'null'); return (v && Array.isArray(v.rows) && Date.now() - v.t < 7 * 864e5) ? v.rows : null; } catch (e) { return null; }
-        }
-        function _awCacheSet(key, rows) {
-            if (!rows.length || rows.length > 600) return;
-            try { localStorage.setItem('aw1:' + key, JSON.stringify({ t: Date.now(), rows })); } catch (e) { /* kuota penuh — abaikan */ }
-        }
-        function _awDedupe(rows) {
-            const seen = new Map();
-            rows.filter(r => r.name && r.cat && !/^Q\d+$/.test(r.name)).forEach(r => {
-                const k = r.cat + '|' + r.name + '|' + r.work;
-                const old = seen.get(k);
-                if (!old || (old.kind === 'nom' && r.kind === 'won')) seen.set(k, r); // pemenang menggantikan catatan nominasi yang sama
+        function openAwardCats() {
+            if (document.getElementById('awardsCatSheet') || _awardsCats.length < 2) return;
+            const ov = document.createElement('div');
+            ov.id = 'awardsCatSheet';
+            ov.className = 'app-ov app-sheet-ov';
+            let html = '<div class="app-sheet"><div class="app-sheet-title">Pilih kategori</div>';
+            AWARD_GROUP_ORDER.forEach(g => {
+                const items = _awardsCats.filter(c => (c.group || _awardGroupOf(c.label)) === g);
+                if (!items.length) return;
+                html += `<div class="app-sheet-title" style="padding-top:12px;color:#8e8e8e">${g}</div>` + items.map(c =>
+                    `<div class="app-sheet-row ${c.qid === _awardsCat.qid ? 'on' : ''}" data-q="${c.qid}" data-l="${_escAttr(c.label)}"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_escAttr(c.label)}</span><span class="app-radio ${c.qid === _awardsCat.qid ? 'on' : ''}"></span></div>`).join('');
             });
-            return [...seen.values()];
+            ov.innerHTML = html + '</div>';
+            ov.addEventListener('click', e => {
+                const row = e.target.closest ? e.target.closest('.app-sheet-row') : null;
+                if (row) {
+                    _closeSheet(ov);
+                    const req = ++_awardsReq;
+                    _awardsLoadCategory(row.dataset.q, row.dataset.l, req);
+                } else if (e.target === ov) _closeSheet(ov);
+            });
+            document.body.appendChild(ov);
+            history.pushState({ view: 'sheet' }, '');
+            const on = ov.querySelector('.app-sheet-row.on');
+            if (on) on.scrollIntoView({ block: 'center' });
         }
-        // 1) Cepat: hanya penghargaan utama (mis. Best Picture) pada tahun itu
-        async function _awardsQuickRows(qid, y, label) {
-            const rows = await _wdRun(`SELECT ?recLabel ?kind ?rtm ?rtt WHERE {
-                { ?rec p:P166 ?s. ?s ps:P166 wd:${qid}. BIND("won" AS ?kind) }
-                UNION
-                { ?rec p:P1411 ?s. ?s ps:P1411 wd:${qid}. BIND("nom" AS ?kind) }
-                ?s pq:P585 ?d. FILTER(YEAR(?d) = ${y})
-                OPTIONAL { ?rec wdt:P4947 ?rtm } OPTIONAL { ?rec wdt:P4983 ?rtt }
-                SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-            } LIMIT 300`, 15000, 1);
-            return _awDedupe(rows.map(b => ({ cat: label, name: _awVal(b, 'recLabel'), work: '', kind: _awVal(b, 'kind'), tm: _awVal(b, 'rtm'), tt: _awVal(b, 'rtt') })));
-        }
-        // 2) Lengkap: semua kategori dari lembaga/festival yang sama
-        async function _awardsFullRows(qid, y) {
-            const rows = await _wdRun(`SELECT ?awardLabel ?recLabel ?workLabel ?kind ?rtm ?rtt ?wtm ?wtt WHERE {
-                wd:${qid} wdt:P1027 ?org. ?award wdt:P1027 ?org.
-                { ?rec p:P166 ?s. ?s ps:P166 ?award. BIND("won" AS ?kind) }
-                UNION
-                { ?rec p:P1411 ?s. ?s ps:P1411 ?award. BIND("nom" AS ?kind) }
-                ?s pq:P585 ?d. FILTER(YEAR(?d) = ${y})
-                OPTIONAL { ?s pq:P1686 ?work. OPTIONAL { ?work wdt:P4947 ?wtm } OPTIONAL { ?work wdt:P4983 ?wtt } }
-                OPTIONAL { ?rec wdt:P4947 ?rtm } OPTIONAL { ?rec wdt:P4983 ?rtt }
-                SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-            } LIMIT 1200`, 25000, 1);
-            return _awDedupe(rows.map(b => ({ cat: _awVal(b, 'awardLabel'), name: _awVal(b, 'recLabel'), work: _awVal(b, 'workLabel'), kind: _awVal(b, 'kind'), tm: _awVal(b, 'wtm') || _awVal(b, 'rtm'), tt: _awVal(b, 'wtt') || _awVal(b, 'rtt') })));
-        }
-        function _awardsNote(html) {
-            const n = document.getElementById('awardsNote');
-            if (n) n.innerHTML = html || '';
-        }
-        function _awardsRetry() {
-            if (!_awardsCur) return;
-            delete _awardsRowsCache[_awardsCur.qid + '|' + _awardsYear];
-            try { localStorage.removeItem('aw1:' + _awardsCur.qid + '|' + _awardsYear); } catch (e) {}
-            const req = ++_awardsReq;
-            _awardsFetchYear(req, false).catch(e => { _warn('awardsRetry', e); });
-        }
-        async function _awardsFetchYear(req, autoPrev) {
-            const cur = _awardsCur;
-            if (!cur) return;
-            _awardsRenderYears();
-            _awardsNote('');
-            const y = _awardsYear;
-            const key = cur.qid + '|' + y;
-            const done = rows => { _awardsRows = rows; _awardsGroup = 'Semua'; _awardsRenderYears(); _awardsRender(); };
-            // Cache: tampil seketika
-            const cached = _awardsRowsCache[key] || _awCacheGet(key);
-            if (cached) { _awardsRowsCache[key] = cached; done(cached); return; }
-            _awardsShowLoading();
-            let quick = [], quickFailed = false, fullFailed = false;
-            try { quick = await _awardsQuickRows(cur.qid, y, cur.label); } catch (e) { quickFailed = true; _warn('awardsQuick', e); }
-            if (req !== _awardsReq) return;
-            if (quick.length) { done(quick); _awardsNote('Memuat kategori lengkap…'); }
-            let full = [];
-            try { full = await _awardsFullRows(cur.qid, y); } catch (e) { fullFailed = true; _warn('awardsFull', e); }
-            if (req !== _awardsReq) return;
-            if (full.length) { _awardsRowsCache[key] = full; _awCacheSet(key, full); done(full); _awardsNote(''); return; }
-            if (quick.length) {
-                _awardsRowsCache[key] = quick; _awCacheSet(key, quick);
-                _awardsNote(fullFailed ? 'Kategori lengkap gagal dimuat — baru penghargaan utama yang tampil. <span class="toggle-btn" onclick="_awardsRetry()">Coba lagi</span>' : 'Hanya penghargaan utama yang tercatat untuk tahun ini.');
-                return;
-            }
-            if (quickFailed && fullFailed) {
-                _awardsShowMsg('Gagal memuat data penghargaan. Server Wikidata sedang sibuk atau koneksi bermasalah.<br><span class="toggle-btn" style="display:inline-block;margin-top:12px" onclick="_awardsRetry()">Coba lagi</span>');
-                return;
-            }
-            if (autoPrev && y > new Date().getFullYear() - 2) { _awardsYear = y - 1; return _awardsFetchYear(req, autoPrev); }
-            done([]);
-        }
-        function setAwardsGroup(g) { _awardsGroup = g; _awardsRender(); }
         function _awardsRender() {
-            const cur = _awardsCur;
             const rows = _awardsRows;
             const info = document.getElementById('awardsInfo');
+            const cur = _awardsCur;
             if (!rows.length) {
-                _awardsShowMsg(`Belum ada data untuk ${_awardsYear}. Coba pilih tahun lain.`);
+                _awardsShowMsg('Belum ada data untuk kategori ini. Coba kategori lain.');
                 if (cur) info.innerHTML = `<b style="color:#ddd">${_escAttr(cur.label)}</b>`;
                 return;
             }
-            const byCat = {};
-            rows.forEach(r => { (byCat[r.cat] = byCat[r.cat] || []).push(r); });
-            const cats = Object.keys(byCat).map(c => ({ name: c, group: _awardGroupOf(c), items: byCat[c] }))
-                .sort((a, b) => AWARD_GROUP_ORDER.indexOf(a.group) - AWARD_GROUP_ORDER.indexOf(b.group) || a.name.localeCompare(b.name));
             const wins = rows.filter(r => r.kind === 'won').length;
-            info.innerHTML = `<b style="color:#ddd">${_escAttr(cur.label)}</b>${cur.desc ? ' — ' + _escAttr(cur.desc) : ''}<br>Tahun ${_awardsYear} · ${cats.length} kategori · ${wins} pemenang · ${rows.length - wins} nominasi`;
-            const groupsPresent = AWARD_GROUP_ORDER.filter(g => cats.some(c => c.group === g));
-            if (_awardsGroup !== 'Semua' && !groupsPresent.includes(_awardsGroup)) _awardsGroup = 'Semua';
-            document.getElementById('awardsGroups').innerHTML = (groupsPresent.length > 1
-                ? ['Semua', ...groupsPresent].map(g => `<div class="decade-tab-chip ${g === _awardsGroup ? 'active' : ''}" onclick="setAwardsGroup('${g}')">${g}</div>`).join('') : '');
+            info.innerHTML = `<b style="color:#ddd">${_escAttr(_awardsCat ? _awardsCat.label : cur.label)}</b>${cur && cur.desc && (!_awardsCat || _awardsCat.qid === cur.qid) ? ' — ' + _escAttr(cur.desc) : ''}<br>${wins} pemenang · ${rows.length - wins} nominasi tercatat`;
+            const byYear = {};
+            rows.forEach(r => { (byYear[r.year || '0'] = byYear[r.year || '0'] || []).push(r); });
+            const years = Object.keys(byYear).sort((a, b) => (b === '0') - (a === '0') || b - a);
+            const shown = years.slice(0, _awardsYearsShown);
             const rowHTML = r => {
                 const id = r.tm || r.tt;
                 const type = r.tm ? 'movie' : 'tv';
@@ -11926,12 +11964,11 @@
                     <i class="${r.kind === 'won' ? 'fa-solid fa-trophy' : 'fa-regular fa-star'}" style="color:${r.kind === 'won' ? '#f5c518' : '#666'}"></i>
                     <span>${label}</span><span class="aw-tag">${r.kind === 'won' ? 'Pemenang' : 'Nominasi'}</span></div>`;
             };
-            document.getElementById('awardsList').innerHTML = cats
-                .filter(c => _awardsGroup === 'Semua' || c.group === _awardsGroup)
-                .map(c => {
-                    const items = c.items.slice().sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'won' ? -1 : 1));
-                    return `<div class="aw-cat">${_escAttr(c.name)}</div>${items.map(rowHTML).join('')}`;
-                }).join('');
+            document.getElementById('awardsList').innerHTML = shown.map(y => {
+                const items = byYear[y].slice().sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'won' ? -1 : 1));
+                return `<div class="aw-year">${y === '0' ? 'TAHUN TIDAK DIKETAHUI' : y}</div>${items.map(rowHTML).join('')}`;
+            }).join('') + (years.length > shown.length
+                ? `<div class="toggle-btn" style="text-align:center;margin-top:16px;padding:8px" onclick="_awardsYearsShown += 6; _awardsRender()">Tampilkan lebih banyak</div>` : '');
         }
         function _awardsSearchInput(v) {
             clearTimeout(_awardsSearchTimer);
