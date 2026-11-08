@@ -2230,6 +2230,34 @@
         .reel-video-wrap { -webkit-mask-image: linear-gradient(to bottom, #000 68%, transparent 100%); mask-image: linear-gradient(to bottom, #000 68%, transparent 100%); }
         .reel-video-wrap.streaming { -webkit-mask-image: none; mask-image: none; }
         .reel-slide::after { height: 48%; }
+
+        /* ===== RONDE 21 ===== */
+        /* Reels: tutupan hitam di atas video dipertipis; tombol rapat ke navigasi bawah */
+        .reel-slide::before { height: 88px; background: linear-gradient(to bottom, #000 0%, #000 34px, rgba(0,0,0,0.7) 58px, rgba(0,0,0,0) 100%); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%); mask-image: linear-gradient(to bottom, #000 72%, transparent 100%); }
+        .reel-action-buttons { padding: 8px 15px 2px; }
+
+        /* ===== RONDE 22 ===== */
+        /* Terakhir Dilihat dihapus */
+        #recentlyViewedWrapper { display: none !important; }
+        /* Modal film: bar judul atas dihapus (judul sudah ada di bawah bingkai video) — kecuali mode Live TV */
+        #movieModal:not(.tv-mode) #mHeaderBar { display: none; }
+        /* Reels: tinggi mengikuti kontainer tetap (di atas navigasi 52px), bukan satuan svh yang berubah saat bar browser muncul/hilang */
+        .reels-container { position: absolute; top: 0; left: 0; right: 0; bottom: 52px; height: auto; }
+        .reel-slide { height: 100%; min-height: 0; }
+        /* Reels: tutupan hitam atas dinaikkan & dipertipis, bawah diturunkan & dipertipis */
+        .reel-slide::before { top: -6px; height: 72px; background: linear-gradient(to bottom, #000 0%, #000 22px, rgba(0,0,0,0.65) 46px, rgba(0,0,0,0) 100%); }
+        .reel-slide::after { height: 40%; }
+        .reel-video-wrap { -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); }
+        .reel-video-wrap.streaming { -webkit-mask-image: none; mask-image: none; }
+
+        /* ===== RONDE 23: keseragaman modal (Film Baru, Pencarian, Penghargaan, Kalender, Rating per Dekade) =====
+           Header 54px; judul 16px/800 di tengah; tab 12px/700 garis bawah putih; chip 12px/700 setinggi 30px;
+           jarak samping 15px; header/tab → konten 12px; padding bawah 68px. */
+        .search-header { height: 54px; box-sizing: border-box; padding: 0 15px; }
+        #searchTypeTabs { border-bottom-color: #1a1a1a !important; }
+        .decade-tab-chip, .genre-explore-chip { display: inline-flex; align-items: center; height: 30px; padding: 0 14px; border-radius: 20px; font-size: 12px; font-weight: 700; box-sizing: border-box; }
+        /* Reels: judul–sinopsis dinaikkan mendekati video (tombol tetap di atas navigasi) */
+        .reel-desc-block { margin-bottom: 16px; }
     </style>
 </head>
 <body>
@@ -2663,16 +2691,19 @@
         <!-- Decade modal (triggered by filter btn when idle) -->
         <div id="decadeModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);overflow-y:auto">
             <div style="max-width:520px;margin:0 auto;padding:20px 15px 60px">
-                <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:-20px -15px 12px;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
+                <div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;box-sizing:border-box;height:54px;margin:-20px -15px 0;padding:0 15px;background:#000;border-bottom:1px solid #1c1c1c">
                     <i class="fa-solid fa-chevron-left btn-icon bk-none" onclick="_manualClose('decade', closeDecadeModal)"></i>
                     <div style="position:absolute;left:0;right:0;padding:0 56px;text-align:center;pointer-events:none;font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff">Rating Tertinggi per Dekade</div>
                 </div>
                 <!-- Decade + type selector -->
-                <div style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none" class="no-scrollbar" id="decadeTabRow"></div>
-                <div style="display:flex;border-bottom:1px solid #1a1a1a;margin-bottom:12px">
-                    <div id="dcTypeMovie" class="decade-type-btn active" onclick="selectDecadeType('movie',this)">Film</div>
-                    <div id="dcTypeTV" class="decade-type-btn" onclick="selectDecadeType('tv',this)">Serial</div>
+                <div id="dcSticky" style="position:sticky;top:54px;z-index:4;background:#000;margin:0 -15px;padding:12px 15px 0">
+                    <div style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none" class="no-scrollbar" id="decadeTabRow"></div>
+                    <div style="display:flex;border-bottom:1px solid #1a1a1a;margin-bottom:0">
+                        <div id="dcTypeMovie" class="decade-type-btn active" onclick="selectDecadeType('movie',this)">Film</div>
+                        <div id="dcTypeTV" class="decade-type-btn" onclick="selectDecadeType('tv',this)">Serial</div>
+                    </div>
                 </div>
+                <div style="height:12px"></div>
                 <div id="decadeGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
             </div>
         </div>
@@ -2711,7 +2742,7 @@
         <div class="w-12 h-1 bg-zinc-800 rounded-full mx-auto mt-3 mb-6"></div>
         <div class="px-5">
             <h3 class="text-[10px] font-black uppercase tracking-[4px] mb-8 text-center text-zinc-500">
-                Official Soundtrack
+                Soundtrack Resmi
             </h3>
             <div id="musicList" class="space-y-3 pb-12"></div>
         </div>
@@ -2788,7 +2819,7 @@
         </div>
         <div id="modalScrollTop" class="max-w-xl mx-auto pb-20">
             <div class="sticky top-0 bg-black z-[100] border-b border-zinc-900">
-                <div class="h-[54px] flex items-center" style="padding:0 15px;gap:10px">
+                <div id="mHeaderBar" class="h-[54px] flex items-center" style="padding:0 15px;gap:10px">
                     <i class="fa-solid fa-chevron-left btn-icon bk-ghost" onclick="_manualClose('modal', closeModal)"></i>
                     <div class="flex-grow text-center text-[14px] font-extrabold truncate" style="letter-spacing:-0.3px" id="mTitle"></div>
                     <div style="width:32px;flex-shrink:0"></div>
@@ -7286,7 +7317,8 @@
             document.getElementById('actorKnownFor').innerHTML = '';
             switchActorTab('grid');
 
-            history.pushState({view: 'actor'}, "");
+            if (history.state && history.state.view === 'actor') history.replaceState({view: 'actor'}, "");
+            else history.pushState({view: 'actor'}, "");
 
             try {
                 const [details, credits] = await Promise.all([
@@ -8672,7 +8704,8 @@
             document.getElementById('searchGrid').innerHTML = '<div id="calendarList" class="col-span-3"></div>';
             calendarHeader.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
-            history.pushState({view: 'search'}, "");
+            if (history.state && history.state.view === 'search') history.replaceState({view: 'search'}, "");
+            else history.pushState({view: 'search'}, "");
 
             // Build tab + date strip
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -9439,7 +9472,8 @@
             // Tidak auto-focus agar keyboard tidak langsung muncul
             document.body.style.overflow = 'hidden';
             updateActiveNav('search');
-            history.pushState({view: 'search'}, "");
+            if (history.state && history.state.view === 'search') history.replaceState({view: 'search'}, "");
+            else history.pushState({view: 'search'}, "");
         }
 
         function closeSearch() { 
@@ -9733,7 +9767,8 @@
             // tampilkan controls sebentar lalu auto-hide
             setTimeout(() => showVideoControls(), 500);
             
-            history.pushState({view: 'modal'}, "");
+            if (history.state && history.state.view === 'modal') history.replaceState({view: 'modal'}, ""); // buka judul lain dari dalam modal: tidak menambah entri riwayat
+            else history.pushState({view: 'modal'}, "");
 
             const [dId, dEn, dCast, dExt] = await Promise.all([
                 fetchWithCache(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=id-ID&append_to_response=videos,production_companies&include_video_language=en,id,hi,th,ko,ja,ru,null`),
@@ -10364,8 +10399,9 @@
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active-link'));
             if(srvIdx !== 99) el.classList.add('active-link');
             // Simpan progres episode untuk fitur lanjut tonton (kecuali mode trailer)
-            if (window.currentMediaType === 'tv' && srvIdx !== 99) {
-                saveResume(window.currentMediaId, { s: activeSeason, e: activeEpisode });
+            if (srvIdx !== 99) {
+                if (window.currentMediaType === 'tv') saveResume(window.currentMediaId, { s: activeSeason, e: activeEpisode });
+                else saveResume(window.currentMediaId, {}); // film: catat saat mulai diputar agar muncul di Lanjut Tonton
             }
             const url = buildEmbedUrl(window.currentMediaType, window.currentMediaId, activeSeason, activeEpisode, activeServerIdx);
             playVid(url);
@@ -11164,6 +11200,7 @@
         const RV_MAX = 20;
 
         function addToRecentlyViewed(id, type, poster) {
+            return; // fitur Terakhir Dilihat dihapus
             let items = JSON.parse(localStorage.getItem(RV_KEY) || '[]');
             items = items.filter(x => x.id != id);
             items.unshift({ id, type, poster });
@@ -11173,6 +11210,7 @@
         }
 
         function renderRecentlyViewed() {
+            { const _w = document.getElementById('recentlyViewedWrapper'); if (_w) _w.style.display = 'none'; return; } // fitur Terakhir Dilihat dihapus
             const items = JSON.parse(localStorage.getItem(RV_KEY) || '[]');
             const wrapper = document.getElementById('recentlyViewedWrapper');
             const scroll = document.getElementById('recentlyScroll');
@@ -11666,6 +11704,24 @@
         }, { passive: true });
 
         // ===== RIWAYAT TOMBOL BACK =====
+        // Pembersih entri riwayat usang: bila setelah back, entri tujuan milik layar yang sudah tertutup,
+        // mundur lagi otomatis (tanpa menutup layar lain), sehingga back HP tidak perlu ditekan dua kali.
+        const _STALE_MAP = { modal: 'movieModal', actor: 'actorModal', search: 'searchOverlay', tv: 'tvModal', reels: 'reelsModal', movieografi: 'movieografiModal', notif: 'notifModal', decade: 'decadeModal', credits: 'creditsModal', awards: 'awardsModal', dlLib: 'downloadLibModal', notifCenter: 'notifCenterModal', actorPhotos: 'actorPhotosModal', soundtrack: 'soundtrackModal', lightbox: 'lightboxModal', livesport: 'livesportModal' };
+        let _staleSkips = 0;
+        window.addEventListener('popstate', function (e) {
+            const v = e.state && e.state.view;
+            if (!v) { _staleSkips = 0; return; }
+            setTimeout(() => {
+                if (document.querySelector('.app-ov')) return;
+                const id = _STALE_MAP[v];
+                const el = id ? document.getElementById(id) : null;
+                if (!id || !el || getComputedStyle(el).display !== 'none' || _staleSkips >= 6) { _staleSkips = 0; return; }
+                _staleSkips++;
+                _ignorePopUntil = Date.now() + 400;
+                history.back();
+            }, 40);
+        });
+
         // Modal yang ditutup lewat tombol panah ikut membuang entri riwayat miliknya,
         // supaya tombol back HP tidak perlu ditekan dua kali.
         let _ignorePopUntil = 0;
