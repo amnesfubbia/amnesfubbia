@@ -2263,6 +2263,16 @@
         .reel-video-wrap { -webkit-mask-image: linear-gradient(to bottom, #000 92%, transparent 100%); mask-image: linear-gradient(to bottom, #000 92%, transparent 100%); }
         .reel-video-wrap.streaming { -webkit-mask-image: none; mask-image: none; }
         .reel-slide::after { height: 34%; background: linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.6) 48%, rgba(0,0,0,0) 100%); }
+
+        /* ===== RONDE 25: Reels (subtitle jelas, judul naik) & detail Reels tanpa sinopsis ===== */
+        .reel-video-wrap { -webkit-mask-image: none; mask-image: none; }
+        .reel-desc-block { margin-bottom: 34px; }
+        #rdsSynopsisWrap { display: none; }
+
+        /* ===== RONDE 26: detail Reels — tombol rapat ke navigasi, AMOLED, jarak samping 15px ===== */
+        .rds-btn-row { padding: 12px 15px 2px; background: #000; }
+        #reelDetailSheet { background: #000; }
+        .rds-header, .rds-body { padding-left: 15px; padding-right: 15px; }
     </style>
 </head>
 <body>
@@ -3140,7 +3150,7 @@
             </div>
         </div>
         <div class="rds-body">
-            <div class="rds-section-label">Sinopsis</div>
+            <div class="rds-section-label" style="display:none">Sinopsis</div>
             <div id="rdsSynopsisWrap">
                 <div id="rdsSynopsisSkeleton">
                     <div class="rds-synopsis-skeleton" style="width:100%"></div>
@@ -6945,7 +6955,8 @@
                 if (opts.s !== undefined) cur.s = opts.s;
                 if (opts.e !== undefined) cur.e = opts.e;
                 if (typeof opts.t === 'number') cur.t = opts.t;
-                if (window.currentMediaType) cur.type = window.currentMediaType;
+                if (opts.type) cur.type = opts.type;
+                else if (window.currentMediaType) cur.type = window.currentMediaType;
                 cur.ts = Date.now();
                 map[mediaId] = cur;
                 const keys = Object.keys(map);
@@ -7287,8 +7298,53 @@
             });
         }
 
-        async function openActorProfile(actorId) {
+        function _looksEnglish(t) { return ((t || '').match(/\b(the|and|of|is|was|his|her|in|to|with)\b/gi) || []).length >= 4; }
+        function _setupActorBio(text, forceEn) {
+            const bioEl = document.getElementById('actorBiography');
+            let act = document.getElementById('actorBioActions');
+            if (!act) {
+                act = document.createElement('div');
+                act.id = 'actorBioActions';
+                act.style.cssText = 'display:flex;gap:14px;margin-top:6px';
+                bioEl.after(act);
+            }
+            act.innerHTML = '';
+            if (!text) { bioEl.innerText = ''; bioEl.style.display = 'none'; return; }
+            bioEl.style.display = '';
+            const canTranslate = forceEn || _looksEnglish(text);
+            const st = { orig: text, trans: '', showTrans: false, expanded: false };
+            const view = () => {
+                const t = st.showTrans ? st.trans : st.orig;
+                const long = t.length > 120;
+                bioEl.innerText = (!st.expanded && long) ? t.substring(0, 120).trim() + '...' : t;
+                act.innerHTML = '';
+                const mk = (label, fn) => { const b = document.createElement('span'); b.className = 'toggle-btn'; b.innerText = label; b.onclick = fn; act.appendChild(b); return b; };
+                if (canTranslate) {
+                    const tb = mk(st.showTrans ? 'Lihat asli' : 'Lihat terjemahan', async () => {
+                        if (st.showTrans) { st.showTrans = false; view(); return; }
+                        if (st.trans) { st.showTrans = true; view(); return; }
+                        tb.innerText = 'Menerjemahkan...';
+                        try { st.trans = await translateTextChunked(st.orig, 'en', 'id'); st.showTrans = true; view(); }
+                        catch (e) { _warn('bioTranslate', e); tb.innerText = 'Gagal menerjemahkan'; }
+                    });
+                }
+                if (long) mk(st.expanded ? 'ringkas' : 'selengkapnya', () => { st.expanded = !st.expanded; view(); });
+            };
+            view();
+        }
+        // Daftar karya: pemeran → cast; sutradara/penulis → crew sesuai peran; studio → data yang sudah disusun
+        function _actorCreditsList(credits) {
+            const role = window._currentActorRole;
+            if (!role || role === 'studio') return credits.cast || [];
+            const jobs = role === 'director' ? ['Director'] : ['Writer', 'Screenplay', 'Story', 'Script', 'Creator'];
+            let crew = (credits.crew || []).filter(c => jobs.includes(c.job));
+            if (!crew.length) crew = credits.crew || [];
+            return crew.map(c => ({ ...c, character: '' }));
+        }
+        const _DEPT_ID = { 'Acting': 'Pemeran', 'Directing': 'Sutradara', 'Writing': 'Penulis', 'Production': 'Produksi', 'Sound': 'Tata Suara', 'Camera': 'Sinematografi', 'Editing': 'Penyuntingan', 'Art': 'Seni', 'Costume & Make-Up': 'Kostum & Rias', 'Visual Effects': 'Efek Visual', 'Crew': 'Kru', 'Lighting': 'Tata Cahaya' };
+        async function openActorProfile(actorId, role) {
             _pauseFilmTrailer();
+            window._currentActorRole = role || '';
             window._currentActorId = actorId;
             window._currentOpenActorId = actorId; // Simpan untuk back navigation dari film
             lastTrailerSources = [];
@@ -7305,11 +7361,26 @@
             document.body.style.overflow = 'hidden';
 
             // Reset state dengan skeleton
+            // Tampilan khusus studio: logo di foto, tombol Movieografi/IMDb/Foto disembunyikan, label statistik disesuaikan
+            {
+                const _isStudio = role === 'studio';
+                const _pic = document.getElementById('actorPic');
+                _pic.style.background = _isStudio ? '#fff' : '';
+                _pic.style.objectFit = _isStudio ? 'contain' : '';
+                _pic.style.padding = _isStudio ? '10px' : '';
+                _pic.style.boxSizing = _isStudio ? 'border-box' : '';
+                const _row = document.querySelector('#actorModal .actor-action-row');
+                if (_row) _row.style.display = _isStudio ? 'none' : '';
+                const _lbl = document.querySelectorAll('#actorModal .actor-stat-lbl');
+                const _names = _isStudio ? ['Karya', 'Film', 'Serial'] : ['Karya', 'Popularitas', 'Usia'];
+                _lbl.forEach((el, i) => { if (_names[i]) el.innerText = _names[i]; });
+            }
             document.getElementById('actorHeaderTitle').innerText = '...';
             document.getElementById('actorName').innerText = '';
             document.getElementById('actorNameBio').innerText = '';
             document.getElementById('actorDept').innerText = '';
             document.getElementById('actorBiography').innerText = '';
+            { const _ba = document.getElementById('actorBioActions'); if (_ba) _ba.innerHTML = ''; }
             document.getElementById('actorBioMeta').innerHTML = '';
             document.getElementById('statWorks').innerText = '—';
             document.getElementById('statPop').innerText = '—';
@@ -7326,10 +7397,25 @@
             else history.pushState({view: 'actor'}, "");
 
             try {
-                const [details, credits] = await Promise.all([
-                    fetchWithCache(`https://api.themoviedb.org/3/person/${actorId}?api_key=${API_KEY}&language=id-ID`),
-                    fetchWithCache(`https://api.themoviedb.org/3/person/${actorId}/combined_credits?api_key=${API_KEY}&language=en-US`)
-                ]);
+                let details, credits;
+                if (role === 'studio') {
+                    const disc = (t, pg) => fetchWithCache(`https://api.themoviedb.org/3/discover/${t}?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&with_companies=${actorId}&include_adult=false&page=${pg}`).catch(() => ({ results: [] }));
+                    const [comp, m1, m2, t1, t2] = await Promise.all([
+                        fetchWithCache(`https://api.themoviedb.org/3/company/${actorId}?api_key=${API_KEY}`),
+                        disc('movie', 1), disc('movie', 2), disc('tv', 1), disc('tv', 2)
+                    ]);
+                    const cast = [
+                        ...(m1.results || []).concat(m2.results || []).map(r => ({ ...r, media_type: 'movie' })),
+                        ...(t1.results || []).concat(t2.results || []).map(r => ({ ...r, media_type: 'tv' }))
+                    ];
+                    details = { profile_path: comp.logo_path, name: comp.name, known_for_department: 'Studio', popularity: 0, biography: comp.description || '', place_of_birth: [comp.headquarters, comp.origin_country].filter(Boolean).join(' · '), birthday: null, gender: 0, imdb_id: '', also_known_as: [] };
+                    credits = { cast };
+                } else {
+                    [details, credits] = await Promise.all([
+                        fetchWithCache(`https://api.themoviedb.org/3/person/${actorId}?api_key=${API_KEY}&language=id-ID`),
+                        fetchWithCache(`https://api.themoviedb.org/3/person/${actorId}/combined_credits?api_key=${API_KEY}&language=en-US`)
+                    ]);
+                }
 
                 const imgPath = details.profile_path ? `https://image.tmdb.org/t/p/w500${details.profile_path}` : 'amnesfubbia.png';
                 document.getElementById('actorPic').src = imgPath;
@@ -7337,11 +7423,11 @@
                 document.getElementById('actorCoverBlur').classList.add('is-portrait'); // cadangan: foto diburamkan
 
                 // Nama aktor — gunakan Latin dari also_known_as jika nama asli non-Latin
-                const actorDisplayName = await _latinPersonName(actorId, details.name, details.also_known_as);
+                const actorDisplayName = role === 'studio' ? details.name : await _latinPersonName(actorId, details.name, details.also_known_as);
                 document.getElementById('actorHeaderTitle').innerText = actorDisplayName;
                 document.getElementById('actorName').innerText = actorDisplayName;
                 document.getElementById('actorNameBio').innerText = actorDisplayName;
-                document.getElementById('actorDept').innerText = details.known_for_department || 'Pemeran';
+                document.getElementById('actorDept').innerText = role === 'director' ? 'Sutradara' : role === 'writer' ? 'Penulis' : role === 'studio' ? 'Studio' : (_DEPT_ID[details.known_for_department] || details.known_for_department || 'Pemeran');
 
                 // Age
                 let age = '—';
@@ -7351,7 +7437,7 @@
                 }
 
                 // Stats
-                const allCast = credits.cast || [];
+                const allCast = _actorCreditsList(credits);
                 // Latar hero: backdrop dari karya paling populer (bila ada)
                 const _bd = allCast.filter(c => c.backdrop_path).sort((x, y) => (y.popularity || 0) - (x.popularity || 0))[0];
                 if (_bd) {
@@ -7362,27 +7448,25 @@
                 const movieCount = allCast.filter(c => c.media_type === 'movie').length;
                 const tvCount = allCast.filter(c => c.media_type === 'tv').length;
                 document.getElementById('statWorks').innerText = allCast.length;
-                document.getElementById('statPop').innerText = Math.floor(details.popularity || 0);
-                document.getElementById('statAge').innerText = age;
-
-                // Bio text (biography)
-                const bioText = details.biography || '';
-                const bioEl = document.getElementById('actorBiography');
-                if (bioText) {
-                    const short = bioText.length > 120;
-                    bioEl.innerText = short ? bioText.substring(0, 120) + '...' : bioText;
-                    bioEl.style.display = '';
-                    if (short) {
-                        const more = document.createElement('span');
-                        more.className = 'toggle-btn';
-                        more.innerText = 'selengkapnya';
-                        more.onclick = () => { bioEl.innerText = bioText; more.remove(); };
-                        bioEl.after(more);
-                    }
+                if (role === 'studio') {
+                    document.getElementById('statPop').innerText = movieCount;
+                    document.getElementById('statAge').innerText = tvCount;
                 } else {
-                    bioEl.innerText = '';
-                    bioEl.style.display = 'none';
+                    document.getElementById('statPop').innerText = Math.floor(details.popularity || 0);
+                    document.getElementById('statAge').innerText = age;
                 }
+
+                // Bio / keterangan — dengan tombol terjemahan dan selengkapnya/ringkas
+                let bioText = details.biography || '';
+                let bioEn = false;
+                if (!bioText && role !== 'studio') {
+                    try {
+                        const _en = await fetchWithCache(`https://api.themoviedb.org/3/person/${actorId}?api_key=${API_KEY}&language=en-US`);
+                        bioText = _en.biography || ''; bioEn = !!bioText;
+                    } catch (e) { _warn('actorBioEn', e); }
+                }
+                if (role === 'studio' && bioText) bioEn = true;
+                _setupActorBio(bioText, bioEn);
 
                 // Bio meta: birth date, place, gender
                 const genderMap = { 1: '♀ Perempuan', 2: '♂ Laki-laki' };
@@ -8357,18 +8441,33 @@
                 document.getElementById('rdsTranslateBtn').style.display = (synopsisLang === 'en' || !/[A-Z]/.test(synopsis.slice(0,3))) ? 'inline-block' : 'inline-block';
                 document.getElementById('rdsTranslateBtn').innerText = 'Lihat terjemahan';
 
-                // Info grid
-                document.getElementById('rdsInfoGrid').innerHTML = `
-                    <div class="rds-info-cell"><div class="rds-info-key">Release</div><div class="rds-info-val">${releaseStr}</div></div>
-                    <div class="rds-info-cell"><div class="rds-info-key">Sutradara</div><div class="rds-info-val">${dirName}</div></div>
-                    <div class="rds-info-cell"><div class="rds-info-key">Negara</div><div class="rds-info-val">${countries}</div></div>
-                    <div class="rds-info-cell"><div class="rds-info-key">Studio</div><div class="rds-info-val">${studios}</div></div>
-                    <div class="rds-info-cell" style="grid-column:1/-1;border-right:none"><div class="rds-info-key">Genre</div><div class="rds-info-val">${genres}</div></div>
-                `;
+                // Info lengkap — sama dengan info di modal film
+                const _wCrew = crew.filter(c => ['Writer', 'Screenplay', 'Story', 'Script'].includes(c.job));
+                const _wSrc = _wCrew.length ? _wCrew : (type === 'tv' ? (d.created_by || []) : []);
+                const _wUniq = []; const _wSeen = new Set();
+                _wSrc.forEach(w => { if (!_wSeen.has(w.id)) { _wSeen.add(w.id); _wUniq.push(w); } });
+                const _wNames = await Promise.all(_wUniq.slice(0, 2).map(w => _latinPersonName(w.id, w.name)));
+                const writersStr = _wNames.length ? _wNames.join(', ') + (_wUniq.length > 2 ? ', ...' : '') : '—';
+                const _rt = d.runtime || (d.episode_run_time && d.episode_run_time[0]) || 0;
+                const runtimeStr = _rt ? (_rt >= 60 ? `${Math.floor(_rt / 60)}j ${_rt % 60}m` : `${_rt} mnt`) : '—';
+                const langStr = (d.spoken_languages || []).map(l => l.name || l.english_name).filter(Boolean).slice(0, 2).join(', ') || '—';
+                const _money = n => n >= 1e9 ? '$' + (n / 1e9).toFixed(2) + ' M' : (n >= 1e6 ? '$' + Math.round(n / 1e6) + ' jt' : (n ? '$' + Number(n).toLocaleString('id-ID') : '—'));
+                const studios3 = (d.production_companies || []).slice(0, 3).map(c => c.name).join(', ') || '—';
+                const cell = (k, v, full) => `<div class="rds-info-cell"${full ? ' style="grid-column:1/-1;border-right:none"' : ''}><div class="rds-info-key">${k}</div><div class="rds-info-val">${v}</div></div>`;
+                document.getElementById('rdsInfoGrid').innerHTML =
+                    cell('Rilis', releaseStr) + cell('Durasi', runtimeStr) +
+                    cell('Sutradara', dirName) + cell('Penulis', writersStr) +
+                    cell('Negara', countries) + cell('Bahasa', langStr) +
+                    (type === 'tv'
+                        ? cell('Musim', d.number_of_seasons || '—') + cell('Episode', d.number_of_episodes || '—')
+                        : cell('Anggaran', _money(d.budget)) + cell('Pendapatan', _money(d.revenue))) +
+                    cell('Studio', studios3, true) +
+                    cell('Genre', genres, true);
             } catch(e) {
                 document.getElementById('rdsSynopsisSkeleton').style.display = 'none';
                 document.getElementById('rdsSynopsis').style.display = 'block';
                 document.getElementById('rdsSynopsis').innerText = 'Gagal memuat data.';
+                document.getElementById('rdsInfoGrid').innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:12px">Gagal memuat data.</div>';
             }
         }
 
@@ -8492,6 +8591,11 @@
             const type = directType || _rdsCurrentType;
             if (!id || !type) return;
             if (btn && btn.classList) { btn.classList.add('pressed'); setTimeout(() => btn && btn.classList.remove('pressed'), 300); }
+            // Catat ke Lanjut Tonton (serial: musim 1 episode 1 bila belum ada catatan)
+            try {
+                const _prev = getResumeData()[id];
+                saveResume(id, Object.assign({ type }, (type === 'tv' && !(_prev && _prev.s)) ? { s: 1, e: 1 } : {}));
+            } catch (e) { _warn('reelResume', e); }
             const url = buildEmbedUrl(type, id, 1, 1, 1);
             // Putar langsung di dalam frame reel-nya sendiri, bukan buka tab baru
             const slide = document.querySelector(`.reel-slide[data-movie-id="${id}"]`);
@@ -8925,7 +9029,7 @@
 
                 // Filter unique credits with poster
                 const seen = new Set();
-                const all = (credits.cast || []).filter(c => {
+                const all = _actorCreditsList(credits).filter(c => {
                     if (!c.poster_path || seen.has(c.id)) return false;
                     seen.add(c.id); return true;
                 });
@@ -12165,6 +12269,9 @@
             history.pushState({ view: 'credits' }, '');
             return true;
         }
+        // Sutradara / penulis / studio kini membuka modal profil seperti pemeran
+        function openCreditsPerson(personId, name, kind) { return openActorProfile(personId, kind); }
+        function openCreditsStudio(companyId, name) { return openActorProfile(companyId, 'studio'); }
         function closeCreditsModal(resume) {
             const m = document.getElementById('creditsModal');
             if (m) m.style.display = 'none';
@@ -12212,7 +12319,7 @@
                 </div>`;
             }).join('');
         }
-        async function openCreditsPerson(personId, name, kind) {
+        async function _openCreditsPersonOld(personId, name, kind) {
             if (!_creditsShell(name, kind === 'director' ? 'Karya sebagai sutradara' : 'Karya sebagai penulis')) return;
             const req = ++_creditsReq;
             try {
@@ -12230,7 +12337,7 @@
                 document.getElementById('creditsGrid').innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:#666;font-size:11px">Gagal memuat.</div>';
             }
         }
-        async function openCreditsStudio(companyId, name) {
+        async function _openCreditsStudioOld(companyId, name) {
             if (!_creditsShell(name, 'Film & serial dari studio ini')) return;
             const req = ++_creditsReq;
             try {
