@@ -2258,6 +2258,11 @@
         .decade-tab-chip, .genre-explore-chip { display: inline-flex; align-items: center; height: 30px; padding: 0 14px; border-radius: 20px; font-size: 12px; font-weight: 700; box-sizing: border-box; }
         /* Reels: judul–sinopsis dinaikkan mendekati video (tombol tetap di atas navigasi) */
         .reel-desc-block { margin-bottom: 16px; }
+
+        /* ===== RONDE 24: Reels — subtitle YouTube lebih jelas (pudar bawah dimulai lebih rendah & lebih tipis) ===== */
+        .reel-video-wrap { -webkit-mask-image: linear-gradient(to bottom, #000 92%, transparent 100%); mask-image: linear-gradient(to bottom, #000 92%, transparent 100%); }
+        .reel-video-wrap.streaming { -webkit-mask-image: none; mask-image: none; }
+        .reel-slide::after { height: 34%; background: linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.6) 48%, rgba(0,0,0,0) 100%); }
     </style>
 </head>
 <body>
@@ -4999,7 +5004,7 @@
                         <i class="fa-solid fa-quote-left" style="font-size:24px;margin-bottom:14px;display:block;color:#333"></i>
                         <div style="font-size:13px;line-height:1.8">Lirik tidak ditemukan untuk<br><b style="color:#888">${_musicCurrentTrack.title}</b><br>oleh ${_musicCurrentTrack.artist}</div>
                         <a href="https://www.google.com/search?q=${encodeURIComponent(_musicCurrentTrack.title+' '+_musicCurrentTrack.artist+' lyrics')}" target="_blank"
-                            style="display:inline-block;margin-top:16px;background:#fff;color:#000;padding:10px 24px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none">Cari di Google</a>
+                            style="display:inline-block;margin-top:16px;background:#fff;color:#000;padding:10px 24px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none" rel="noopener noreferrer">Cari di Google</a>
                     </div>`;
                 }
             } else if (type === 'sleep') {
