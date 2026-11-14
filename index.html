@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>amnesfubbia</title>
     <meta name="description" content="Discover, watch & archive film dan serial favoritmu. Streaming 20+ server, trailer, Live TV Indonesia.">
     <meta name="theme-color" content="#000000">
@@ -2296,6 +2296,9 @@
         .reel-action-buttons { padding-bottom: 8px; }
         .rds-btn-row { padding-bottom: 8px; }
         #filterBar, .about-hero, .about-credits, .actor-stats-bar, .reels-topbar { padding-left: 15px; padding-right: 15px; }
+
+        /* ===== RONDE 29: zoom jari boleh, ketuk-ganda tidak zoom ===== */
+        html, body { touch-action: manipulation; }
     </style>
 </head>
 <body>
@@ -3335,42 +3338,44 @@
         <!-- ===== PLAYLIST TAB (browse semua playlist) ===== -->
         <div id="musicPlaylistTab" style="display:none;flex:1;flex-direction:column;overflow:hidden">
             <div style="padding:16px 15px 10px;flex-shrink:0">
-                <div style="font-size:22px;font-weight:800;color:#fff">Playlist</div>
+                <div style="font-size:28px;font-weight:800;color:#fff">Playlist</div>
+                <div id="musicPlaylistCount" style="font-size:12px;color:#666;margin-top:2px"></div>
             </div>
-            <div id="musicPlaylistGrid" style="flex:1;overflow-y:auto;padding:6px 15px 160px;display:grid;grid-template-columns:1fr 1fr;gap:14px"></div>
+            <div id="musicPlaylistGrid" style="flex:1;overflow-y:auto;padding:6px 15px 80px;display:grid;grid-template-columns:1fr 1fr;gap:14px"></div>
         </div>
 
         <!-- ===== PROFILE TAB ===== -->
         <!-- ===== PLAYLIST DETAIL SCREEN ===== -->
         <div id="musicPlaylistDetail" style="display:none;position:absolute;top:0;left:0;right:0;bottom:62px;z-index:30;background:#000;flex-direction:column;overflow:hidden">
-            <div style="flex:1;overflow-y:auto;padding-bottom:160px">
-                <div style="position:relative;height:220px;background:#141414">
-                    <div id="musicPlDetailArt" style="position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(0.55)"></div>
-                    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.3),#000 95%)"></div>
-                    <div style="position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between">
+            <div style="flex:1;overflow-y:auto;padding-bottom:80px">
+                <div id="musicPlDetailHero" style="position:relative;padding:56px 0 20px;background:linear-gradient(to bottom,#2a2a2a,#000)">
+                    <div style="position:absolute;top:16px;left:15px;right:15px;display:flex;justify-content:space-between">
                         <i class="fa-solid fa-chevron-left btn-icon bk-ghost" onclick="musicClosePlaylistDetail()"></i>
                         <i class="fa-solid fa-ellipsis" style="font-size:18px;color:#fff;cursor:pointer;padding:6px"></i>
+                    </div>
+                    <div style="display:flex;justify-content:center">
+                        <div id="musicPlDetailArt" style="width:200px;height:200px;border-radius:12px;background-color:#1a1a1a;background-size:cover;background-position:center;box-shadow:0 14px 36px rgba(0,0,0,0.65)"></div>
                     </div>
                 </div>
                 <div style="padding:14px 15px 0">
                     <div id="musicPlDetailTitle" style="font-size:21px;font-weight:900;color:#fff"></div>
-                    <div style="font-size:12px;color:#666;margin-top:4px">Playlist pilihan</div>
+                    <div id="musicPlDetailSub" style="font-size:12px;color:#777;margin-top:4px"></div>
                     <div id="musicPlDetailMeta" style="font-size:11px;color:#555;margin-top:2px"></div>
                     <div style="display:flex;align-items:center;gap:12px;margin-top:16px">
                         <div onclick="musicPlayPlaylistDetail()" style="width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer">
-                            <i class="fa-solid fa-play" style="color:#fff;font-size:18px;margin-left:2px"></i>
+                            <i class="fa-solid fa-play" style="color:#000;font-size:18px;margin-left:2px"></i>
                         </div>
                         <i class="fa-solid fa-shuffle" style="color:#666;font-size:18px;cursor:pointer;padding:8px" onclick="musicToggleShuffle()"></i>
                         <i class="fa-solid fa-download" style="color:#666;font-size:18px;cursor:pointer;padding:8px"></i>
                     </div>
                 </div>
-                <div id="musicPlDetailList" style="padding:16px 8px 0"></div>
+                <div id="musicPlDetailList" style="padding:12px 0 0"></div>
             </div>
         </div>
 
         <!-- ===== ALBUM DETAIL SCREEN ===== -->
         <div id="musicAlbumDetail" style="display:none;position:absolute;top:0;left:0;right:0;bottom:62px;z-index:30;background:#000;flex-direction:column;overflow:hidden">
-            <div style="flex:1;overflow-y:auto;padding-bottom:160px">
+            <div style="flex:1;overflow-y:auto;padding-bottom:80px">
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 15px 0">
                     <i class="fa-solid fa-chevron-left btn-icon bk-ghost" onclick="musicCloseAlbumDetail()"></i>
                     <i id="musicAlbumLikeBtn" class="fa-regular fa-heart" style="font-size:19px;color:#666;cursor:pointer;padding:6px" onclick="musicToggleAlbumLike()"></i>
@@ -3382,7 +3387,7 @@
                     <div id="musicAlbumMeta" style="font-size:11px;color:#555;margin-top:2px"></div>
                     <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px">
                         <div onclick="musicPlayAlbumDetail()" style="width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer">
-                            <i class="fa-solid fa-play" style="color:#fff;font-size:18px;margin-left:2px"></i>
+                            <i class="fa-solid fa-play" style="color:#000;font-size:18px;margin-left:2px"></i>
                         </div>
                         <i class="fa-solid fa-shuffle" style="color:#666;font-size:18px;cursor:pointer;padding:8px" onclick="musicToggleShuffle()"></i>
                         <i class="fa-solid fa-download" style="color:#666;font-size:18px;cursor:pointer;padding:8px"></i>
@@ -3395,7 +3400,7 @@
 
         <!-- ===== ARTIST PROFILE SCREEN ===== -->
         <div id="musicArtistProfile" style="display:none;position:absolute;top:0;left:0;right:0;bottom:62px;z-index:30;background:#000;flex-direction:column;overflow:hidden">
-            <div style="flex:1;overflow-y:auto;padding-bottom:160px">
+            <div style="flex:1;overflow-y:auto;padding-bottom:80px">
                 <div style="position:relative;height:230px;background:#141414">
                     <div id="musicArtistBg" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#222,#111)">
                         <i class="fa-solid fa-user-music" style="font-size:56px;color:#333"></i>
@@ -3409,11 +3414,7 @@
                         <div style="font-size:11px;color:#999;margin-top:2px">Artis</div>
                     </div>
                 </div>
-                <div style="padding:14px 15px 0">
-                    <div onclick="musicPlayArtistTop()" style="width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer">
-                        <i class="fa-solid fa-play" style="color:#fff;font-size:18px;margin-left:2px"></i>
-                    </div>
-                </div>
+                <div id="musicArtistAbout" style="display:none;padding:20px 15px 0"></div>
                 <div style="padding:24px 0 0">
                     <div style="padding:0 15px 12px"><span style="font-size:15px;font-weight:800;color:#fff">Lagu Populer</span></div>
                     <div id="musicArtistSongs"></div>
@@ -3582,6 +3583,72 @@
     </div>
 
     <script>
+
+        // ===== GAMBAR ADAPTIF & ALT OTOMATIS =====
+        // Ukuran gambar TMDb disesuaikan dengan kerapatan layar & koneksi (ditaruh di satu tempat, berlaku ke semua gambar).
+        (function () {
+            const conn = navigator.connection || {};
+            const dpr = window.devicePixelRatio || 1;
+            const lowData = !!conn.saveData || /(^|-)2g$/.test(String(conn.effectiveType || ''));
+            const wide = window.innerWidth >= 700;
+            const hi = !lowData && (dpr >= 2.5 || (wide && dpr >= 2));
+            // peta dibuat idempoten (menerapkan dua kali hasilnya sama)
+            const UP = { 92: 154, 185: 342, 300: 780, 500: 780 };
+            const DOWN = { 1280: 500, 780: 500 };
+            function adapt(str) {
+                if (typeof str !== 'string' || str.indexOf('image.tmdb.org/t/p/w') < 0) return str;
+                if (!hi && !lowData) return str;
+                return str.replace(/image\.tmdb\.org\/t\/p\/w(\d+)\//g, (m, w) => {
+                    w = parseInt(w, 10);
+                    const n = lowData ? (DOWN[w] || w) : (UP[w] || w);
+                    return 'image.tmdb.org/t/p/w' + n + '/';
+                });
+            }
+            window._tmdbAdapt = adapt;
+            const T_SEL = '.post-card-title,.card-title-text,.hero-title,.notif-title,.rv-title,.cast-name,.similar-title,.ep-title,[class*="title"],[class*="name"]';
+            function fixAlts(root) {
+                try {
+                    if (!root || !root.querySelectorAll) return;
+                    root.querySelectorAll('img:not([alt])').forEach(im => {
+                        let text = '';
+                        const holder = im.closest('[data-title],[title]');
+                        if (holder) text = holder.getAttribute('data-title') || holder.getAttribute('title') || '';
+                        let c = im.parentElement;
+                        for (let i = 0; i < 4 && c && !text; i++, c = c.parentElement) {
+                            const t = c.querySelector(T_SEL);
+                            if (t && t.textContent && t.textContent.trim()) text = t.textContent.trim().slice(0, 80);
+                        }
+                        im.setAttribute('alt', text);
+                    });
+                } catch (e) { /* abaikan */ }
+            }
+            window._fixAlts = fixAlts;
+            try {
+                const d = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+                Object.defineProperty(Element.prototype, 'innerHTML', { get: d.get, set(v) { d.set.call(this, adapt(v)); fixAlts(this); }, configurable: true });
+            } catch (e) {}
+            try {
+                const ia = Element.prototype.insertAdjacentHTML;
+                Element.prototype.insertAdjacentHTML = function (pos, html) { const r = ia.call(this, pos, adapt(html)); fixAlts(this.parentElement || this); return r; };
+            } catch (e) {}
+            try {
+                const sd = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+                Object.defineProperty(HTMLImageElement.prototype, 'src', { get: sd.get, set(v) { sd.set.call(this, adapt(v)); }, configurable: true });
+            } catch (e) {}
+            try {
+                const bd = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'backgroundImage');
+                if (bd && bd.set) Object.defineProperty(CSSStyleDeclaration.prototype, 'backgroundImage', { get: bd.get, set(v) { bd.set.call(this, adapt(v)); }, configurable: true });
+            } catch (e) {}
+            try {
+                let tm = 0;
+                const start = () => {
+                    fixAlts(document);
+                    new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(() => fixAlts(document.body), 400); }).observe(document.body, { childList: true, subtree: true });
+                };
+                if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+            } catch (e) {}
+        })();
+
         // Logging error ringan: tidak menampilkan apa pun di layar, hanya ke console (untuk debugging)
         function _warn(ctx, e) { console.warn('[amnes:' + ctx + ']', e); }
         function _dbg(ctx, e) { console.debug('[amnes:' + ctx + ']', e); }
@@ -3812,7 +3879,7 @@
         // Rekomendasi — daftar gaya "radio" (riwayat jika ada, kalau belum ada pakai top hits)
         let _musicHomeQueues = { reco: [], newrelease: [] };
         function musicRadioRowHTML(t, i, section) {
-            return `<div style="display:flex;align-items:center;gap:14px;padding:11px 20px;cursor:pointer;border-bottom:1px solid #161616" onclick="musicPlayHomeRow('${section}',${i})">
+            return `<div style="display:flex;align-items:center;gap:14px;padding:11px 15px;cursor:pointer;border-bottom:1px solid #161616" onclick="musicPlayHomeRow('${section}',${i})">
                 <img loading="lazy" decoding="async" src="${t.artworkSmall}" onerror="musicImgFallback(this)" style="width:52px;height:52px;border-radius:10px;object-fit:cover;background:#1a1a1a;flex-shrink:0">
                 <div style="flex:1;overflow:hidden">
                     <div style="display:flex;align-items:center;gap:6px">
@@ -3882,9 +3949,9 @@
                 let tracks = musicShuffleArr(raw.map(musicNormalize));
                 tracks = musicCapPerArtist(tracks, 2).slice(0, 10);
                 _musicHomeQueues.reco = tracks;
-                el.innerHTML = tracks.length ? tracks.map((t,i) => musicRecoGridCardHTML(t, i, 'reco')).join('') : '<div style="color:#444;font-size:12px;padding:10px 20px">Tidak ada data</div>';
+                el.innerHTML = tracks.length ? tracks.map((t,i) => musicRecoGridCardHTML(t, i, 'reco')).join('') : '<div style="color:#444;font-size:12px;padding:10px 15px">Tidak ada data</div>';
             } catch(e) {
-                el.innerHTML = '<div style="color:#444;font-size:12px;padding:10px 20px">Gagal memuat</div>';
+                el.innerHTML = '<div style="color:#444;font-size:12px;padding:10px 15px">Gagal memuat</div>';
             }
         }
         async function musicRenderNewReleases() {
@@ -3901,23 +3968,13 @@
                 _musicHomeQueues.newrelease = tracks;
                 el.innerHTML = tracks.length
                     ? tracks.map((t,i) => musicRadioRowHTML(t, i, 'newrelease')).join('')
-                    : '<div style="color:#444;font-size:12px;padding:10px 20px">Belum ada rilisan baru dari artis-artis ini</div>';
+                    : '<div style="color:#444;font-size:12px;padding:10px 15px">Belum ada rilisan baru dari artis-artis ini</div>';
             } catch(e) {
-                el.innerHTML = '<div style="color:#444;font-size:12px;padding:10px 20px">Gagal memuat</div>';
+                el.innerHTML = '<div style="color:#444;font-size:12px;padding:10px 15px">Gagal memuat</div>';
             }
         }
         async function musicLoadHomePlaylistCard() {
-            [[MUSIC_PLAYLISTS[0], 'musicHomePlCard1'], [MUSIC_PLAYLISTS[1], 'musicHomePlCard2']].forEach(async ([p, elId]) => {
-                try {
-                    const r = await fetch(`${ITUNES_API}/search?term=${encodeURIComponent(p.artists[0])}&media=music&country=ID&lang=id_id&limit=1`);
-                    const d = await r.json();
-                    const t = (d.results || [])[0];
-                    if (t && t.artworkUrl100) {
-                        const el = document.getElementById(elId);
-                        if (el) el.innerHTML = `<img src="${t.artworkUrl100.replace('100x100','300x300')}" onerror="musicImgFallback(this)" style="width:100%;height:100%;object-fit:cover">`;
-                    }
-                } catch (e) { _warn('musicLoadHomePlaylistCard', e); }
-            });
+            [[MUSIC_PLAYLISTS[0], 'musicHomePlCard1'], [MUSIC_PLAYLISTS[1], 'musicHomePlCard2']].forEach(([p, elId]) => musicApplyCollage(document.getElementById(elId), p));
         }
         async function musicRenderCommunityPlaylists() {
             const el = document.getElementById('musicCommunityScroll');
@@ -3925,18 +3982,9 @@
                 <div onclick="musicOpenPlaylistDetail('${p.id}')" style="flex-shrink:0;width:150px;cursor:pointer">
                     <div id="musicCommCollage-${p.id}" style="width:150px;height:150px;border-radius:10px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;background:${p.color}"></div>
                     <div style="margin-top:8px;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.title}</div>
-                    <div style="font-size:11px;color:#666;margin-top:2px">Playlist pilihan</div>
+                    <div style="font-size:11px;color:#666;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.artists.join(', ')}</div>
                 </div>`).join('');
-            MUSIC_PLAYLISTS.forEach(async p => {
-                try {
-                    const raw = await musicFetchPlaylistTracks(p, 1);
-                    const arts = raw.map(t => t.artworkUrl100).filter(Boolean);
-                    const collage = document.getElementById(`musicCommCollage-${p.id}`);
-                    if (collage && arts.length) {
-                        collage.innerHTML = arts.slice(0,4).map(u => `<img src="${u}" onerror="musicImgFallback(this)" style="width:100%;height:100%;object-fit:cover">`).join('');
-                    }
-                } catch (e) { _warn('musicRenderCommunityPlaylists', e); }
-            });
+            MUSIC_PLAYLISTS.forEach(p => musicApplyCollage(document.getElementById(`musicCommCollage-${p.id}`), p));
         }
 
         async function musicFetchAlbums() {
@@ -4028,7 +4076,45 @@
             { id:'semangat', title:'Semangat Pagi',     artists:['Agnez Mo','Afgan','Rizky Febian','Vidi Aldiano'],    color:'#101010' },
             { id:'nostalgia',title:'Nostalgia 2000an',  artists:['Dewa 19','Sheila On 7','Iwan Fals','Ari Lasso'],     color:'#1c1c1c' },
             { id:'romantis', title:'Romantis',          artists:['Raisa','Rossa','Judika','Glenn Fredly'],             color:'#161616' },
+            { id:'dangdut',  title:'Dangdut Hits',      artists:['Rhoma Irama','Via Vallen','Denny Caknan','Happy Asmara'], color:'#181818' },
+            { id:'indie',    title:'Indie Indonesia',   artists:['Fourtwnty','Sal Priadi','Feast','Reality Club'],     color:'#131313' },
+            { id:'akustik',  title:'Akustik Santai',    artists:['Eclat','Hanin Dhiya','Juicy Luicy','Dere'],          color:'#1a1a1a' },
+            { id:'kpop',     title:'K-Pop Favorit',     artists:['BTS','BLACKPINK','NewJeans','Stray Kids'],           color:'#151515' },
+            { id:'religi',   title:'Religi & Sholawat', artists:['Maher Zain','Opick','Haddad Alwi','Sabyan'],         color:'#171717' },
+            { id:'fokus',    title:'Fokus & Tenang',    artists:['Ludovico Einaudi','Yiruma','Joe Hisaishi','Ryuichi Sakamoto'], color:'#121212' },
         ];
+        // Kolase 2×2 sampul dari empat artis tiap playlist — hasilnya disimpan (memori + penyimpanan lokal 14 hari)
+        const _musicPlCollageMem = {};
+        async function musicPlaylistCollage(p) {
+            if (_musicPlCollageMem[p.id]) return _musicPlCollageMem[p.id];
+            let store = {};
+            try { store = JSON.parse(localStorage.getItem('musicPlCollage1') || '{}'); } catch (e) {}
+            const hit = store[p.id];
+            if (hit && Array.isArray(hit.urls) && hit.urls.length && Date.now() - hit.t < 14 * 864e5) return (_musicPlCollageMem[p.id] = hit.urls);
+            const urls = (await Promise.all(p.artists.map(name =>
+                fetch(`${ITUNES_API}/search?term=${encodeURIComponent(name)}&media=music&country=ID&lang=id_id&limit=1`)
+                    .then(r => r.json())
+                    .then(d => { const t = (d.results || [])[0]; return t && t.artworkUrl100 ? t.artworkUrl100.replace('100x100', '300x300') : ''; })
+                    .catch(() => '')
+            ))).filter(Boolean);
+            if (urls.length) {
+                _musicPlCollageMem[p.id] = urls;
+                store[p.id] = { t: Date.now(), urls };
+                try { localStorage.setItem('musicPlCollage1', JSON.stringify(store)); } catch (e) {}
+            }
+            return urls;
+        }
+        function musicCollageHTML(urls) {
+            return [0, 1, 2, 3].map(i => `<img src="${urls[i % urls.length]}" loading="lazy" onerror="musicImgFallback(this)" style="width:100%;height:100%;object-fit:cover">`).join('');
+        }
+        async function musicApplyCollage(el, p) {
+            if (!el) return;
+            const urls = await musicPlaylistCollage(p);
+            if (urls.length && el.isConnected) {
+                el.style.display = 'grid'; el.style.gridTemplateColumns = '1fr 1fr'; el.style.gridTemplateRows = '1fr 1fr'; el.style.overflow = 'hidden';
+                el.innerHTML = musicCollageHTML(urls);
+            }
+        }
         async function musicFetchPlaylistTracks(p, perArtist) {
             const raw = await musicFetchTracksByArtists(p.artists, perArtist);
             return raw;
@@ -4036,26 +4122,18 @@
         let _musicPlaylistDetail = null; // playlist yang sedang dibuka {id,title,tracks}
         function musicPlaylistCardHTML(p, scope) {
             scope = scope || 'main';
-            return `<div onclick="musicOpenPlaylistDetail('${p.id}')" style="cursor:pointer">
-                <div id="plCardBg-${p.id}-${scope}" style="width:100%;aspect-ratio:1;border-radius:12px;background:${p.color};background-size:cover;background-position:center;position:relative;overflow:hidden;display:flex;align-items:flex-end">
-                    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 55%)"></div>
-                    <div style="position:relative;padding:10px;font-size:13px;font-weight:800;color:#fff;line-height:1.25">${p.title}</div>
-                </div>
-                <div style="font-size:10px;color:#666;margin-top:6px">Playlist pilihan</div>
+            return `<div onclick="musicOpenPlaylistDetail('${p.id}')" style="cursor:pointer;min-width:0">
+                <div id="plCardBg-${p.id}-${scope}" style="width:100%;aspect-ratio:1;border-radius:12px;background:${p.color};overflow:hidden"></div>
+                <div style="margin-top:8px;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.title}</div>
+                <div style="font-size:11px;color:#777;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.artists.join(', ')}</div>
             </div>`;
         }
         function musicHydratePlaylistArt(scope) {
-            MUSIC_PLAYLISTS.forEach(async p => {
-                try {
-                    const r = await fetch(`${ITUNES_API}/search?term=${encodeURIComponent(p.artists[0])}&media=music&country=ID&lang=id_id&limit=1`);
-                    const d = await r.json();
-                    const t = (d.results || [])[0];
-                    const el = document.getElementById(`plCardBg-${p.id}-${scope}`);
-                    if (el && t && t.artworkUrl100) el.style.backgroundImage = `url(${t.artworkUrl100.replace('100x100','400x400')})`;
-                } catch (e) { _warn('musicHydratePlaylistArt', e); }
-            });
+            MUSIC_PLAYLISTS.forEach(p => musicApplyCollage(document.getElementById(`plCardBg-${p.id}-${scope}`), p));
         }
         function musicRenderPlaylistTab() {
+            const cnt = document.getElementById('musicPlaylistCount');
+            if (cnt) cnt.textContent = `${MUSIC_PLAYLISTS.length} playlist`;
             document.getElementById('musicPlaylistGrid').innerHTML = MUSIC_PLAYLISTS.map(p => musicPlaylistCardHTML(p, 'tab')).join('');
             musicHydratePlaylistArt('tab');
         }
@@ -4066,20 +4144,30 @@
             history.pushState({view:'music', tab:'playlistDetail'}, '');
             document.getElementById('musicPlDetailTitle').textContent = p.title;
             document.getElementById('musicPlDetailMeta').textContent = 'Memuat...';
-            document.getElementById('musicPlDetailArt').style.backgroundImage = '';
+            { const _a = document.getElementById('musicPlDetailArt'); _a.style.backgroundImage = ''; _a.innerHTML = ''; _a.style.display = ''; const _sb = document.getElementById('musicPlDetailSub'); if (_sb) _sb.textContent = p.artists.join(', '); }
+            { const _hr = document.getElementById('musicPlDetailHero'); if (_hr) _hr.style.background = 'linear-gradient(to bottom,#2a2a2a,#000)'; }
             document.getElementById('musicPlDetailList').innerHTML = musicSkeletonListRows(6);
             try {
                 const raw = await musicFetchPlaylistTracks(p, 6);
                 const tracks = raw.filter(t => t.trackId).map(musicNormalize);
                 _musicPlaylistDetail = { id:p.id, title:p.title, tracks };
-                if (tracks[0]) document.getElementById('musicPlDetailArt').style.backgroundImage = `url(${tracks[0].artwork})`;
-                document.getElementById('musicPlDetailMeta').textContent = `${tracks.length} lagu`;
+                if (tracks[0]) {
+                    document.getElementById('musicPlDetailArt').style.backgroundImage = `url(${tracks[0].artwork})`;
+                    musicApplyCollage(document.getElementById('musicPlDetailArt'), p);
+                    _musicCoverColor(tracks[0].artwork).then(c => {
+                        const hero = document.getElementById('musicPlDetailHero');
+                        if (c && hero && _musicPlaylistDetail && _musicPlaylistDetail.id === p.id) hero.style.background = `linear-gradient(to bottom, rgb(${Math.round(c[0] * 0.7)},${Math.round(c[1] * 0.7)},${Math.round(c[2] * 0.7)}) 0%, #000 100%)`;
+                    });
+                }
+                const _tot = tracks.reduce((a, t) => a + (t.duration || 0), 0);
+                const _h = Math.floor(_tot / 3600), _m = Math.floor((_tot % 3600) / 60);
+                document.getElementById('musicPlDetailMeta').textContent = `${tracks.length} lagu${_tot ? ' · ' + (_h ? _h + ' j ' : '') + _m + ' mnt' : ''}`;
                 document.getElementById('musicPlDetailList').innerHTML = tracks.length
-                    ? tracks.map((t,i) => musicListItemHTML(t,i).replace(`musicPlayFromQueue(${i})`, `musicPlayPlaylistDetailAt(${i})`)).join('')
-                    : '<div style="text-align:center;padding:40px 20px;color:#444">Lagu tidak ditemukan</div>';
+                    ? tracks.map((t,i) => musicPlaylistRowHTML(t, i, `musicPlayPlaylistDetailAt(${i})`)).join('')
+                    : '<div style="text-align:center;padding:40px 15px;color:#444">Lagu tidak ditemukan</div>';
             } catch(e) {
                 document.getElementById('musicPlDetailMeta').textContent = '';
-                document.getElementById('musicPlDetailList').innerHTML = '<div style="text-align:center;padding:40px 20px;color:#444">Gagal memuat playlist</div>';
+                document.getElementById('musicPlDetailList').innerHTML = '<div style="text-align:center;padding:40px 15px;color:#444">Gagal memuat playlist</div>';
             }
         }
         function musicClosePlaylistDetail() {
@@ -4096,7 +4184,7 @@
             musicPlayCurrentQueueItem();
         }
         function musicSkeletonListRows(n) {
-            return Array(n).fill(`<div style="display:flex;align-items:center;gap:12px;padding:9px 16px">
+            return Array(n).fill(`<div style="display:flex;align-items:center;gap:12px;padding:9px 15px">
                 <div class="sk" style="width:46px;height:46px;border-radius:7px"></div>
                 <div style="flex:1"><div class="sk" style="width:70%;height:11px;border-radius:4px"></div><div class="sk" style="width:40%;height:9px;margin-top:6px;border-radius:4px"></div></div>
             </div>`).join('');
@@ -4120,17 +4208,17 @@
                 _musicAlbumDetail = { title, artist, tracks };
                 document.getElementById('musicAlbumMeta').textContent = `Album • ${tracks.length} lagu`;
                 document.getElementById('musicAlbumList').innerHTML = tracks.length
-                    ? tracks.map((t,i) => `<div style="display:flex;align-items:center;gap:12px;padding:9px 20px;cursor:pointer" onclick="musicPlayAlbumDetailAt(${i})">
+                    ? tracks.map((t,i) => `<div style="display:flex;align-items:center;gap:12px;padding:9px 15px;cursor:pointer" onclick="musicPlayAlbumDetailAt(${i})">
                         <span style="width:18px;font-size:12px;color:#555;text-align:center">${i+1}</span>
                         <div style="flex:1;overflow:hidden">
                             <div style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div>
                         </div>
                         <span style="font-size:11px;color:#555">${Math.floor(t.duration/60)}:${String(t.duration%60).padStart(2,'0')}</span>
                     </div>`).join('')
-                    : '<div style="text-align:center;padding:40px 20px;color:#444">Lagu tidak ditemukan</div>';
+                    : '<div style="text-align:center;padding:40px 15px;color:#444">Lagu tidak ditemukan</div>';
             } catch(e) {
                 document.getElementById('musicAlbumMeta').textContent = '';
-                document.getElementById('musicAlbumList').innerHTML = '<div style="text-align:center;padding:40px 20px;color:#444">Gagal memuat album</div>';
+                document.getElementById('musicAlbumList').innerHTML = '<div style="text-align:center;padding:40px 15px;color:#444">Gagal memuat album</div>';
             }
         }
         function musicCloseAlbumDetail() {
@@ -4195,23 +4283,46 @@
             localStorage.setItem('musicRecentSearches', JSON.stringify(recent));
             musicRenderSearchLanding();
         }
+        const MUSIC_BROWSE = [
+            ['Pop Indonesia', 'pop indonesia', '#e91e63', 'fa-star'],
+            ['Indie', 'indie indonesia', '#5c6bc0', 'fa-guitar'],
+            ['Dangdut', 'dangdut', '#f57c00', 'fa-drum'],
+            ['Rock', 'rock indonesia', '#c62828', 'fa-bolt'],
+            ['Hip-Hop', 'hip hop indonesia', '#7b1fa2', 'fa-microphone'],
+            ['Jazz', 'jazz', '#00838f', 'fa-music'],
+            ['Akustik', 'akustik', '#558b2f', 'fa-leaf'],
+            ['Sholawat', 'sholawat', '#00695c', 'fa-mosque'],
+            ['K-Pop', 'kpop', '#d81b60', 'fa-heart'],
+            ['Galau', 'lagu galau', '#455a64', 'fa-cloud-rain'],
+            ['Santai', 'lagu santai', '#1e88e5', 'fa-mug-hot'],
+            ['Anime', 'anime opening', '#ef6c00', 'fa-wand-magic-sparkles']
+        ];
+        function musicBrowseTilesHTML() {
+            return `<div style="padding:22px 15px 0"><div style="font-size:15px;font-weight:700;color:#eee;margin-bottom:12px">Jelajahi semua</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${MUSIC_BROWSE.map(b => `
+                    <div onclick="musicSearch('${b[1]}')" style="position:relative;height:76px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,${b[2]},#000 170%);padding:12px;cursor:pointer;box-sizing:border-box">
+                        <div style="font-size:15px;font-weight:800;color:#fff;line-height:1.2">${b[0]}</div>
+                        <i class="fa-solid ${b[3]}" style="position:absolute;right:-4px;bottom:-6px;font-size:44px;color:rgba(255,255,255,0.2);transform:rotate(-18deg)"></i>
+                    </div>`).join('')}</div></div>`;
+        }
         function musicRenderSearchLanding() {
             const el = document.getElementById('musicSearchResults');
             if (!el) return;
             const recent = JSON.parse(localStorage.getItem('musicRecentSearches') || '[]');
             el.innerHTML = `
-                <div style="padding:4px 20px 24px">
+                <div style="padding:4px 15px 24px">
                     <div style="font-size:15px;font-weight:700;color:#eee;margin-bottom:14px">Teratas</div>
                     <div id="musicSearchTopArtistsScroll" style="display:flex;gap:18px;overflow-x:auto;scrollbar-width:none">${musicSkeletonCards(4, true)}</div>
                 </div>
-                <div style="padding:0 20px">
+                <div style="padding:0 15px">
                     <div style="font-size:15px;font-weight:700;color:#eee;margin-bottom:6px">Pencarian terbaru</div>
                     ${recent.length ? recent.map(q => `
                         <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #1a1a1a">
                             <span onclick="musicSearch('${q.replace(/'/g,"\\'")}')" style="font-size:14px;color:#ddd;cursor:pointer;flex:1">${q}</span>
                             <i class="fa-solid fa-xmark" style="color:#555;cursor:pointer;padding:6px" onclick="musicRemoveRecentSearch('${q.replace(/'/g,"\\'")}')"></i>
                         </div>`).join('') : '<div style="color:#444;font-size:12px;padding:10px 0 20px">Belum ada pencarian</div>'}
-                </div>`;
+                </div>
+                ${musicBrowseTilesHTML()}`;
             const teratasNames = musicPickRandomArtists(8);
             Promise.all(teratasNames.map(name =>
                 fetch(`${ITUNES_API}/search?term=${encodeURIComponent(name)}&entity=musicArtist&country=ID&lang=id_id&limit=1`)
@@ -4238,45 +4349,107 @@
             document.getElementById('musicSearchInp').value = q;
             musicSaveRecentSearch(q);
             const el = document.getElementById('musicSearchResults');
-            el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#444"><i class="fa-solid fa-compact-disc fa-spin" style="font-size:28px;color:#fff;margin-bottom:12px;display:block"></i>Mencari...</div>`;
+            el.innerHTML = `<div style="text-align:center;padding:50px 15px;color:#444"><i class="fa-solid fa-compact-disc fa-spin" style="font-size:28px;color:#fff;margin-bottom:12px;display:block"></i>Mencari...</div>`;
             try {
-                const [trackRes, artistRes] = await Promise.all([
-                    fetch(`${ITUNES_API}/search?term=${encodeURIComponent(q)}&media=music&country=ID&lang=id_id&limit=30`).then(r => r.json()),
-                    fetch(`${ITUNES_API}/search?term=${encodeURIComponent(q)}&entity=musicArtist&country=ID&lang=id_id&limit=6`).then(r => r.json()),
+                const enc = encodeURIComponent(q);
+                const [trackRes, artistRes, albumRes] = await Promise.all([
+                    fetch(`${ITUNES_API}/search?term=${enc}&media=music&country=ID&lang=id_id&limit=30`).then(r => r.json()),
+                    fetch(`${ITUNES_API}/search?term=${enc}&entity=musicArtist&country=ID&lang=id_id&limit=6`).then(r => r.json()),
+                    fetch(`${ITUNES_API}/search?term=${enc}&entity=album&country=ID&lang=id_id&limit=10`).then(r => r.json()).catch(() => ({ results: [] })),
                 ]);
                 const tracks = (trackRes.results || []).filter(t => t.trackId && t.previewUrl).map(musicNormalize);
                 const artists = (artistRes.results || []).filter(a => a.artistId && a.artistName);
-                if (!tracks.length && !artists.length) {
-                    el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#444">Tidak ada hasil untuk "${q}"</div>`;
+                const albums = (albumRes.results || []).filter(a => a.collectionId && a.collectionName);
+                if (!tracks.length && !artists.length && !albums.length) {
+                    el.innerHTML = `<div style="text-align:center;padding:50px 15px;color:#444">Tidak ada hasil untuk "${q}"</div>`;
                     return;
                 }
                 _musicQueue = tracks;
-                let html = '';
-                if (artists.length) {
-                    html += `<div style="padding:4px 0 10px">
-                        <div style="font-size:13px;font-weight:800;color:#888;padding:0 16px 10px">Artis</div>
-                        <div style="display:flex;gap:16px;overflow-x:auto;padding:0 16px;scrollbar-width:none">
-                            ${artists.map(a => `
-                                <div onclick="musicOpenArtistProfile(${a.artistId},'${(a.artistName||'').replace(/'/g,"&#39;")}')" style="flex-shrink:0;width:78px;text-align:center;cursor:pointer">
-                                    <div class="music-avatar-ring" style="width:78px;height:78px;margin-bottom:6px">
-                                        <div id="artistCircle-${a.artistId}-searchres" class="music-avatar-ring-inner">
-                                            <i class="fa-solid fa-user-music" style="font-size:28px;color:#444"></i>
-                                        </div>
-                                    </div>
-                                    <div style="font-size:11px;font-weight:600;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.artistName}</div>
-                                </div>`).join('')}
-                        </div>
-                    </div>`;
-                }
-                if (tracks.length) {
-                    html += `<div style="font-size:13px;font-weight:800;color:#888;padding:14px 16px 4px">Lagu</div>`;
-                    html += tracks.map((t, i) => musicListItemHTML(t, i)).join('');
-                }
-                el.innerHTML = html;
-                if (artists.length) musicHydrateArtistArt(artists, 'searchres');
+                _musicSearchData = { q, tracks, artists, albums };
+                _musicSearchFilter = 'all';
+                musicRenderSearchResults();
             } catch(e) {
-                el.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#444">Gagal memuat hasil</div>`;
+                el.innerHTML = `<div style="text-align:center;padding:50px 15px;color:#444">Gagal memuat hasil</div>`;
             }
+        }
+        let _musicSearchData = null, _musicSearchFilter = 'all';
+        function musicSetSearchFilter(f) {
+            _musicSearchFilter = f;
+            musicRenderSearchResults();
+            const sc = document.getElementById('musicSearchResults'); if (sc) sc.scrollTop = 0;
+        }
+        function musicRenderSearchResults() {
+            const D = _musicSearchData;
+            if (!D) return;
+            const el = document.getElementById('musicSearchResults');
+            const { q, tracks, artists, albums } = D;
+            const f = _musicSearchFilter;
+            const esc = t => String(t || '').replace(/'/g, '&#39;');
+            const norm = t => String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+            const nq = norm(q);
+            const na = artists[0] ? norm(artists[0].artistName) : '';
+            const topArtist = (artists[0] && nq && (na === nq || na.startsWith(nq) || nq.startsWith(na))) ? artists[0] : null;
+            const label = txt => `<div style="font-size:15px;font-weight:800;color:#fff;padding:0 15px 10px">${txt}</div>`;
+            const ell = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+            const chip = (k, t) => `<span class="music-pill ${f === k ? 'music-pill-active' : ''}" onclick="musicSetSearchFilter('${k}')">${t}</span>`;
+            let html = `<div style="display:flex;gap:8px;padding:0 15px 14px">${chip('all', 'Semua')}${chip('tracks', 'Lagu')}${chip('artists', 'Artis')}</div>`;
+            if (f === 'all') {
+                if (topArtist) {
+                    html += `<div style="padding:4px 0 18px">${label('Hasil Teratas')}
+                        <div onclick="musicOpenArtistProfile(${topArtist.artistId},'${esc(topArtist.artistName)}')" style="margin:0 15px;background:#111;border-radius:14px;padding:14px;display:flex;align-items:center;gap:14px;cursor:pointer">
+                            <div class="music-avatar-ring" style="width:72px;height:72px;flex-shrink:0"><div id="artistCircle-${topArtist.artistId}-searchtop" class="music-avatar-ring-inner"><i class="fa-solid fa-user-music" style="font-size:26px;color:#444"></i></div></div>
+                            <div style="min-width:0"><div style="font-size:18px;font-weight:800;color:#fff;${ell}">${topArtist.artistName}</div><div style="font-size:12px;color:#888;margin-top:3px">Artis${topArtist.primaryGenreName ? ' · ' + topArtist.primaryGenreName : ''}</div></div>
+                        </div></div>`;
+                } else if (tracks[0]) {
+                    const t0 = tracks[0];
+                    html += `<div style="padding:4px 0 18px">${label('Hasil Teratas')}
+                        <div onclick="musicPlayFromQueue(0)" style="margin:0 15px;background:#111;border-radius:14px;padding:14px;display:flex;align-items:center;gap:14px;cursor:pointer">
+                            <img src="${t0.artworkSmall}" onerror="musicImgFallback(this)" style="width:72px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#1a1a1a">
+                            <div style="min-width:0"><div style="font-size:16px;font-weight:800;color:#fff;${ell}">${t0.title}</div><div style="font-size:12px;color:#888;margin-top:3px;${ell}">Lagu · ${t0.artist}</div></div>
+                        </div></div>`;
+                }
+            }
+            if ((f === 'all' || f === 'tracks') && tracks.length) {
+                const first = f === 'tracks' ? tracks : tracks.slice(0, 6), rest = f === 'tracks' ? [] : tracks.slice(6);
+                html += `<div style="padding:0 0 14px">${f === 'all' ? label('Lagu') : ''}${first.map((t, i) => musicListItemHTML(t, i)).join('')}
+                    ${rest.length ? `<div id="musicSearchMore" style="display:none">${rest.map((t, i) => musicListItemHTML(t, i + 6)).join('')}</div>
+                    <div class="toggle-btn" style="padding:8px 15px" onclick="document.getElementById('musicSearchMore').style.display='block';this.remove()">Tampilkan lebih banyak</div>` : ''}</div>`;
+            }
+            if (f === 'all' && artists.length) {
+                html += `<div style="padding:4px 0 18px">${label('Artis')}
+                    <div style="display:flex;gap:16px;overflow-x:auto;padding:0 15px;scrollbar-width:none">
+                        ${artists.map(a => `
+                            <div onclick="musicOpenArtistProfile(${a.artistId},'${esc(a.artistName)}')" style="flex-shrink:0;width:78px;text-align:center;cursor:pointer">
+                                <div class="music-avatar-ring" style="width:78px;height:78px;margin-bottom:6px"><div id="artistCircle-${a.artistId}-searchres" class="music-avatar-ring-inner"><i class="fa-solid fa-user-music" style="font-size:28px;color:#444"></i></div></div>
+                                <div style="font-size:11px;font-weight:600;color:#ccc;${ell}">${a.artistName}</div>
+                            </div>`).join('')}
+                    </div></div>`;
+            }
+            if (f === 'artists' && artists.length) {
+                html += artists.map(a => `
+                    <div onclick="musicOpenArtistProfile(${a.artistId},'${esc(a.artistName)}')" style="display:flex;align-items:center;gap:14px;padding:9px 15px;cursor:pointer">
+                        <div class="music-avatar-ring" style="width:56px;height:56px;flex-shrink:0"><div id="artistCircle-${a.artistId}-searchlist" class="music-avatar-ring-inner"><i class="fa-solid fa-user-music" style="font-size:20px;color:#444"></i></div></div>
+                        <div style="min-width:0"><div style="font-size:14px;font-weight:700;color:#fff;${ell}">${a.artistName}</div><div style="font-size:11px;color:#777;margin-top:2px">Artis${a.primaryGenreName ? ' · ' + a.primaryGenreName : ''}</div></div>
+                    </div>`).join('');
+            }
+            if (f === 'all' && albums.length) {
+                html += `<div style="padding:4px 0 18px">${label('Album')}
+                    <div style="display:flex;gap:14px;overflow-x:auto;padding:0 15px;scrollbar-width:none">
+                        ${albums.map(a => { const art = (a.artworkUrl100 || '').replace('100x100', '600x600'); return `
+                            <div onclick="musicOpenAlbumDetail(${a.collectionId},'${esc(a.collectionName)}','${esc(a.artistName)}','${art}')" style="flex-shrink:0;width:120px;cursor:pointer">
+                                <div style="width:120px;height:120px;border-radius:10px;overflow:hidden;background:#1a1a1a"><img src="${art}" loading="lazy" onerror="musicImgFallback(this)" style="width:100%;height:100%;object-fit:cover"></div>
+                                <div style="margin-top:7px;font-size:12px;font-weight:700;color:#fff;${ell}">${a.collectionName}</div>
+                                <div style="font-size:11px;color:#777;margin-top:2px;${ell}">${a.artistName || ''}${a.releaseDate ? ' · ' + a.releaseDate.slice(0, 4) : ''}</div>
+                            </div>`; }).join('')}
+                    </div></div>`;
+            }
+            if ((f === 'tracks' && !tracks.length) || (f === 'artists' && !artists.length)) {
+                html += `<div style="text-align:center;padding:40px 15px;color:#444;font-size:13px">Tidak ada ${f === 'tracks' ? 'lagu' : 'artis'} untuk "${q}"</div>`;
+            }
+            el.innerHTML = html;
+            if (f === 'all' && artists.length) musicHydrateArtistArt(artists, 'searchres');
+            if (f === 'all' && topArtist) musicHydrateArtistArt([topArtist], 'searchtop');
+            if (f === 'artists' && artists.length) musicHydrateArtistArt(artists, 'searchlist');
         }
 
         // ---------- ARTIST PROFILE ----------
@@ -4289,13 +4462,19 @@
             document.getElementById('musicArtistBg').style.backgroundImage = '';
             document.getElementById('musicArtistSongs').innerHTML = musicSkeletonListRows(5);
             document.getElementById('musicArtistAlbums').innerHTML = musicSkeletonCards(4);
+            { const _ab = document.getElementById('musicArtistAbout'); if (_ab) { _ab.style.display = 'none'; _ab.innerHTML = ''; } }
             try {
                 const [songRes, albumRes] = await Promise.all([
                     fetch(`${ITUNES_API}/lookup?id=${artistId}&entity=song&limit=15`).then(r => r.json()),
-                    fetch(`${ITUNES_API}/lookup?id=${artistId}&entity=album&limit=12`).then(r => r.json()),
+                    fetch(`${ITUNES_API}/lookup?id=${artistId}&entity=album&limit=50`).then(r => r.json()),
                 ]);
                 const songs = (songRes.results || []).filter(t => t.wrapperType === 'track' && t.trackId).map(musicNormalize);
-                const albums = (albumRes.results || []).filter(a => a.wrapperType === 'collection' && a.collectionId);
+                const _seenAlb = new Set();
+                const albums = (albumRes.results || []).filter(a => a.wrapperType === 'collection' && a.collectionId)
+                    .filter(a => { const k = (a.collectionName || '').toLowerCase().replace(/\s*[\(\[].*?[\)\]]\s*/g, '').trim(); if (_seenAlb.has(k)) return false; _seenAlb.add(k); return true; })
+                    .sort((x, y) => String(y.releaseDate || '').localeCompare(String(x.releaseDate || '')))
+                    .slice(0, 30);
+                _musicLoadArtistAbout(artistName, albums);
                 _musicArtistSongs = songs;
                 if (songs.length && songs[0].artwork) {
                     const bg = document.getElementById('musicArtistBg');
@@ -4315,12 +4494,71 @@
                                 <img src="${(a.artworkUrl100||'').replace('100x100','600x600')}" loading="lazy" onerror="musicImgFallback(this)" style="width:100%;height:100%;object-fit:cover">
                             </div>
                             <div style="margin-top:7px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.collectionName||''}</div>
+                            <div style="font-size:11px;color:#777;margin-top:2px">${(a.releaseDate || '').slice(0, 4)}${a.trackCount ? ' · ' + a.trackCount + ' lagu' : ''}</div>
                         </div>`).join('')
                     : '<div style="color:#444;font-size:12px;padding:0 4px">Album tidak ditemukan</div>';
             } catch(e) {
                 document.getElementById('musicArtistSongs').innerHTML = '<div style="text-align:center;padding:20px;color:#444;font-size:12px">Gagal memuat</div>';
                 document.getElementById('musicArtistAlbums').innerHTML = '';
             }
+        }
+        // Keterangan singkat artis/band: Wikipedia (Indonesia dulu, lalu Inggris) — hanya dipakai bila halamannya memang tentang musisi
+        async function _wikiArtistSummary(name) {
+            const MUSIC = { id: /(penyanyi|band|grup musik|musisi|vokalis|rapper|duo|trio|kelompok musik|penulis lagu|pencipta lagu|diva|biduan|disjoki|musik)/i, en: /(singer|band|musician|rapper|group|songwriter|vocalist|duo|trio|disc jockey|music)/i };
+            const norm = t => String(t || '').toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+            const target = norm(name);
+            if (!target) return null;
+            for (const lang of ['id', 'en']) {
+                try {
+                    const q = encodeURIComponent(name + (lang === 'id' ? ' musisi OR band OR penyanyi' : ' musician OR band OR singer'));
+                    const sr = await fetch(`https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${q}&srlimit=4&format=json&origin=*`).then(r => r.json());
+                    for (const h of ((sr.query && sr.query.search) || [])) {
+                        const tn = norm(h.title);
+                        if (!(tn === target || tn.startsWith(target + ' ') || target.startsWith(tn + ' '))) continue;
+                        const sm = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(h.title)}`).then(r => r.json());
+                        const ex = sm.extract || '';
+                        if (ex.length > 60 && MUSIC[lang].test(ex)) return { text: ex, lang, url: (sm.content_urls && sm.content_urls.desktop && sm.content_urls.desktop.page) || '' };
+                    }
+                } catch (e) { _warn('wikiArtist', e); }
+            }
+            return null;
+        }
+        async function _musicLoadArtistAbout(name, albums) {
+            const box = document.getElementById('musicArtistAbout');
+            if (!box) return;
+            const genre = (albums[0] && albums[0].primaryGenreName) || '';
+            const meta = [genre, albums.length ? albums.length + ' album' : ''].filter(Boolean).join(' · ');
+            let info = null;
+            try { info = await _wikiArtistSummary(name); } catch (e) { _warn('musicAbout', e); }
+            if (document.getElementById('musicArtistName').textContent !== name && name) return; // sudah pindah artis
+            if (!info && !meta) { box.style.display = 'none'; return; }
+            box.style.display = 'block';
+            box.innerHTML = `<div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:8px">Tentang</div>
+                ${meta ? `<div style="font-size:11px;color:#777;margin-bottom:8px">${meta}</div>` : ''}
+                <div id="musicAboutText" style="font-size:12.5px;line-height:1.55;color:#bbb"></div>
+                <div id="musicAboutActions" style="display:flex;gap:14px;margin-top:6px;flex-wrap:wrap"></div>`;
+            const txt = document.getElementById('musicAboutText'), act = document.getElementById('musicAboutActions');
+            if (!info) { txt.innerText = 'Belum ada keterangan tentang artis ini.'; return; }
+            const st = { orig: info.text, trans: '', showTrans: false, expanded: false };
+            const view = () => {
+                const t = st.showTrans ? st.trans : st.orig;
+                const long = t.length > 180;
+                txt.innerText = (!st.expanded && long) ? t.substring(0, 180).trim() + '...' : t;
+                act.innerHTML = '';
+                const mk = (label, fn) => { const b = document.createElement('span'); b.className = 'toggle-btn'; b.innerText = label; b.onclick = fn; act.appendChild(b); return b; };
+                if (info.lang === 'en') {
+                    const tb = mk(st.showTrans ? 'Lihat asli' : 'Lihat terjemahan', async () => {
+                        if (st.showTrans) { st.showTrans = false; view(); return; }
+                        if (st.trans) { st.showTrans = true; view(); return; }
+                        tb.innerText = 'Menerjemahkan...';
+                        try { st.trans = await translateTextChunked(st.orig, 'en', 'id'); st.showTrans = true; view(); }
+                        catch (e) { _warn('aboutTranslate', e); tb.innerText = 'Gagal menerjemahkan'; }
+                    });
+                }
+                if (long) mk(st.expanded ? 'ringkas' : 'selengkapnya', () => { st.expanded = !st.expanded; view(); });
+                if (info.url) { const a = document.createElement('a'); a.href = info.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.className = 'toggle-btn'; a.innerText = 'Wikipedia'; act.appendChild(a); }
+            };
+            view();
         }
         function musicCloseArtistProfile() {
             document.getElementById('musicArtistProfile').style.display = 'none';
@@ -4336,10 +4574,39 @@
             musicPlayCurrentQueueItem();
         }
 
+        // Baris playlist: nomor urut di kiri, durasi lagu di kanan
+        function musicPlaylistRowHTML(t, i, playFn) {
+            const dur = t.duration || 0;
+            let h = musicListItemHTML(t, i).replace(`musicPlayFromQueue(${i})`, playFn);
+            h = h.replace('<img loading', `<span style="width:18px;text-align:center;font-size:12px;color:#666;flex-shrink:0">${i + 1}</span><img loading`);
+            h = h.replace('<i class="fa-', `<span style="font-size:11px;color:#777;flex-shrink:0">${Math.floor(dur / 60)}:${String(dur % 60).padStart(2, '0')}</span><i class="fa-`);
+            return h;
+        }
+        // Warna dominan sampul (untuk latar sampul playlist); bila gambar tidak boleh dibaca, pakai warna bawaan
+        function _musicCoverColor(url) {
+            return new Promise(res => {
+                try {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => {
+                        try {
+                            const c = document.createElement('canvas'); c.width = c.height = 16;
+                            const x = c.getContext('2d'); x.drawImage(img, 0, 0, 16, 16);
+                            const d = x.getImageData(0, 0, 16, 16).data;
+                            let r = 0, g = 0, b = 0, n = 0;
+                            for (let i = 0; i < d.length; i += 4) { const L = (d[i] + d[i + 1] + d[i + 2]) / 3; if (L < 25 || L > 235) continue; r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
+                            res(n ? [Math.round(r / n), Math.round(g / n), Math.round(b / n)] : null);
+                        } catch (e) { res(null); }
+                    };
+                    img.onerror = () => res(null);
+                    img.src = url;
+                } catch (e) { res(null); }
+            });
+        }
         function musicListItemHTML(t, idx) {
             const isLiked = musicIsLiked(t.id);
             const isPlaying = _musicCurrentTrack && _musicCurrentTrack.id === t.id;
-            return `<div style="display:flex;align-items:center;gap:12px;padding:9px 16px;cursor:pointer;${isPlaying?'background:#111':''}"
+            return `<div style="display:flex;align-items:center;gap:12px;padding:9px 15px;cursor:pointer;${isPlaying?'background:#111':''}"
                 onclick="musicPlayFromQueue(${idx})">
                 <img loading="lazy" decoding="async" src="${t.artworkSmall}" onerror="musicImgFallback(this)" style="width:46px;height:46px;border-radius:7px;object-fit:cover;flex-shrink:0;background:#1a1a1a">
                 <div style="flex:1;overflow:hidden">
@@ -4507,7 +4774,7 @@
                 } else if (!sentInit) {
                     sentInit = true;
                     _musicYtCmd('setVolume', [parseInt(document.getElementById('musicVolumeSlider')?.value, 10) || _lsVolume]);
-                    _musicYtCmd('setPlaybackRate', [_playbackRate]);
+                    _musicYtCmd('setPlaybackRate', [1]); // musik selalu kecepatan normal (kecepatan film tidak berlaku)
                     clearInterval(iv);
                 }
                 if (tries > 40) clearInterval(iv);
@@ -4586,6 +4853,7 @@
             _musicHideYtInPlayer(); // mode preview → tampilkan poster lagi
             _musicStopAudio();
             _musicAudio = new Audio(t.preview);
+            try { _musicAudio.defaultPlaybackRate = 1; _musicAudio.playbackRate = 1; } catch (e) { _dbg('musicRate', e); }
             _musicAudio.volume = (document.getElementById('musicVolumeSlider')?.value || 100) / 100;
             _musicAudio.play().catch(e => _dbg('_musicPlayPreview', e));
             _musicPlaying = true;
@@ -5823,7 +6091,7 @@
                     return favs.includes(key) && ch.name.toLowerCase().includes(q);
                 });
                 if (!favChannels.length) {
-                    cont.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#444"><i class="fa-regular fa-heart" style="font-size:32px;margin-bottom:12px;display:block"></i>Belum ada channel favorit<br><span style="font-size:11px">Tap ikon hati pada channel untuk menyimpannya di sini</span></div>`;
+                    cont.innerHTML = `<div style="text-align:center;padding:60px 15px;color:#444"><i class="fa-regular fa-heart" style="font-size:32px;margin-bottom:12px;display:block"></i>Belum ada channel favorit<br><span style="font-size:11px">Tap ikon hati pada channel untuk menyimpannya di sini</span></div>`;
                     return;
                 }
                 cont.innerHTML = `<div class="tv-category-label">Favorit</div><div class="tv-channel-grid">` +
@@ -5835,7 +6103,7 @@
                 const list = _iptvChannelsCache || [];
                 if (!list.length) {
                     cont.innerHTML = _iptvLoading
-                        ? '<div style="text-align:center;padding:60px 20px;color:#555"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;margin-bottom:10px;display:block"></i>Memuat channel IPTV...</div>'
+                        ? '<div style="text-align:center;padding:60px 15px;color:#555"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;margin-bottom:10px;display:block"></i>Memuat channel IPTV...</div>'
                         : '<div class="text-center py-10 text-zinc-600 text-xs">Channel tidak ditemukan.</div>';
                     return;
                 }
@@ -7739,6 +8007,7 @@
         let _reelsData = [];   // [{movieId, type, title, year, videoKey}]
         let _reelsPage = 1;
         let _reelsLoading = false;
+        let _reelsRetry = 0; // percobaan ulang otomatis bila trailer gagal dimuat
         let _reelsObserver = null;
 
         // Regex portrait — sama dengan filter di trailer (disimpan global agar konsisten)
@@ -8013,11 +8282,33 @@
                 if (isNew && !firstRendered) container.innerHTML = '';
 
                 if (newReels.length === 0 && isNew && !firstRendered) {
+                    // 1) pakai daftar reel terakhir yang berhasil dimuat (cadangan)
+                    let cached = [];
+                    try { const c = JSON.parse(localStorage.getItem('reelsCache1') || 'null'); if (c && Array.isArray(c.list)) cached = c.list; } catch (e) {}
+                    if (cached.length) {
+                        container.innerHTML = '';
+                        _reelsData.push(...cached);
+                        _reelsLoaded = true;
+                        cached.forEach((r, i) => appendReelSlide(r, i));
+                        setupReelsAutoplay();
+                        setupReelSwipeLeft();
+                        playFirstReel();
+                        _reelsLoading = false;
+                        return;
+                    }
+                    // 2) coba lagi otomatis beberapa kali — tampilan tetap berupa loading, bukan pesan gagal
+                    if (_reelsRetry < 3) {
+                        _reelsRetry++;
+                        container.innerHTML = '<div class="reel-loading"><div class="spinner"></div></div>';
+                        _reelsLoading = false;
+                        setTimeout(() => { if (!_reelsLoaded) loadReels(true); }, 2000 * _reelsRetry);
+                        return;
+                    }
+                    // 3) tetap gagal: pesan singkat + tombol coba lagi
                     container.innerHTML = `
-                        <div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
-                            <i class="fa-regular fa-circle-play" style="font-size:48px;color:#555"></i>
-                            <div style="font-size:14px;font-weight:700;color:#555">Tidak Ada Konten</div>
-                            <div style="font-size:12px;color:#666;text-align:center;padding:0 40px">Gagal memuat trailer</div>
+                        <div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px">
+                            <div style="font-size:13px;color:#888;text-align:center;padding:0 40px">Trailer belum bisa dimuat. Periksa koneksi lalu coba lagi.</div>
+                            <div style="padding:8px 18px;border:1px solid #fff;border-radius:20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onclick="_reelsRetry = 0; loadReels(true)">Coba lagi</div>
                         </div>`;
                     _reelsLoading = false;
                     return;
@@ -8025,6 +8316,8 @@
 
                 _reelsData.push(...newReels);
                 _reelsLoaded = true;
+                _reelsRetry = 0;
+                try { if (isNew) localStorage.setItem('reelsCache1', JSON.stringify({ t: Date.now(), list: _reelsData.slice(0, 15) })); } catch (e) {}
                 newReels.forEach((reel, i) => appendReelSlide(reel, firstRendered ? i + 1 : i));
 
                 if (newReels.length > 0 || !firstRendered) {
@@ -8036,7 +8329,19 @@
 
             } catch(e) {
                 console.error('Reels error:', e);
-                if (isNew) container.innerHTML = '<div class="reel-loading" style="color:#555;font-size:12px">Gagal memuat</div>';
+                if (isNew) {
+                    if (_reelsRetry < 3) {
+                        _reelsRetry++;
+                        container.innerHTML = '<div class="reel-loading"><div class="spinner"></div></div>';
+                        setTimeout(() => { if (!_reelsLoaded) loadReels(true); }, 2000 * _reelsRetry);
+                    } else {
+                        container.innerHTML = `
+                            <div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px">
+                                <div style="font-size:13px;color:#888;text-align:center;padding:0 40px">Trailer belum bisa dimuat. Periksa koneksi lalu coba lagi.</div>
+                                <div style="padding:8px 18px;border:1px solid #fff;border-radius:20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer" onclick="_reelsRetry = 0; loadReels(true)">Coba lagi</div>
+                            </div>`;
+                    }
+                }
             }
 
             _reelsLoading = false;
@@ -12607,8 +12912,6 @@
         function _speedApply() {
             const v = document.getElementById(`vid-${currentIdx}`);
             if (v) { try { v.contentWindow.postMessage(JSON.stringify({event:'command', func:'setPlaybackRate', args:[_playbackRate]}), '*'); } catch (e) { _dbg('_speedApply', e); } }
-            if (_musicFrameWin) { _musicYtCmd('setPlaybackRate', [_playbackRate]); }
-            if (_musicAudio) { try { _musicAudio.playbackRate = _playbackRate; } catch (e) { _dbg('_speedApply', e); } }
             const l1 = document.getElementById('speedLabel'); if (l1) l1.innerText = _playbackRate + '×';
             const l2 = document.getElementById('lsSpeedLabel'); if (l2) l2.innerText = _playbackRate + '×';
         }
