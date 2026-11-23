@@ -3348,9 +3348,12 @@
 
         <!-- ===== PLAYLIST TAB (browse semua playlist) ===== -->
         <div id="musicPlaylistTab" style="display:none;flex:1;flex-direction:column;overflow:hidden">
-            <div style="padding:16px 15px 10px;flex-shrink:0">
-                <div style="font-size:28px;font-weight:800;color:#fff">Playlist</div>
-                <div id="musicPlaylistCount" style="font-size:12px;color:#666;margin-top:2px"></div>
+            <div style="padding:16px 15px 10px;flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                <div style="min-width:0">
+                    <div style="font-size:28px;font-weight:800;color:#fff">Playlist</div>
+                    <div id="musicPlaylistCount" style="font-size:12px;color:#666;margin-top:2px"></div>
+                </div>
+                <i class="fa-solid fa-ellipsis-vertical" onclick="musicShowPlaylistMenu()" style="color:#fff;font-size:18px;padding:8px;margin-top:2px;cursor:pointer;flex-shrink:0"></i>
             </div>
             <div id="musicPlaylistGrid" style="flex:1;overflow-y:auto;padding:6px 15px 80px;display:grid;grid-template-columns:1fr 1fr;gap:14px"></div>
         </div>
@@ -3389,7 +3392,7 @@
                 <div id="musicPlDetailHero" style="position:relative;padding:56px 0 20px;background:linear-gradient(to bottom,#2a2a2a,#000)">
                     <div style="position:absolute;top:16px;left:15px;right:15px;display:flex;justify-content:space-between">
                         <i class="fa-solid fa-chevron-left btn-icon bk-ghost" onclick="musicClosePlaylistDetail()"></i>
-                        <i class="fa-solid fa-ellipsis" style="font-size:18px;color:#fff;cursor:pointer;padding:6px"></i>
+                        <i class="fa-solid fa-ellipsis" onclick="musicPlaylistDetailMenu()" style="font-size:18px;color:#fff;cursor:pointer;padding:6px"></i>
                     </div>
                     <div style="display:flex;justify-content:center">
                         <div id="musicPlDetailArt" style="width:200px;height:200px;border-radius:12px;background-color:#1a1a1a;background-size:cover;background-position:center;box-shadow:0 14px 36px rgba(0,0,0,0.65)"></div>
@@ -3403,8 +3406,8 @@
                         <div onclick="musicPlayPlaylistDetail()" style="width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer">
                             <i class="fa-solid fa-play" style="color:#000;font-size:18px;margin-left:2px"></i>
                         </div>
-                        <i class="fa-solid fa-shuffle" style="color:#666;font-size:18px;cursor:pointer;padding:8px" onclick="musicToggleShuffle()"></i>
-                        <i class="fa-solid fa-download" style="color:#666;font-size:18px;cursor:pointer;padding:8px"></i>
+                        <i id="musicPlShuffleBtn" class="fa-solid fa-shuffle" style="color:#666;font-size:18px;cursor:pointer;padding:8px" onclick="musicPlaylistShuffle()"></i>
+                        <i class="fa-solid fa-download" style="color:#666;font-size:18px;cursor:pointer;padding:8px" onclick="musicDownloadPlaylist()"></i>
                     </div>
                 </div>
                 <div id="musicPlDetailList" style="padding:12px 0 0"></div>
@@ -3427,8 +3430,8 @@
                         <div onclick="musicPlayAlbumDetail()" style="width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer">
                             <i class="fa-solid fa-play" style="color:#000;font-size:18px;margin-left:2px"></i>
                         </div>
-                        <i class="fa-solid fa-shuffle" style="color:#666;font-size:18px;cursor:pointer;padding:8px" onclick="musicToggleShuffle()"></i>
-                        <i class="fa-solid fa-download" style="color:#666;font-size:18px;cursor:pointer;padding:8px"></i>
+                        <i id="musicAlbumShuffleBtn" class="fa-solid fa-shuffle" style="color:#666;font-size:18px;cursor:pointer;padding:8px" onclick="musicAlbumShuffle()"></i>
+                        <i class="fa-solid fa-download" style="color:#666;font-size:18px;cursor:pointer;padding:8px" onclick="musicDownloadAlbum()"></i>
                         <i class="fa-solid fa-ellipsis" style="color:#666;font-size:18px;cursor:pointer;padding:8px"></i>
                     </div>
                 </div>
@@ -3461,6 +3464,10 @@
                     <div style="padding:0 15px 12px"><span style="font-size:15px;font-weight:800;color:#fff">Album</span></div>
                     <div id="musicArtistAlbums" style="display:flex;gap:14px;overflow-x:auto;padding:0 15px;scrollbar-width:none"></div>
                 </div>
+                <div id="musicArtistSimilarWrap" style="display:none;padding:22px 0 0">
+                    <div style="padding:0 15px 12px"><span style="font-size:15px;font-weight:800;color:#fff">Artis Serupa</span></div>
+                    <div id="musicArtistSimilar" style="display:flex;gap:14px;overflow-x:auto;padding:0 15px;scrollbar-width:none"></div>
+                </div>
             </div>
         </div>
 
@@ -3483,6 +3490,7 @@
                 <div class="music-pill" data-preset="treble" onclick="musicEqPreset('treble')">Treble Boost</div>
                 <div class="music-pill" data-preset="vocal" onclick="musicEqPreset('vocal')">Vocal</div>
             </div>
+            <div style="padding:0 15px 6px;flex-shrink:0"><span id="musicFadePill" class="music-pill music-pill-active" onclick="musicToggleFade()">Fade antar lagu: Aktif</span></div>
             <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 26px 30px">
                 <div style="display:flex;justify-content:space-between;font-size:10px;color:#555;margin-bottom:4px">
                     <span>+12db</span>
@@ -3538,7 +3546,7 @@
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
                         <span id="musicModeChip" onclick="musicToggleFullMode()" title="Ganti mode pemutaran: lagu penuh (YouTube) / preview 30 detik (iTunes)"
-                            style="font-size:8px;font-weight:800;padding:4px 9px;border-radius:10px;background:rgba(255,255,255,0.12);color:#fff;cursor:pointer;letter-spacing:0.8px;border:1px solid rgba(255,255,255,0.18)">FULL</span>
+                            style="font-size:9px;font-weight:800;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,0.12);color:#fff;cursor:pointer;letter-spacing:0.8px;border:1px solid rgba(255,255,255,0.18);-webkit-tap-highlight-color:transparent">FULL</span>
                         <i id="musicFullLikeBtn" class="fa-regular fa-heart" onclick="musicToggleLike()" style="color:#666;font-size:24px;padding:8px 0;cursor:pointer;flex-shrink:0"></i>
                     </div>
                 </div>
@@ -3585,9 +3593,13 @@
                 </div>
             </div>
 
-            <!-- Bottom sheet panels -->
-            <div id="musicPanelOverlay" onclick="musicClosePanel()" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:70"></div>
-            <div id="musicPanel" style="display:none;position:absolute;left:0;right:0;bottom:0;max-height:72%;background:#181818;border-radius:20px 20px 0 0;z-index:71;flex-direction:column;overflow:hidden">
+        </div>
+
+        <!-- Panel bawah (Antrean / Lirik / Timer tidur / Filter genre). Ada di level modal supaya juga muncul di tab Cari. Kotaknya sama dengan pemutar penuh (di atas navigasi). -->
+        <div id="musicPanelHost" style="position:absolute;top:0;left:0;right:0;bottom:52px;z-index:70;pointer-events:none">
+            
+            <div id="musicPanelOverlay" onclick="musicClosePanel()" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:70;pointer-events:auto"></div>
+            <div id="musicPanel" style="display:none;position:absolute;left:0;right:0;bottom:0;max-height:72%;background:#181818;border-radius:20px 20px 0 0;z-index:71;flex-direction:column;overflow:hidden;pointer-events:auto">
                 <div style="width:36px;height:4px;background:#333;border-radius:2px;margin:12px auto 4px"></div>
                 <div id="musicPanelTitle" style="text-align:center;font-size:15px;font-weight:800;color:#fff;padding:6px 0 14px"></div>
                 <div id="musicPanelBody" style="flex:1;overflow-y:auto;padding:0 15px 28px"></div>
@@ -3596,10 +3608,10 @@
 
         <!-- Menu lagu: Putar selanjutnya / Tambah ke antrean / Suka -->
         <div id="musicMenuOverlay" onclick="musicCloseTrackMenu()" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:80"></div>
-        <div id="musicMenuSheet" style="display:none;position:absolute;left:0;right:0;bottom:0;background:#181818;border-radius:20px 20px 0 0;z-index:81;flex-direction:column;overflow:hidden">
+        <div id="musicMenuSheet" style="display:none;position:absolute;left:0;right:0;bottom:0;background:#181818;border-radius:20px 20px 0 0;z-index:81;flex-direction:column;overflow:hidden;max-height:78%">
             <div style="width:36px;height:4px;background:#333;border-radius:2px;margin:12px auto 10px;flex-shrink:0"></div>
-            <div id="musicMenuHead" style="display:flex;align-items:center;gap:12px;padding:0 15px 12px;border-bottom:1px solid #222"></div>
-            <div id="musicMenuBody" style="padding:6px 15px 24px"></div>
+            <div id="musicMenuHead" style="display:flex;align-items:center;gap:12px;padding:0 15px 12px;border-bottom:1px solid #222;flex-shrink:0"></div>
+            <div id="musicMenuBody" style="padding:6px 15px 24px;overflow-y:auto"></div>
         </div>
 
         <!-- Music nav tab bar (Home / Cari / Koleksi / Playlist) -->
@@ -3853,7 +3865,9 @@
             musicRenderNav('home');
             musicShowTab('home');
             musicLoadHomeContent();
+            _musicRestoreLast();
             musicRestoreMiniPlayer();
+            _musicFadeUpdateUI();
         }
         function closeMusicModal() {
             document.getElementById('musicModal').style.display = 'none';
@@ -3886,10 +3900,7 @@
             if (tab === 'search') { setTimeout(() => document.getElementById('musicSearchInp').focus(), 100); musicRenderSearchLanding(); }
             if (tab === 'playlist') musicRenderPlaylistTab();
             if (tab === 'local') musicRenderLocalTab();
-            // pushState saat masuk tab baru (kecuali ke home, itu sudah ditangani popstate via replaceState)
-            if (tab !== 'home' && !(history.state && history.state.tab === tab)) {
-                history.pushState({view:'music', tab:tab}, '');
-            }
+            // (tidak ada pushState per tab/layar: modal musik cukup satu entri riwayat, dijaga oleh handler popstate)
         }
 
         // ---------- MUSIC BOTTOM NAV (Home / Cari / Koleksi / Playlist) ----------
@@ -4180,17 +4191,11 @@
         function musicHydratePlaylistArt(scope) {
             MUSIC_PLAYLISTS.forEach(p => musicApplyCollage(document.getElementById(`plCardBg-${p.id}-${scope}`), p));
         }
-        function musicRenderPlaylistTab() {
-            const cnt = document.getElementById('musicPlaylistCount');
-            if (cnt) cnt.textContent = `${MUSIC_PLAYLISTS.length} playlist`;
-            document.getElementById('musicPlaylistGrid').innerHTML = _musicLikedCardHTML() + MUSIC_PLAYLISTS.map(p => musicPlaylistCardHTML(p, 'tab')).join('');
-            musicHydratePlaylistArt('tab');
-        }
+        // (musicRenderPlaylistTab ada di blok fitur musik di bawah — mendukung tampilan grid/daftar & playlist buatan sendiri)
         async function musicOpenPlaylistDetail(id) {
             const p = MUSIC_PLAYLISTS.find(x => x.id === id);
             if (!p) return;
             document.getElementById('musicPlaylistDetail').style.display = 'flex';
-            history.pushState({view:'music', tab:'playlistDetail'}, '');
             document.getElementById('musicPlDetailTitle').textContent = p.title;
             document.getElementById('musicPlDetailMeta').textContent = 'Memuat...';
             { const _a = document.getElementById('musicPlDetailArt'); _a.style.backgroundImage = ''; _a.innerHTML = ''; _a.style.display = ''; const _sb = document.getElementById('musicPlDetailSub'); if (_sb) _sb.textContent = p.artists.join(', '); }
@@ -4222,6 +4227,42 @@
         function musicClosePlaylistDetail() {
             document.getElementById('musicPlaylistDetail').style.display = 'none';
         }
+        function musicPlaylistShuffle() {
+            const d = _musicPlaylistDetail;
+            if (!d || !d.tracks.length) return;
+            if (!_musicShuffle) musicToggleShuffle();
+            _musicQueue = d.tracks; _musicQueueIdx = Math.floor(Math.random() * d.tracks.length);
+            musicPlayCurrentQueueItem();
+            const b = document.getElementById('musicPlShuffleBtn'); if (b) b.style.color = '#fff';
+        }
+        let _musicDlList = [];
+        function musicDownloadPlaylist() { const d = _musicPlaylistDetail; _musicDlOpen(d ? d.tracks : [], 'Unduh playlist'); }
+        function _musicDlOpen(all, title) {
+            const list = (all || []).filter(t => t && t.preview && !t.isLocal);
+            if (!list.length) { showToast('Tidak ada lagu untuk diunduh'); return; }
+            _musicDlList = list.slice();
+            _musicSheetOpen(_musicSheetTitle(title),
+                `<div style="font-size:12px;color:#888;padding:12px 0 4px;line-height:1.6">${list.length} lagu diunduh satu per satu. Yang tersimpan hanya cuplikan 30 detik, bukan lagu penuh. Browser mungkin meminta izin untuk beberapa unduhan.</div>` +
+                _musicSheetRow('fa-solid fa-download', 'Mulai unduh', 'musicConfirmDownloadPlaylist()') +
+                _musicSheetRow('fa-solid fa-xmark', 'Batal', 'musicCloseTrackMenu()'));
+        }
+        function musicConfirmDownloadPlaylist() {
+            musicCloseTrackMenu();
+            const list = _musicDlList.slice();
+            if (!list.length) return;
+            showToast(`Mengunduh ${list.length} lagu…`);
+            let i = 0;
+            const next = () => {
+                if (i >= list.length) return;
+                const t = list[i++];
+                const a = document.createElement('a');
+                a.href = t.preview;
+                a.download = `${t.artist} - ${t.title}.m4a`;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                setTimeout(next, 1200);
+            };
+            next();
+        }
         function musicPlayPlaylistDetail() {
             if (!_musicPlaylistDetail || !_musicPlaylistDetail.tracks.length) return;
             _musicQueue = _musicPlaylistDetail.tracks; _musicQueueIdx = 0;
@@ -4243,7 +4284,9 @@
         let _musicAlbumDetail = null;
         async function musicOpenAlbumDetail(collectionId, title, artist, artwork) {
             document.getElementById('musicAlbumDetail').style.display = 'flex';
-            history.pushState({view:'music', tab:'albumDetail'}, '');
+            _musicAlbumDetail = { id: collectionId, title, artist, artwork, tracks: [] };
+            _musicRefreshAlbumHeart(collectionId);
+            { const _sb = document.getElementById('musicAlbumShuffleBtn'); if (_sb) _sb.style.color = _musicShuffle ? '#fff' : '#666'; }
             document.getElementById('musicAlbumArt').src = artwork || '';
             document.getElementById('musicAlbumTitle').textContent = title || '';
             document.getElementById('musicAlbumArtist').textContent = artist || '';
@@ -4254,7 +4297,7 @@
                 const r = await fetch(`${ITUNES_API}/lookup?id=${collectionId}&entity=song`);
                 const data = await r.json();
                 const tracks = (data.results || []).filter(t => t.wrapperType === 'track').map(musicNormalize);
-                _musicAlbumDetail = { title, artist, tracks };
+                _musicAlbumDetail = { id: collectionId, title, artist, artwork, tracks };
                 document.getElementById('musicAlbumMeta').textContent = `Album • ${tracks.length} lagu`;
                 document.getElementById('musicAlbumList').innerHTML = tracks.length
                     ? tracks.map((t,i) => `<div style="display:flex;align-items:center;gap:12px;padding:9px 15px;cursor:pointer" onclick="musicPlayAlbumDetailAt(${i})">
@@ -4283,7 +4326,36 @@
             _musicQueue = _musicAlbumDetail.tracks; _musicQueueIdx = i;
             musicPlayCurrentQueueItem();
         }
-        function musicToggleAlbumLike() { /* placeholder — album belum punya id unik terpisah */ }
+        // Album disukai: disimpan di perangkat dan muncul sebagai kartu di tab Playlist
+        function _musicGetLikedAlbums() { try { const a = JSON.parse(localStorage.getItem('musicLikedAlbums') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+        function _musicRefreshAlbumHeart(id) {
+            const b = document.getElementById('musicAlbumLikeBtn');
+            if (!b) return;
+            const on = !!id && _musicGetLikedAlbums().some(a => String(a.id) === String(id));
+            b.className = `fa-${on ? 'solid' : 'regular'} fa-heart`;
+            b.style.color = on ? '#fff' : '#666';
+        }
+        function musicToggleAlbumLike() {
+            const d = _musicAlbumDetail;
+            if (!d || !d.id) return;
+            const arr = _musicGetLikedAlbums();
+            const i = arr.findIndex(a => String(a.id) === String(d.id));
+            if (i >= 0) { arr.splice(i, 1); showToast('Album dihapus dari Playlist'); }
+            else { arr.unshift({ id: d.id, title: d.title || '', artist: d.artist || '', artwork: d.artwork || '' }); showToast('Album disimpan di Playlist'); }
+            try { localStorage.setItem('musicLikedAlbums', JSON.stringify(arr)); } catch (e) { showToast('Penyimpanan perangkat penuh'); }
+            _musicRefreshAlbumHeart(d.id);
+            const pt = document.getElementById('musicPlaylistTab');
+            if (pt && pt.style.display === 'flex') musicRenderPlaylistTab();
+        }
+        function musicAlbumShuffle() {
+            const d = _musicAlbumDetail;
+            if (!d || !d.tracks || !d.tracks.length) return;
+            if (!_musicShuffle) musicToggleShuffle();
+            _musicQueue = d.tracks; _musicQueueIdx = Math.floor(Math.random() * d.tracks.length);
+            musicPlayCurrentQueueItem();
+            const b = document.getElementById('musicAlbumShuffleBtn'); if (b) b.style.color = '#fff';
+        }
+        function musicDownloadAlbum() { const d = _musicAlbumDetail; _musicDlOpen(d ? d.tracks : [], 'Unduh album'); }
 
         // ---------- NORMALIZE ITUNES TRACK ----------
         function musicNormalize(t) {
@@ -4505,13 +4577,13 @@
         let _musicArtistSongs = [];
         async function musicOpenArtistProfile(artistId, artistName) {
             document.getElementById('musicArtistProfile').style.display = 'flex';
-            history.pushState({view:'music', tab:'artistProfile'}, '');
             document.getElementById('musicArtistName').textContent = artistName || '';
             document.getElementById('musicArtistBg').innerHTML = '<i class="fa-solid fa-user-music" style="font-size:56px;color:#333"></i>';
             document.getElementById('musicArtistBg').style.backgroundImage = '';
             document.getElementById('musicArtistSongs').innerHTML = musicSkeletonListRows(5);
             document.getElementById('musicArtistAlbums').innerHTML = musicSkeletonCards(4);
             { const _ab = document.getElementById('musicArtistAbout'); if (_ab) { _ab.style.display = 'none'; _ab.innerHTML = ''; } }
+            { const _sw = document.getElementById('musicArtistSimilarWrap'); if (_sw) _sw.style.display = 'none'; }
             try {
                 const [songRes, albumRes] = await Promise.all([
                     fetch(`${ITUNES_API}/lookup?id=${artistId}&entity=song&limit=15`).then(r => r.json()),
@@ -4525,6 +4597,7 @@
                     .slice(0, 30);
                 _musicLoadArtistAbout(artistName, albums);
                 _musicArtistSongs = songs;
+                _musicLoadSimilarArtists(artistId, artistName, songs[0] && songs[0].genre);
                 if (songs.length && songs[0].artwork) {
                     const bg = document.getElementById('musicArtistBg');
                     bg.style.backgroundImage = `url(${songs[0].artwork})`;
@@ -4663,8 +4736,8 @@
                     <div style="font-size:13px;font-weight:600;color:${isPlaying?'#fff':'#ccc'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div>
                     <div style="font-size:11px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.artist}</div>
                 </div>
-                <i class="fa-${isLiked?'solid':'regular'} fa-heart" data-lk="${t.id}" style="color:${isLiked?'#fff':'#444'};font-size:15px;padding:6px" onclick="event.stopPropagation();musicToggleLikeById(${t.id})"></i>
-                <i class="fa-solid fa-ellipsis-vertical" style="color:#666;font-size:15px;padding:6px" onclick="event.stopPropagation();musicShowTrackMenu(${t.id})"></i>
+                ${t.isLocal ? '' : `<i class="fa-${isLiked?'solid':'regular'} fa-heart" data-lk="${t.id}" style="color:${isLiked?'#fff':'#444'};font-size:15px;padding:6px" onclick="event.stopPropagation();musicToggleLikeById(${t.id})"></i>`}
+                <i class="fa-solid fa-ellipsis-vertical" style="color:#666;font-size:15px;padding:6px" onclick="event.stopPropagation();musicShowTrackMenu(${t.isLocal ? `'${t.id}'` : t.id})"></i>
             </div>`;
         }
 
@@ -4870,6 +4943,7 @@
                     <img src="${_lmCoverUrl(m)}" alt="" style="width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#1a1a1a">
                     <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700;color:#fff;${ell}">${esc(m.title)}</div>
                         <div style="font-size:12px;color:#777;margin-top:3px;${ell}">${esc(m.artist)}${d ? ' · ' + Math.floor(d / 60) + ':' + String(d % 60).padStart(2, '0') : ''}</div></div>
+                    <i class="fa-solid fa-ellipsis-vertical" onclick="event.stopPropagation(); musicShowLocalMenu(${m.id})" style="color:#666;font-size:15px;padding:8px;flex-shrink:0"></i>
                     <i class="fa-solid fa-trash" onclick="event.stopPropagation(); musicLocalDelete(${m.id})" style="color:#666;font-size:14px;padding:8px;flex-shrink:0"></i>
                 </div>`;
             });
@@ -4920,6 +4994,7 @@
         }
         // ===== PEMUTAR MUSIK: FULL (lagu penuh via YouTube) vs PREVIEW (iTunes 30 dtk) =====
         let _musicFullMode = true;
+        let _musicPreviewFallback = false; // mode FULL diminta, tapi video tidak tersedia → sedang memutar preview 30 detik
         (function _musicModeInit() {
             try { _musicFullMode = localStorage.getItem('musicFullMode') !== '0'; } catch (e) { _warn('_musicModeInit', e); }
         })();
@@ -5026,16 +5101,21 @@
             if (fp) fp.innerHTML = playing
                 ? '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>'
                 : '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
+            _musicMSTouch();
         }
         // Putar lagu penuh via embed YouTube
+        let _musicYtReq = 0; // nomor permintaan; naik tiap _musicStopYt supaya pencarian lama dibatalkan
         async function _musicPlayYt(t) {
+            const _req = ++_musicYtReq;
             const vidId = await _musicSearchYt(t);
-            // Pengguna sudah pindah lagu selama pencarian berlangsung → batalkan
-            if (_musicCurrentTrack !== t) return;
+            // Pengguna sudah pindah lagu / pindah ke mode 30 detik selama pencarian berlangsung → batalkan
+            if (_musicCurrentTrack !== t || _req !== _musicYtReq) return;
             if (!vidId) {
                 showToast(_musicYtErr === 'quota' ? 'Kuota YouTube hari ini habis — pakai preview 30 detik'
                     : _musicYtErr ? 'Server lagu penuh tidak merespons — pakai preview 30 detik'
                     : 'Lagu penuh tidak ditemukan — pakai preview 30 detik');
+                _musicPreviewFallback = true;
+                _musicUpdateModeChip();
                 _musicPlayPreview(t);
                 return;
             }
@@ -5053,6 +5133,7 @@
             f.src = `https://www.youtube.com/embed/${vidId}?enablejsapi=1&widgetid=1&autoplay=1&playsinline=1&controls=0&fs=0&rel=0&modestbranding=1&iv_load_policy=3`;
             ph.appendChild(f);
             _musicFrameWin = f.contentWindow;
+            _musicMSTouch();
             _musicShowYtInPlayer(); // pastikan langsung terlihat kalau pemutar penuh sedang terbuka
             // Jabat tangan "listening" supaya YouTube mengirim event (waktu, durasi, status),
             // lalu atur volume & kecepatan begitu sinyal pertama diterima.
@@ -5064,7 +5145,7 @@
                     try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), '*'); } catch (e) {}
                 } else if (!sentInit) {
                     sentInit = true;
-                    _musicYtCmd('setVolume', [parseInt(document.getElementById('musicVolumeSlider')?.value, 10) || _lsVolume]);
+                    _musicYtCmd('setVolume', [_musicFadeOn ? 0 : (parseInt(document.getElementById('musicVolumeSlider')?.value, 10) || _lsVolume)]);
                     _musicYtCmd('setPlaybackRate', [1]); // musik selalu kecepatan normal (kecepatan film tidak berlaku)
                     clearInterval(iv);
                 }
@@ -5079,6 +5160,8 @@
             }, 12000);
         }
         function _musicStopYt() {
+            _musicYtReq++;
+            _musicKeepAlive(false);
             if (_musicYtFailTimer) { clearTimeout(_musicYtFailTimer); _musicYtFailTimer = null; }
             _musicStopPoll();
             const ph = document.getElementById('musicYtPlayer');
@@ -5145,7 +5228,7 @@
             _musicStopAudio();
             _musicAudio = new Audio(t.preview);
             try { _musicAudio.defaultPlaybackRate = 1; _musicAudio.playbackRate = 1; } catch (e) { _dbg('musicRate', e); }
-            _musicAudio.volume = (document.getElementById('musicVolumeSlider')?.value || 100) / 100;
+            _musicAudio.volume = _musicFadeOn ? 0 : (document.getElementById('musicVolumeSlider')?.value || 100) / 100; // fade-in dimulai dari senyap
             _musicAudio.play().catch(e => _dbg('_musicPlayPreview', e));
             _musicPlaying = true;
             musicBindAudioEvents();
@@ -5154,6 +5237,10 @@
         function musicPlayCurrentQueueItem() {
             const t = _musicQueue[_musicQueueIdx];
             if (!t) return;
+            _musicResumePending = false;
+            _musicPreviewFallback = false;
+            _musicFadeLastMul = _musicFadeOn ? 0 : 1;
+            _musicFadeT0 = Date.now();
             _musicCurrentTrack = t;
             _musicPlaying = true;
             if (t.isLocal) {
@@ -5169,11 +5256,19 @@
                 _musicPlayPreview(t);
             }
             musicUpdateAllUI(t);
-            if (!t.isLocal) musicAddToHistory(t);
+            if (!t.isLocal) { musicAddToHistory(t); _musicSaveLast(); _musicScheduleCount(t); }
             _musicUpdateModeChip();
+            _musicMSTouch();
         }
 
         function musicToggleFullMode() {
+            // Mode FULL masih dipilih tapi video gagal dimuat (label sudah 30s): ketukan ini = coba video lagi, bukan pindah ke 30s
+            if (_musicFullMode && _musicPreviewFallback && _musicCurrentTrack && !_musicCurrentTrack.isLocal) {
+                showToast('Mencoba memuat video lagi…');
+                _musicStopYt(); _musicStopAudio();
+                musicPlayCurrentQueueItem();
+                return;
+            }
             _musicFullMode = !_musicFullMode;
             try { localStorage.setItem('musicFullMode', _musicFullMode ? '1' : '0'); } catch (e) { _warn('musicToggleFullMode', e); }
             _musicUpdateModeChip();
@@ -5185,7 +5280,7 @@
         }
         function _musicUpdateModeChip() {
             const chip = document.getElementById('musicModeChip');
-            if (chip) chip.innerText = (_musicCurrentTrack && _musicCurrentTrack.isLocal) ? 'LOKAL' : (_musicFullMode ? 'FULL' : '30s');
+            if (chip) chip.innerText = (_musicCurrentTrack && _musicCurrentTrack.isLocal) ? 'LOKAL' : ((_musicFullMode && !_musicPreviewFallback) ? 'FULL' : '30s');
         }
 
         // ===== BAGIKAN FILM / SERIAL (tautan langsung) =====
@@ -5277,24 +5372,28 @@
         function musicUpdateAllUI(t) {
             const isLiked = musicIsLiked(t.id);
             // Mini player
-            document.getElementById('musicMiniPlayer').style.display = 'block';
+            { const _fpo = document.getElementById('musicFullPlayer');
+              document.getElementById('musicMiniPlayer').style.display = (_fpo && _fpo.style.display === 'flex') ? 'none' : 'block'; }
             document.getElementById('musicMiniArt').src = t.artworkSmall;
             document.getElementById('musicMiniTitle').textContent = t.title;
             document.getElementById('musicMiniArtist').textContent = t.artist;
-            document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-pause';
+            document.getElementById('musicMiniPlayBtn').className = 'fa-solid ' + (_musicPlaying ? 'fa-pause' : 'fa-play');
             document.getElementById('musicMiniLikeBtn').className = isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
             document.getElementById('musicMiniLikeBtn').style.color = isLiked ? '#fff' : '#888';
             // Full player
             document.getElementById('musicFullArt').src = t.artwork;
             document.getElementById('musicFullTitle').textContent = t.title;
             document.getElementById('musicFullArtist').textContent = t.artist;
-            document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>';
+            document.getElementById('musicFullPlayBtn').innerHTML = _musicPlaying
+                ? '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>'
+                : '<i class="fa-solid fa-play" style="color:#111;font-size:24px;margin-left:3px"></i>';
             document.getElementById('musicFullLikeBtn').className = isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
             document.getElementById('musicFullLikeBtn').style.color = isLiked ? '#fff' : '#666';
             document.getElementById('musicFullPlayerBg').style.backgroundImage = `url('${t.artwork}')`;
         }
 
         function musicTogglePlay() {
+            if (_musicResumePending) { musicPlayCurrentQueueItem(); return; } // lagu terakhir dipulihkan: ketukan play pertama memulainya
             if (_musicFullMode && _musicFrameWin) {
                 // Mode lagu penuh — keputusan play/pause berdasar status asli player YouTube
                 // (bukan cuma tebakan lokal), dan perintah diulang sekali kalau belum dituruti.
@@ -5323,6 +5422,7 @@
                 document.getElementById('musicMiniPlayBtn').className = 'fa-solid fa-pause';
                 document.getElementById('musicFullPlayBtn').innerHTML = '<i class="fa-solid fa-pause" style="color:#111;font-size:24px"></i>';
             }
+            _musicMSTouch();
         }
 
         // ---------- AUDIO DUCKING — musik auto-pause saat trailer/streaming/reels/TV/livesport main,
@@ -5333,6 +5433,7 @@
                 musicTogglePlay();
                 _musicDuckedByOther = true;
             }
+            _musicMSClear(); // sumber suara lain mulai: lepas kontrol layar kunci milik musik
         }
         function musicResumeFromDuck() {
             if (_musicDuckedByOther && (_musicAudio || _musicFrameWin) && !_musicPlaying) {
@@ -5557,13 +5658,13 @@
         }
         function musicOpenLikedDetail() {
             document.getElementById('musicPlaylistDetail').style.display = 'flex';
-            history.pushState({view:'music', tab:'playlistDetail'}, '');
             musicRenderLikedDetail();
         }
         function musicRenderLikedDetail() {
             const tracks = _musicGetLiked();
             _musicPlaylistDetail = { id:'liked', title:'Lagu Disukai', tracks };
             const art = document.getElementById('musicPlDetailArt'), hero = document.getElementById('musicPlDetailHero');
+            art.style.display = '';
             document.getElementById('musicPlDetailTitle').textContent = 'Lagu Disukai';
             document.getElementById('musicPlDetailSub').textContent = 'Koleksi pribadi';
             const tot = tracks.reduce((a, t) => a + (t.duration || 0), 0);
@@ -5655,6 +5756,37 @@
             musicShowPanel('queue');
         }
 
+        // ---------- LEMBAR BAWAH UMUM (menu lagu, menu playlist, input nama, rekap) ----------
+        function _musicSheetOpen(headHTML, bodyHTML) {
+            const hd = document.getElementById('musicMenuHead');
+            hd.innerHTML = headHTML || '';
+            hd.style.display = headHTML ? 'flex' : 'none';
+            document.getElementById('musicMenuBody').innerHTML = bodyHTML;
+            document.getElementById('musicMenuBody').scrollTop = 0;
+            document.getElementById('musicMenuOverlay').style.display = 'block';
+            document.getElementById('musicMenuSheet').style.display = 'flex';
+        }
+        function musicCloseTrackMenu() {
+            document.getElementById('musicMenuOverlay').style.display = 'none';
+            document.getElementById('musicMenuSheet').style.display = 'none';
+        }
+        const _musicSheetTitle = txt => `<div style="flex:1;font-size:16px;font-weight:800;color:#fff">${_mEsc(txt)}</div>`;
+        const _musicTrackHead = t => `
+            <img src="${_mEsc(t.artworkSmall)}" onerror="musicImgFallback(this)" style="width:44px;height:44px;border-radius:7px;object-fit:cover;background:#1a1a1a;flex-shrink:0">
+            <div style="flex:1;overflow:hidden">
+                <div style="font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(t.title)}</div>
+                <div style="font-size:12px;color:#777;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(t.artist)}</div>
+            </div>`;
+        function _musicSheetRow(icon, label, js, opt) {
+            opt = opt || {};
+            const col = opt.color || '#fff';
+            return `<div onclick="${js}" style="display:flex;align-items:center;gap:16px;padding:14px 0;cursor:pointer;font-size:14px;font-weight:600;color:${col}">
+                <i class="${icon}" style="width:20px;text-align:center;color:${opt.color || '#aaa'};font-size:16px"></i>
+                <span style="flex:1">${label}</span>${opt.check ? '<i class="fa-solid fa-check" style="color:#fff;font-size:14px"></i>' : ''}</div>`;
+        }
+        const _musicInputCSS = 'flex:1;min-width:0;background:#222;border:none;outline:none;color:#fff;font-size:14px;padding:12px 14px;border-radius:12px';
+        const _musicBtnCSS = 'flex-shrink:0;background:#fff;color:#000;font-size:13px;font-weight:800;padding:0 18px;border-radius:12px;display:flex;align-items:center;cursor:pointer';
+
         // -- Menu lagu
         let _musicMenuTrack = null;
         function musicShowTrackMenu(id) {
@@ -5662,23 +5794,16 @@
             if (!t) return;
             _musicMenuTrack = t;
             const liked = musicIsLiked(t.id);
-            document.getElementById('musicMenuHead').innerHTML = `
-                <img src="${_mEsc(t.artworkSmall)}" onerror="musicImgFallback(this)" style="width:44px;height:44px;border-radius:7px;object-fit:cover;background:#1a1a1a;flex-shrink:0">
-                <div style="flex:1;overflow:hidden">
-                    <div style="font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(t.title)}</div>
-                    <div style="font-size:12px;color:#777;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(t.artist)}</div>
-                </div>`;
-            const row = (icon, label, act) => `<div onclick="musicMenuAction('${act}')" style="display:flex;align-items:center;gap:16px;padding:14px 0;cursor:pointer;font-size:14px;font-weight:600;color:#fff"><i class="${icon}" style="width:20px;text-align:center;color:#aaa;font-size:16px"></i>${label}</div>`;
-            document.getElementById('musicMenuBody').innerHTML =
-                row('fa-solid fa-forward', 'Putar selanjutnya', 'next') +
-                row('fa-solid fa-list-ul', 'Tambah ke antrean', 'add') +
-                row(`fa-${liked ? 'solid' : 'regular'} fa-heart`, liked ? 'Hapus dari Lagu Disukai' : 'Tambah ke Lagu Disukai', 'like');
-            document.getElementById('musicMenuOverlay').style.display = 'block';
-            document.getElementById('musicMenuSheet').style.display = 'flex';
-        }
-        function musicCloseTrackMenu() {
-            document.getElementById('musicMenuOverlay').style.display = 'none';
-            document.getElementById('musicMenuSheet').style.display = 'none';
+            const det = document.getElementById('musicPlaylistDetail');
+            const inUpl = !!(det && det.style.display === 'flex' && _musicPlaylistDetail && String(_musicPlaylistDetail.id).startsWith('upl:')
+                && _musicPlaylistDetail.tracks.some(x => x.id === t.id));
+            _musicSheetOpen(_musicTrackHead(t),
+                _musicSheetRow('fa-solid fa-forward', 'Putar selanjutnya', "musicMenuAction('next')") +
+                _musicSheetRow('fa-solid fa-list-ul', 'Tambah ke antrean', "musicMenuAction('add')") +
+                _musicSheetRow('fa-solid fa-circle-plus', 'Tambah ke playlist', 'musicShowAddToPlaylist()') +
+                (t.isLocal ? '' : _musicSheetRow('fa-solid fa-tower-broadcast', 'Mulai radio dari lagu ini', "musicMenuAction('radio')") +
+                _musicSheetRow(`fa-${liked ? 'solid' : 'regular'} fa-heart`, liked ? 'Hapus dari Lagu Disukai' : 'Tambah ke Lagu Disukai', "musicMenuAction('like')")) +
+                (inUpl ? _musicSheetRow('fa-solid fa-trash', 'Hapus dari playlist ini', "musicMenuAction('rmupl')", { color: '#ff6b6b' }) : ''));
         }
         function musicMenuAction(act) {
             const t = _musicMenuTrack;
@@ -5687,6 +5812,542 @@
             if (act === 'next') _musicQueueAdd(t, true);
             else if (act === 'add') _musicQueueAdd(t, false);
             else if (act === 'like') musicToggleLikeById(t.id, t);
+            else if (act === 'radio') musicStartRadio(t);
+            else if (act === 'rmupl') musicRemoveFromUPLDetail(t.id);
+            else if (act === 'savelocal') _musicDownloadLocal(t);
+            else if (act === 'dellocal') musicLocalDelete(t.localId);
+        }
+        function musicShowLocalMenu(localId) {
+            const m = _musicLocalAll.find(x => x.id === localId);
+            if (!m) return;
+            const t = _lmTracks([m])[0];
+            _musicMenuTrack = t;
+            _musicSheetOpen(_musicTrackHead(t),
+                _musicSheetRow('fa-solid fa-forward', 'Putar selanjutnya', "musicMenuAction('next')") +
+                _musicSheetRow('fa-solid fa-list-ul', 'Tambah ke antrean', "musicMenuAction('add')") +
+                _musicSheetRow('fa-solid fa-circle-plus', 'Tambah ke playlist', 'musicShowAddToPlaylist()') +
+                _musicSheetRow('fa-solid fa-download', 'Simpan ke perangkat', "musicMenuAction('savelocal')") +
+                _musicSheetRow('fa-solid fa-trash', 'Hapus dari Lokal', "musicMenuAction('dellocal')", { color: '#ff6b6b' }));
+        }
+
+        // -- Playlist buatan sendiri (disimpan di perangkat)
+        const _MUSIC_UPL_KEY = 'musicUserPlaylists';
+        function _musicGetUPL() { try { const a = JSON.parse(localStorage.getItem(_MUSIC_UPL_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+        function _musicSaveUPL(a) { try { localStorage.setItem(_MUSIC_UPL_KEY, JSON.stringify(a)); } catch (e) { showToast('Penyimpanan perangkat penuh'); } }
+        function _musicUplArt(pl) {
+            const urls = (pl.tracks || []).slice(0, 4).map(t => t.artworkSmall || t.artwork).filter(Boolean);
+            return urls.length ? { grid: true, html: musicCollageHTML(urls) }
+                : { grid: false, html: '<i class="fa-solid fa-record-vinyl" style="font-size:26px;color:#444"></i>' };
+        }
+        function _musicUplRec(t) {
+            return t.isLocal ? { id: t.id, localId: t.localId, isLocal: true, title: t.title, artist: t.artist, album: t.album || 'Lokal', duration: t.duration || 0 } : t;
+        }
+        // Lagu lokal di playlist: sampul & data diambil ulang dari penyimpanan perangkat saat playlist dibuka
+        let _musicLocalTried = false;
+        function _musicUplHydrate(tracks, onDone) {
+            if (!tracks.some(x => x && x.isLocal)) return tracks;
+            if (!_musicLocalAll.length && !_musicLocalTried) {
+                _musicLocalTried = true;
+                _lmAll().then(a => { _musicLocalAll = a; }).catch(e => _warn('uplHydrate', e)).finally(() => { if (onDone) onDone(); });
+            }
+            return tracks.map(t => {
+                if (!t || !t.isLocal) return t;
+                const m = _musicLocalAll.find(x => x.id === t.localId);
+                return m ? _lmTracks([m])[0] : t;
+            });
+        }
+        function _musicRefreshPlaylistViews() {
+            const pt = document.getElementById('musicPlaylistTab');
+            if (pt && pt.style.display === 'flex') musicRenderPlaylistTab();
+            const det = document.getElementById('musicPlaylistDetail');
+            if (det && det.style.display === 'flex' && _musicPlaylistDetail && String(_musicPlaylistDetail.id).startsWith('upl:')) musicRenderUserPlaylist(_musicPlaylistDetail.id.slice(4));
+        }
+        let _musicNewPlAdd = false;
+        function musicShowNewPlaylist(addTrack) {
+            _musicNewPlAdd = !!addTrack;
+            _musicSheetOpen(_musicSheetTitle('Playlist baru'),
+                `<div style="display:flex;gap:10px;padding:14px 0 6px">
+                    <input id="musicNewPlName" maxlength="40" placeholder="Nama playlist" autocomplete="off" style="${_musicInputCSS}" onkeydown="if(event.key==='Enter')musicSubmitNewPlaylist()">
+                    <div onclick="musicSubmitNewPlaylist()" style="${_musicBtnCSS}">Buat</div>
+                </div>`);
+            setTimeout(() => { const i = document.getElementById('musicNewPlName'); if (i) i.focus(); }, 80);
+        }
+        function musicSubmitNewPlaylist() {
+            const inp = document.getElementById('musicNewPlName');
+            const name = inp ? inp.value.trim().slice(0, 40) : '';
+            if (!name) { showToast('Isi nama playlist dulu'); return; }
+            const arr = _musicGetUPL();
+            const pl = { id: 'u' + Date.now().toString(36), title: name, tracks: [] };
+            if (_musicNewPlAdd && _musicMenuTrack) pl.tracks.push(_musicUplRec(_musicMenuTrack));
+            arr.unshift(pl);
+            _musicSaveUPL(arr);
+            musicCloseTrackMenu();
+            showToast(pl.tracks.length ? `Ditambahkan ke "${name}"` : `Playlist "${name}" dibuat`);
+            _musicNewPlAdd = false;
+            _musicRefreshPlaylistViews();
+        }
+        function musicShowAddToPlaylist() {
+            const t = _musicMenuTrack;
+            if (!t) return;
+            _musicNewPlAdd = true;
+            const arr = _musicGetUPL();
+            _musicSheetOpen(_musicTrackHead(t),
+                `<div style="font-size:12px;font-weight:800;color:#888;padding:12px 0 8px">Playlist baru</div>
+                <div style="display:flex;gap:10px;padding-bottom:10px">
+                    <input id="musicNewPlName" maxlength="40" placeholder="Nama playlist" autocomplete="off" style="${_musicInputCSS}" onkeydown="if(event.key==='Enter')musicSubmitNewPlaylist()">
+                    <div onclick="musicSubmitNewPlaylist()" style="${_musicBtnCSS}">Buat</div>
+                </div>` +
+                (arr.length ? `<div style="font-size:12px;font-weight:800;color:#888;padding:8px 0 0">Playlist kamu</div>` +
+                    arr.map(pl => _musicSheetRow('fa-solid fa-record-vinyl', `${_mEsc(pl.title)} <span style="color:#666;font-weight:600;font-size:12px">· ${pl.tracks.length} lagu</span>`, `musicAddTrackToUPL('${pl.id}')`)).join('') : ''));
+        }
+        function musicAddTrackToUPL(plId) {
+            const t = _musicMenuTrack;
+            const arr = _musicGetUPL();
+            const pl = arr.find(p => p.id === plId);
+            musicCloseTrackMenu();
+            if (!t || !pl) return;
+            if (pl.tracks.some(x => x.id === t.id)) { showToast(`Sudah ada di "${pl.title}"`); return; }
+            pl.tracks.push(_musicUplRec(t));
+            _musicSaveUPL(arr);
+            showToast(`Ditambahkan ke "${pl.title}"`);
+            _musicRefreshPlaylistViews();
+        }
+        function musicOpenUserPlaylist(id) {
+            if (!_musicGetUPL().some(p => p.id === id)) return;
+            document.getElementById('musicPlaylistDetail').style.display = 'flex';
+            musicRenderUserPlaylist(id);
+        }
+        function musicRenderUserPlaylist(id) {
+            const pl = _musicGetUPL().find(p => p.id === id);
+            if (!pl) { musicClosePlaylistDetail(); return; }
+            const tracks = _musicUplHydrate(pl.tracks, () => { if (_musicPlaylistDetail && _musicPlaylistDetail.id === 'upl:' + id) musicRenderUserPlaylist(id); });
+            _musicPlaylistDetail = { id: 'upl:' + id, title: pl.title, tracks };
+            const art = document.getElementById('musicPlDetailArt'), hero = document.getElementById('musicPlDetailHero');
+            document.getElementById('musicPlDetailTitle').textContent = pl.title;
+            document.getElementById('musicPlDetailSub').textContent = 'Playlist buatanmu';
+            const tot = tracks.reduce((a, t) => a + (t.duration || 0), 0);
+            const h = Math.floor(tot / 3600), m = Math.floor((tot % 3600) / 60);
+            document.getElementById('musicPlDetailMeta').textContent = `${tracks.length} lagu${tot ? ' · ' + (h ? h + ' j ' : '') + m + ' mnt' : ''}`;
+            if (hero) hero.style.background = 'linear-gradient(to bottom,#2a2a2a,#000)';
+            art.style.backgroundImage = '';
+            const urls = tracks.slice(0, 4).map(t => t.artwork || t.artworkSmall).filter(Boolean);
+            if (urls.length) {
+                art.style.display = 'grid'; art.style.gridTemplateColumns = '1fr 1fr'; art.style.gridTemplateRows = '1fr 1fr'; art.style.overflow = 'hidden';
+                art.innerHTML = musicCollageHTML(urls);
+            } else {
+                art.style.display = 'flex'; art.style.alignItems = 'center'; art.style.justifyContent = 'center';
+                art.innerHTML = '<i class="fa-solid fa-record-vinyl" style="font-size:54px;color:#444"></i>';
+            }
+            document.getElementById('musicPlDetailList').innerHTML = tracks.length
+                ? tracks.map((t, i) => musicPlaylistRowHTML(t, i, `musicPlayPlaylistDetailAt(${i})`)).join('')
+                : '<div style="text-align:center;padding:40px 15px;color:#444;font-size:13px;line-height:1.7">Playlist masih kosong.<br>Tambahkan lagu lewat ikon titik tiga pada lagu.</div>';
+        }
+        function musicRemoveFromUPLDetail(trackId) {
+            const d = _musicPlaylistDetail;
+            if (!d || !String(d.id).startsWith('upl:')) return;
+            const arr = _musicGetUPL();
+            const pl = arr.find(p => p.id === d.id.slice(4));
+            if (!pl) return;
+            pl.tracks = pl.tracks.filter(x => x.id !== trackId);
+            _musicSaveUPL(arr);
+            showToast('Dihapus dari playlist');
+            _musicRefreshPlaylistViews();
+        }
+        function musicPlaylistDetailMenu() {
+            const d = _musicPlaylistDetail;
+            if (!d || !String(d.id).startsWith('upl:')) return; // playlist bawaan & Lagu Disukai: tidak ada menu
+            const id = d.id.slice(4);
+            _musicSheetOpen(_musicSheetTitle(d.title),
+                _musicSheetRow('fa-solid fa-pen', 'Ganti nama', `musicShowRenameUPL('${id}')`) +
+                _musicSheetRow('fa-solid fa-trash', 'Hapus playlist', `musicShowDeleteUPL('${id}')`, { color: '#ff6b6b' }));
+        }
+        function musicShowRenameUPL(id) {
+            const pl = _musicGetUPL().find(p => p.id === id);
+            if (!pl) return;
+            _musicSheetOpen(_musicSheetTitle('Ganti nama'),
+                `<div style="display:flex;gap:10px;padding:14px 0 6px">
+                    <input id="musicRenamePl" maxlength="40" value="${_mEsc(pl.title)}" autocomplete="off" style="${_musicInputCSS}" onkeydown="if(event.key==='Enter')musicSubmitRenameUPL('${id}')">
+                    <div onclick="musicSubmitRenameUPL('${id}')" style="${_musicBtnCSS}">Simpan</div>
+                </div>`);
+            setTimeout(() => { const i = document.getElementById('musicRenamePl'); if (i) { i.focus(); i.select(); } }, 80);
+        }
+        function musicSubmitRenameUPL(id) {
+            const inp = document.getElementById('musicRenamePl');
+            const name = inp ? inp.value.trim().slice(0, 40) : '';
+            if (!name) { showToast('Nama tidak boleh kosong'); return; }
+            const arr = _musicGetUPL();
+            const pl = arr.find(p => p.id === id);
+            if (!pl) return;
+            pl.title = name;
+            _musicSaveUPL(arr);
+            musicCloseTrackMenu();
+            _musicRefreshPlaylistViews();
+        }
+        function musicShowDeleteUPL(id) {
+            const pl = _musicGetUPL().find(p => p.id === id);
+            if (!pl) return;
+            _musicSheetOpen(_musicSheetTitle(`Hapus "${pl.title}"?`),
+                `<div style="font-size:12px;color:#888;padding:12px 0 2px">Playlist ini dan isinya akan dihapus dari perangkat.</div>` +
+                _musicSheetRow('fa-solid fa-trash', 'Ya, hapus', `musicDeleteUPL('${id}')`, { color: '#ff6b6b' }) +
+                _musicSheetRow('fa-solid fa-xmark', 'Batal', 'musicCloseTrackMenu()'));
+        }
+        function musicDeleteUPL(id) {
+            _musicSaveUPL(_musicGetUPL().filter(p => p.id !== id));
+            musicCloseTrackMenu();
+            const det = document.getElementById('musicPlaylistDetail');
+            if (det && det.style.display === 'flex') musicClosePlaylistDetail();
+            showToast('Playlist dihapus');
+            _musicRefreshPlaylistViews();
+        }
+
+        // -- Tab Playlist: tampilan grid / daftar
+        function _musicPlView() { try { return localStorage.getItem('musicPlView') === 'list' ? 'list' : 'grid'; } catch (e) { return 'grid'; } }
+        function musicSetPlView(v) {
+            try { localStorage.setItem('musicPlView', v === 'list' ? 'list' : 'grid'); } catch (e) { _warn('musicSetPlView', e); }
+            musicCloseTrackMenu();
+            musicRenderPlaylistTab();
+        }
+        function musicShowPlaylistMenu() {
+            const v = _musicPlView();
+            _musicSheetOpen(_musicSheetTitle('Playlist'),
+                _musicSheetRow('fa-solid fa-table-cells-large', 'Tampilan grid', "musicSetPlView('grid')", { check: v === 'grid' }) +
+                _musicSheetRow('fa-solid fa-list', 'Tampilan daftar', "musicSetPlView('list')", { check: v === 'list' }) +
+                _musicSheetRow('fa-solid fa-circle-plus', 'Buat playlist baru', 'musicShowNewPlaylist()') +
+                _musicSheetRow('fa-solid fa-chart-simple', 'Rekap dengar', 'musicShowRecap()'));
+        }
+        function _musicPlListRow(click, artId, artCss, artInner, title, sub) {
+            return `<div onclick="${click}" style="display:flex;align-items:center;gap:14px;padding:8px 0;cursor:pointer;min-width:0">
+                <div ${artId ? `id="${artId}"` : ''} style="width:60px;height:60px;border-radius:10px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;${artCss}">${artInner}</div>
+                <div style="flex:1;min-width:0">
+                    <div style="font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(title)}</div>
+                    <div style="font-size:12px;color:#777;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(sub)}</div>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="color:#444;font-size:12px;flex-shrink:0"></i>
+            </div>`;
+        }
+        function _musicLikedAlbumsHTML(view) {
+            const q = v => _mEsc(v).replace(/'/g, '&#39;');
+            return _musicGetLikedAlbums().map(a => {
+                const click = `musicOpenAlbumDetail(${Number(a.id) || 0},'${q(a.title)}','${q(a.artist)}','${q(a.artwork)}')`;
+                const img = `<img src="${_mEsc(a.artwork)}" onerror="musicImgFallback(this)" style="width:100%;height:100%;object-fit:cover">`;
+                if (view === 'list') return _musicPlListRow(click, '', 'background:#1a1a1a', img, a.title, `Album · ${a.artist}`);
+                return `<div onclick="${click}" style="cursor:pointer;min-width:0">
+                    <div style="width:100%;aspect-ratio:1;border-radius:12px;background:#1a1a1a;overflow:hidden">${img}</div>
+                    <div style="margin-top:8px;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(a.title)}</div>
+                    <div style="font-size:11px;color:#777;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Album · ${_mEsc(a.artist)}</div>
+                </div>`;
+            }).join('');
+        }
+        function musicRenderPlaylistTab() {
+            const view = _musicPlView();
+            const upl = _musicGetUPL();
+            const cnt = document.getElementById('musicPlaylistCount');
+            if (cnt) cnt.textContent = `${MUSIC_PLAYLISTS.length + upl.length} playlist`;
+            const grid = document.getElementById('musicPlaylistGrid');
+            if (!grid) return;
+            const nLiked = _musicGetLiked().length;
+            if (view === 'list') {
+                grid.style.gridTemplateColumns = '1fr'; grid.style.gap = '2px'; grid.style.alignContent = 'start';
+                grid.innerHTML =
+                    _musicPlListRow('musicOpenLikedDetail()', '', 'background:linear-gradient(135deg,#3a3a3a,#0d0d0d)', '<i class="fa-solid fa-heart" style="font-size:22px;color:#fff"></i>', 'Lagu Disukai', `${nLiked} lagu`) +
+                    upl.map(pl => { const a = _musicUplArt(pl); return _musicPlListRow(`musicOpenUserPlaylist('${pl.id}')`, '', 'background:#1a1a1a;' + (a.grid ? 'display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr' : ''), a.html, pl.title, `${pl.tracks.length} lagu · buatanmu`); }).join('') +
+                    _musicLikedAlbumsHTML('list') +
+                    MUSIC_PLAYLISTS.map(p => _musicPlListRow(`musicOpenPlaylistDetail('${p.id}')`, `plCardBg-${p.id}-tab`, `background:${p.color}`, '', p.title, p.artists.join(', '))).join('');
+            } else {
+                grid.style.gridTemplateColumns = '1fr 1fr'; grid.style.gap = '14px'; grid.style.alignContent = '';
+                grid.innerHTML = _musicLikedCardHTML() +
+                    upl.map(pl => { const a = _musicUplArt(pl); return `<div onclick="musicOpenUserPlaylist('${pl.id}')" style="cursor:pointer;min-width:0">
+                        <div style="width:100%;aspect-ratio:1;border-radius:12px;background:#1a1a1a;overflow:hidden;display:${a.grid ? 'grid' : 'flex'};${a.grid ? 'grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr' : 'align-items:center;justify-content:center'}">${a.html}</div>
+                        <div style="margin-top:8px;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(pl.title)}</div>
+                        <div style="font-size:11px;color:#777;margin-top:2px">${pl.tracks.length} lagu · buatanmu</div>
+                    </div>`; }).join('') +
+                    _musicLikedAlbumsHTML('grid') +
+                    MUSIC_PLAYLISTS.map(p => musicPlaylistCardHTML(p, 'tab')).join('');
+            }
+            musicHydratePlaylistArt('tab');
+        }
+
+        // -- Radio dari lagu & artis serupa (iTunes tidak punya "similar", jadi pendekatannya: artis yang sama + genre yang sama)
+        async function musicStartRadio(seed) {
+            if (!seed) return;
+            showToast('Menyiapkan radio…');
+            try {
+                const q = term => `${ITUNES_API}/search?term=${encodeURIComponent(term)}&media=music&entity=song&country=ID&lang=id_id&limit=`;
+                const [a, b] = await Promise.all([
+                    fetch(q(seed.artist) + '15').then(r => r.json()).then(d => d.results || []).catch(() => []),
+                    seed.genre ? fetch(q(seed.genre) + '40').then(r => r.json()).then(d => d.results || []).catch(() => []) : Promise.resolve([])
+                ]);
+                const seen = new Set([seed.id]);
+                const pool = [];
+                for (const r of [...a, ...b]) {
+                    if (!r.trackId || !r.previewUrl || seen.has(r.trackId)) continue;
+                    seen.add(r.trackId);
+                    pool.push(musicNormalize(r));
+                }
+                const mix = musicCapPerArtist(musicShuffleArr(pool), 3).slice(0, 30);
+                if (!mix.length) { showToast('Radio belum bisa dibuat, coba lagu lain'); return; }
+                _musicQueue = [seed, ...mix]; _musicQueueIdx = 0;
+                musicPlayCurrentQueueItem();
+                showToast('Radio: ' + seed.title);
+            } catch (e) { _warn('musicStartRadio', e); showToast('Radio gagal dimuat'); }
+        }
+        async function _musicLoadSimilarArtists(artistId, artistName, genre) {
+            const wrap = document.getElementById('musicArtistSimilarWrap'), el = document.getElementById('musicArtistSimilar');
+            if (!wrap || !el || !genre) return;
+            try {
+                const d = await fetch(`${ITUNES_API}/search?term=${encodeURIComponent(genre)}&media=music&entity=song&country=ID&lang=id_id&limit=60`).then(r => r.json());
+                const cur = document.getElementById('musicArtistName');
+                if (!cur || cur.textContent !== artistName) return; // pengguna sudah pindah profil
+                const seen = new Set([String(artistId)]), list = [];
+                for (const r of (d.results || [])) {
+                    if (!r.artistId || !r.artistName || r.artistName === artistName || seen.has(String(r.artistId))) continue;
+                    seen.add(String(r.artistId));
+                    list.push({ artistId: r.artistId, artistName: r.artistName });
+                    if (list.length >= 10) break;
+                }
+                if (!list.length) return;
+                el.innerHTML = list.map(a => `
+                    <div onclick="musicOpenArtistProfile(${a.artistId},'${(a.artistName || '').replace(/'/g, '&#39;')}')" style="flex-shrink:0;width:84px;text-align:center;cursor:pointer">
+                        <div class="music-avatar-ring" style="width:84px;height:84px;margin-bottom:8px">
+                            <div id="artistCircle-${a.artistId}-sim" class="music-avatar-ring-inner"><i class="fa-solid fa-user-music" style="font-size:30px;color:#444"></i></div>
+                        </div>
+                        <div style="font-size:11px;font-weight:600;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(a.artistName)}</div>
+                    </div>`).join('');
+                wrap.style.display = 'block';
+                musicHydrateArtistArt(list, 'sim');
+            } catch (e) { _dbg('musicSimilarArtists', e); }
+        }
+
+        // -- Lirik bergerak (LRCLIB). Hanya untuk mode lagu penuh / lagu lokal: di preview 30 detik waktunya tidak sama dengan lagu aslinya.
+        const _musicLrcCache = {};
+        let _musicLyricIv = null;
+        function _musicParseLrc(txt) {
+            const out = [];
+            String(txt || '').split(/\r?\n/).forEach(line => {
+                const stamps = [...line.matchAll(/\[(\d+):(\d+(?:\.\d+)?)\]/g)];
+                if (!stamps.length) return;
+                const text = line.replace(/\[[^\]]*\]/g, '').trim();
+                stamps.forEach(m => out.push({ t: parseInt(m[1], 10) * 60 + parseFloat(m[2]), s: text }));
+            });
+            return out.sort((a, b) => a.t - b.t);
+        }
+        async function _musicGetSyncedLyrics(t) {
+            if (!t || !((_musicFullMode && _musicFrameWin) || t.isLocal)) return null;
+            const key = (t.isLocal ? 'L' : 'T') + t.id;
+            if (_musicLrcCache[key] !== undefined) return _musicLrcCache[key];
+            const ctl = new AbortController();
+            const to = setTimeout(() => ctl.abort(), 6000);
+            try {
+                const title = String(t.title || '').replace(/\(.*?\)/g, '').trim();
+                const r = await fetch(`https://lrclib.net/api/search?track_name=${encodeURIComponent(title)}&artist_name=${encodeURIComponent(t.artist || '')}`, { signal: ctl.signal });
+                const arr = await r.json();
+                let list = (Array.isArray(arr) ? arr : []).filter(x => x && x.syncedLyrics);
+                if (t.duration && t.duration > 40) {
+                    list = list.filter(x => !x.duration || Math.abs(x.duration - t.duration) <= 10)
+                        .sort((a, b) => Math.abs((a.duration || 0) - t.duration) - Math.abs((b.duration || 0) - t.duration));
+                }
+                const lines = list[0] ? _musicParseLrc(list[0].syncedLyrics) : [];
+                return (_musicLrcCache[key] = lines.length > 3 ? lines : null);
+            } catch (e) { return null; } finally { clearTimeout(to); }
+        }
+        function _musicRenderSyncedLyrics(body, lines, t) {
+            body.innerHTML = `<div style="padding:4px 0 8px">
+                <div style="font-size:14px;font-weight:800;color:#fff">${_mEsc(t.title)}</div>
+                <div style="font-size:12px;color:#666;margin:2px 0 14px">${_mEsc(t.artist)} · lirik bergerak</div>
+                ${lines.map((l, i) => `<div class="music-lrc" data-i="${i}" style="font-size:18px;font-weight:800;line-height:1.45;padding:7px 0;color:#555;transition:color .25s">${_mEsc(l.s) || '♪'}</div>`).join('')}
+                <div style="height:120px"></div></div>`;
+            if (_musicLyricIv) clearInterval(_musicLyricIv);
+            let cur = -1;
+            const tick = () => {
+                const panel = document.getElementById('musicPanel');
+                if (!panel || panel.style.display !== 'flex' || document.getElementById('musicPanelTitle').textContent !== 'Lirik' || _musicCurrentTrack !== t) {
+                    clearInterval(_musicLyricIv); _musicLyricIv = null; return;
+                }
+                const now = (_musicFullMode && _musicFrameWin) ? _dmCurTime : (_musicAudio ? _musicAudio.currentTime : 0);
+                let idx = -1;
+                for (let i = 0; i < lines.length; i++) { if (lines[i].t <= now + 0.25) idx = i; else break; }
+                if (idx === cur) return;
+                cur = idx;
+                body.querySelectorAll('.music-lrc').forEach(el => { el.style.color = (+el.dataset.i === idx) ? '#fff' : '#555'; });
+                const a = body.querySelector(`.music-lrc[data-i="${idx}"]`);
+                if (a) body.scrollTo({ top: a.getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop - body.clientHeight / 2 + a.clientHeight / 2, behavior: 'smooth' });
+            };
+            _musicLyricIv = setInterval(tick, 300);
+            tick();
+        }
+
+        // -- Rekap dengar: dihitung sejak fitur ini aktif (lagu dianggap diputar setelah 20 detik)
+        const _MUSIC_STATS_KEY = 'musicStats1';
+        function _musicGetStats() {
+            try { const s = JSON.parse(localStorage.getItem(_MUSIC_STATS_KEY) || 'null'); if (s && s.tracks && s.artists) return s; } catch (e) {}
+            return { since: Date.now(), n: 0, tracks: {}, artists: {} };
+        }
+        let _musicCountTimer = null;
+        function _musicScheduleCount(t) {
+            if (_musicCountTimer) clearTimeout(_musicCountTimer);
+            _musicCountTimer = setTimeout(() => {
+                _musicCountTimer = null;
+                if (_musicCurrentTrack && _musicCurrentTrack.id === t.id) _musicCountPlay(t);
+            }, 20000);
+        }
+        function _musicCountPlay(t) {
+            const s = _musicGetStats();
+            s.n++;
+            const e = s.tracks[t.id] || (s.tracks[t.id] = { t: t, n: 0 });
+            e.n++; e.t = t;
+            const k = t.artist || 'Unknown';
+            s.artists[k] = (s.artists[k] || 0) + 1;
+            const ids = Object.keys(s.tracks);
+            if (ids.length > 250) {
+                ids.sort((a, b) => s.tracks[a].n - s.tracks[b].n);
+                ids.slice(0, ids.length - 200).forEach(i => { delete s.tracks[i]; });
+            }
+            try { localStorage.setItem(_MUSIC_STATS_KEY, JSON.stringify(s)); } catch (e2) { _warn('musicCountPlay', e2); }
+        }
+        let _musicRecapTop = [];
+        function musicShowRecap() {
+            const s = _musicGetStats();
+            const topT = Object.values(s.tracks).sort((a, b) => b.n - a.n).slice(0, 5);
+            const topA = Object.entries(s.artists).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            _musicRecapTop = topT.map(x => x.t);
+            topT.forEach(x => _musicReg(x.t));
+            if (!s.n) {
+                _musicSheetOpen(_musicSheetTitle('Rekap dengar'),
+                    '<div style="text-align:center;padding:30px 10px;color:#555;font-size:13px;line-height:1.7">Belum ada data.<br>Rekap mulai dihitung sejak fitur ini aktif — dengarkan beberapa lagu dulu.</div>');
+                return;
+            }
+            const since = new Date(s.since).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const lbl = txt => `<div style="font-size:12px;font-weight:800;color:#888;padding:16px 0 4px">${txt}</div>`;
+            _musicSheetOpen(_musicSheetTitle('Rekap dengar'),
+                `<div style="font-size:12px;color:#777;padding:12px 0 0">${s.n} pemutaran sejak ${since}</div>` +
+                lbl('Artis teratas') +
+                topA.map((a, i) => `<div style="display:flex;align-items:center;gap:14px;padding:9px 0"><span style="width:18px;text-align:center;font-size:12px;color:#666">${i + 1}</span><span style="flex:1;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(a[0])}</span><span style="font-size:12px;color:#777">${a[1]}×</span></div>`).join('') +
+                lbl('Lagu teratas') +
+                topT.map((x, i) => `<div onclick="musicRecapPlay(${i})" style="display:flex;align-items:center;gap:12px;padding:8px 0;cursor:pointer"><span style="width:18px;text-align:center;font-size:12px;color:#666">${i + 1}</span><img src="${_mEsc(x.t.artworkSmall)}" onerror="musicImgFallback(this)" style="width:40px;height:40px;border-radius:6px;object-fit:cover;background:#1a1a1a;flex-shrink:0"><div style="flex:1;overflow:hidden"><div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(x.t.title)}</div><div style="font-size:11px;color:#777;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_mEsc(x.t.artist)}</div></div><span style="font-size:12px;color:#777">${x.n}×</span></div>`).join(''));
+        }
+        function musicRecapPlay(i) {
+            if (!_musicRecapTop[i]) return;
+            musicCloseTrackMenu();
+            _musicQueue = _musicRecapTop.slice(); _musicQueueIdx = i;
+            musicPlayCurrentQueueItem();
+        }
+
+        // -- Lanjutkan lagu terakhir: tampil di mini player saat modal musik dibuka, mulai saat ditekan play
+        let _musicResumePending = false, _musicRestoreTried = false;
+        function _musicSaveLast() {
+            try {
+                const q = _musicQueue.slice(Math.max(0, _musicQueueIdx)).filter(x => x && !x.isLocal).slice(0, 30);
+                if (q.length) localStorage.setItem('musicLast', JSON.stringify({ q }));
+            } catch (e) { _warn('musicSaveLast', e); }
+        }
+        function _musicRestoreLast() {
+            if (_musicCurrentTrack || _musicRestoreTried) return;
+            _musicRestoreTried = true;
+            try {
+                const d = JSON.parse(localStorage.getItem('musicLast') || 'null');
+                if (!d || !Array.isArray(d.q) || !d.q.length) return;
+                _musicQueue = d.q; _musicQueueIdx = 0;
+                _musicCurrentTrack = d.q[0];
+                _musicPlaying = false;
+                _musicResumePending = true;
+                musicUpdateAllUI(_musicCurrentTrack);
+                _musicUpdateModeChip();
+            } catch (e) { _warn('musicRestoreLast', e); }
+        }
+
+        // -- Fade antar lagu: 3 detik naik di awal & turun di akhir lagu (berdasarkan posisi putar, jadi berlaku untuk mode penuh, 30 detik, dan lokal).
+        // Bukan crossfade (dua lagu tumpang tindih): pemutar YouTube hanya satu, jadi lagu berikutnya baru mulai setelah lagu sebelumnya selesai.
+        const _MUSIC_FADE_SEC = 3;
+        let _musicFadeOn = true, _musicFadeLastMul = 1, _musicFadeT0 = 0;
+        try { _musicFadeOn = localStorage.getItem('musicFade') !== '0'; } catch (e) { _dbg('musicFadeInit', e); }
+        function _musicFadeBase() { const v = parseInt(document.getElementById('musicVolumeSlider')?.value, 10); return isNaN(v) ? 100 : v; }
+        function _musicFadeApply(mul) {
+            const v = Math.round(_musicFadeBase() * mul);
+            if (_musicFullMode && _musicFrameWin) _musicYtCmd('setVolume', [v]);
+            else if (_musicAudio) _musicAudio.volume = v / 100;
+        }
+        function _musicFadeTick() {
+            if (!_musicPlaying || !_musicCurrentTrack || _musicResumePending) return;
+            let mul = 1;
+            if (_musicFadeOn) {
+                let cur = 0, dur = 0;
+                if (_musicFullMode && _musicFrameWin) { cur = _dmCurTime; dur = _musicLastDur; }
+                else if (_musicAudio) { cur = _musicAudio.currentTime || 0; dur = _musicAudio.duration || 0; }
+                const known = !!dur && isFinite(dur) && dur > _MUSIC_FADE_SEC * 2;
+                // fade-in: posisi belum bergerak > 6 detik berarti sinyal waktu tidak ada → jangan biarkan lagu senyap
+                const fin = cur > 0 ? Math.min(1, cur / _MUSIC_FADE_SEC) : ((Date.now() - _musicFadeT0 > 6000) ? 1 : 0);
+                const rem = dur - cur;
+                const fout = (known && rem < _MUSIC_FADE_SEC) ? Math.max(0, rem / _MUSIC_FADE_SEC) : 1;
+                mul = Math.min(fin, fout);
+            }
+            if (Math.abs(mul - _musicFadeLastMul) < 0.02) return;
+            _musicFadeLastMul = mul;
+            _musicFadeApply(mul);
+        }
+        setInterval(_musicFadeTick, 250);
+        function _musicFadeUpdateUI() {
+            const el = document.getElementById('musicFadePill');
+            if (!el) return;
+            el.textContent = 'Fade antar lagu: ' + (_musicFadeOn ? 'Aktif' : 'Mati');
+            el.classList.toggle('music-pill-active', _musicFadeOn);
+        }
+        function musicToggleFade() {
+            _musicFadeOn = !_musicFadeOn;
+            try { localStorage.setItem('musicFade', _musicFadeOn ? '1' : '0'); } catch (e) { _dbg('musicFadeSave', e); }
+            _musicFadeLastMul = _musicFadeOn ? -1 : 1; // paksa tick berikutnya menghitung ulang
+            if (!_musicFadeOn) _musicFadeApply(1);
+            _musicFadeUpdateUI();
+        }
+
+        // -- Kontrol layar kunci / notifikasi (Media Session). Di mode lagu penuh suaranya dari iframe YouTube,
+        // jadi diputar juga audio hening kecil supaya browser menganggap halaman sedang memutar media.
+        let _musicMSActive = false, _musicMSTrackId = null, _musicKA = null;
+        function _musicSilentUrl() {
+            const sr = 8000, n = sr, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+            const w = (o, str) => { for (let i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); };
+            w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt ');
+            v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+            v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+            w(36, 'data'); v.setUint32(40, n * 2, true);
+            return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+        }
+        function _musicKeepAlive(on) {
+            try {
+                if (on) {
+                    if (!_musicKA) { _musicKA = new Audio(_musicSilentUrl()); _musicKA.loop = true; }
+                    if (_musicKA.paused) _musicKA.play().catch(() => {});
+                } else if (_musicKA && !_musicKA.paused) _musicKA.pause();
+            } catch (e) { _dbg('musicKeepAlive', e); }
+        }
+        function _musicMSSet(t) {
+            if (!('mediaSession' in navigator)) return;
+            try {
+                const art = t.artwork || t.artworkSmall;
+                navigator.mediaSession.metadata = new MediaMetadata({ title: t.title || '', artist: t.artist || '', album: t.album || '', artwork: art ? [{ src: art, sizes: '600x600', type: 'image/jpeg' }] : [] });
+                const h = (a, f) => { try { navigator.mediaSession.setActionHandler(a, f); } catch (e) {} };
+                h('play', () => { if (!_musicPlaying) musicTogglePlay(); });
+                h('pause', () => { if (_musicPlaying) musicTogglePlay(); });
+                h('previoustrack', () => musicPrev());
+                h('nexttrack', () => musicNext());
+                _musicMSActive = true; _musicMSTrackId = t.id;
+            } catch (e) { _dbg('musicMSSet', e); }
+        }
+        function _musicMSClear() {
+            _musicMSActive = false; _musicMSTrackId = null;
+            _musicKeepAlive(false);
+            if (!('mediaSession' in navigator)) return;
+            try {
+                navigator.mediaSession.metadata = null;
+                ['play', 'pause', 'previoustrack', 'nexttrack'].forEach(a => { try { navigator.mediaSession.setActionHandler(a, null); } catch (e) {} });
+                navigator.mediaSession.playbackState = 'none';
+            } catch (e) { _dbg('musicMSClear', e); }
+        }
+        function _musicMSTouch() {
+            const t = _musicCurrentTrack;
+            if (!t || _musicResumePending) return;
+            if (!_musicMSActive || _musicMSTrackId !== t.id) _musicMSSet(t);
+            try { if ('mediaSession' in navigator) navigator.mediaSession.playbackState = _musicPlaying ? 'playing' : 'paused'; } catch (e) {}
+            _musicKeepAlive(_musicPlaying && _musicFullMode && !t.isLocal && !!_musicFrameWin);
         }
 
         // ---------- FULL PLAYER OPEN/CLOSE ----------
@@ -5694,7 +6355,6 @@
             if (!_musicCurrentTrack) return;
             document.getElementById('musicFullPlayer').style.display = 'flex';
             document.getElementById('musicMiniPlayer').style.display = 'none';
-            history.pushState({view:'musicFullPlayer'}, '');
             // Mode FULL → tampilkan video menggantikan poster
             if (_musicFullMode) _musicShowYtInPlayer();
         }
@@ -5740,6 +6400,11 @@
                 if (!_musicCurrentTrack) { body.innerHTML = '<div style="text-align:center;padding:30px;color:#444">Tidak ada lagu diputar</div>'; return; }
                 body.innerHTML = `<div style="text-align:center;padding:30px 0;color:#555"><i class="fa-solid fa-compact-disc fa-spin" style="font-size:24px;color:#fff"></i><div style="margin-top:10px;font-size:12px">Memuat lirik...</div></div>`;
                 try {
+                    const _syn = await _musicGetSyncedLyrics(_musicCurrentTrack);
+                    if (_syn) {
+                        if (document.getElementById('musicPanel').style.display === 'flex' && title.textContent === 'Lirik') _musicRenderSyncedLyrics(body, _syn, _musicCurrentTrack);
+                        return;
+                    }
                     const artist = encodeURIComponent(_musicCurrentTrack.artist);
                     const titleClean = encodeURIComponent(_musicCurrentTrack.title.replace(/\(.*?\)/g, '').trim());
                     const controller = new AbortController();
@@ -5819,7 +6484,6 @@
         let _musicEqOn = true;
         function musicOpenEqScreen() {
             document.getElementById('musicEqScreen').style.display = 'flex';
-            history.pushState({view:'music', tab:'eqScreen'}, '');
             musicRenderEqBands();
         }
         function musicCloseEqScreen() {
@@ -5882,7 +6546,33 @@
         }
 
         // ---------- DOWNLOAD ----------
+        async function _lmGetBlobRaw(id) {
+            const db = await _lmDb();
+            return new Promise((res, rej) => { const rq = db.transaction('blob').objectStore('blob').get(id); rq.onsuccess = () => res(rq.result); rq.onerror = () => rej(rq.error); });
+        }
+        async function _musicDownloadLocal(t) {
+            try {
+                const blob = await _lmGetBlobRaw(t.localId);
+                if (!blob) { showToast('File lagu tidak ditemukan di perangkat'); return; }
+                const meta = (await _lmAll()).find(m => m.id === t.localId);
+                const name = (meta && meta.name) || `${t.artist} - ${t.title}.m4a`;
+                // Jalur utama: lembar bagikan sistem (tanpa membuka tautan blob:, yang diteruskan Android ke "Buka Dengan")
+                const file = new File([blob], name, { type: blob.type || 'audio/mpeg' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    showToast('Pilih "Simpan" di menu yang muncul');
+                    try { await navigator.share({ files: [file], title: t.title }); return; }
+                    catch (e) { if (e && e.name === 'AbortError') return; _warn('localShare', e); }
+                }
+                // Cadangan: unduhan biasa
+                const url = URL.createObjectURL(new Blob([blob], { type: 'application/octet-stream' }));
+                const a = document.createElement('a');
+                a.href = url; a.download = name;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 120000);
+            } catch (e) { _warn('musicDownloadLocal', e); showToast('Gagal menyimpan lagu'); }
+        }
         function musicDownload() {
+            if (_musicCurrentTrack && _musicCurrentTrack.isLocal) { _musicDownloadLocal(_musicCurrentTrack); return; }
             if (!_musicCurrentTrack || !_musicCurrentTrack.preview) { showToast('Tidak ada audio untuk diunduh'); return; }
             const a = document.createElement('a');
             a.href = _musicCurrentTrack.preview;
@@ -7235,6 +7925,14 @@
 
             // Music modal — urutan prioritas: panel > album/playlist detail > full player > tab non-home > close
             if (document.getElementById('musicModal').style.display === 'flex') {
+                // Satu entri riwayat milik modal musik dipertahankan: tiap back menutup SATU lapisan teratas,
+                // lalu entri dipasang lagi. Hanya kalau modal memang ditutup, entrinya dibuang (lihat langkah 6).
+                history.pushState({view:'music'}, '');
+                // 0. Lembar menu lagu / playlist terbuka?
+                if (document.getElementById('musicMenuSheet').style.display === 'flex') {
+                    musicCloseTrackMenu();
+                    return;
+                }
                 // 1. Panel (lyrics/queue/eq) terbuka?
                 if (document.getElementById('musicPanel').style.display === 'flex') {
                     musicClosePanel();
@@ -7268,13 +7966,16 @@
                 // 5. Tab selain home aktif?
                 const searchOpen = document.getElementById('musicSearchTab').style.display === 'flex';
                 const playlistOpen = document.getElementById('musicPlaylistTab').style.display === 'flex';
-                if (searchOpen || playlistOpen) {
+                const localOpen = document.getElementById('musicLocalTab').style.display === 'flex';
+                if (searchOpen || playlistOpen || localOpen) {
                     musicShowTab('home');
                     history.replaceState({view:'music'}, '');
                     return;
                 }
-                // 6. Sudah di home → tutup modal
+                // 6. Sudah di home → tutup modal (entri yang baru dipasang di atas ikut dibuang)
                 closeMusicModal();
+                _ignorePopUntil = Date.now() + 400;
+                history.back();
                 return;
             }
 
