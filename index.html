@@ -5181,8 +5181,8 @@
         function _musicYtVisibleOk() {
             const shown = id => { const e = document.getElementById(id); return !!(e && e.style.display && e.style.display !== 'none'); };
             if (!shown('musicModal') || !shown('musicFullPlayer')) return false;
-            // Layar lain (Equalizer, detail playlist/album/artis, panel antrian/lirik) tampil di atas pemutar penuh
-            return !['musicEqScreen', 'musicPlaylistDetail', 'musicAlbumDetail', 'musicArtistProfile', 'musicPanel'].some(shown);
+            // Video hanya tampil kalau pemutar penuh ada di paling atas (bukan tertutup Equalizer/detail/artis) dan tidak ada panel
+            return _musicLayerTop() === document.getElementById('musicFullPlayer') && !shown('musicPanel');
         }
         function _musicYtSync() {
             const anchor = document.getElementById('musicYtAnchor');
@@ -6255,6 +6255,37 @@
             } catch (e) { _warn('musicRestoreLast', e); }
         }
 
+        // -- Susunan layar penuh di modal musik. Semua layar ini ber-z-index sama, jadi sebelumnya yang paling akhir di dokumen
+        // (pemutar penuh) selalu menutupi yang lain, misalnya Equalizer yang dibuka dari pemutar penuh. Sekarang yang dibuka terakhir ada di atas.
+        const _MUSIC_LAYERS = ['musicPlaylistDetail', 'musicAlbumDetail', 'musicArtistProfile', 'musicEqScreen', 'musicFullPlayer'];
+        let _musicZ = 30;
+        function _musicLayerTop() {
+            let best = null, bz = -1;
+            for (const id of _MUSIC_LAYERS) {
+                const el = document.getElementById(id);
+                if (!el || el.style.display !== 'flex') continue;
+                const z = parseInt(el.style.zIndex, 10) || 30;
+                if (z >= bz) { best = el; bz = z; }
+            }
+            return best;
+        }
+        (function _musicWatchLayers() {
+            const prev = {};
+            const obs = new MutationObserver(() => {
+                let any = false;
+                for (const id of _MUSIC_LAYERS) {
+                    const el = document.getElementById(id);
+                    if (!el) continue;
+                    const on = el.style.display === 'flex';
+                    if (on) any = true;
+                    if (on && !prev[id]) { _musicZ = Math.min(_musicZ + 1, 39); el.style.zIndex = String(_musicZ); }
+                    prev[id] = on;
+                }
+                if (!any) _musicZ = 30;
+            });
+            _MUSIC_LAYERS.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el, { attributes: true, attributeFilter: ['style'] }); });
+        })();
+
         // -- Fade antar lagu: 3 detik naik di awal & turun di akhir lagu (berdasarkan posisi putar, jadi berlaku untuk mode penuh, 30 detik, dan lokal).
         // Bukan crossfade (dua lagu tumpang tindih): pemutar YouTube hanya satu, jadi lagu berikutnya baru mulai setelah lagu sebelumnya selesai.
         const _MUSIC_FADE_SEC = 3;
@@ -6563,11 +6594,19 @@
                     try { await navigator.share({ files: [file], title: t.title }); return; }
                     catch (e) { if (e && e.name === 'AbortError') return; _warn('localShare', e); }
                 }
-                // Cadangan: unduhan biasa
+                // Cadangan 1: data URL. Banyak browser Android pihak ketiga tidak mengerti tautan blob: dan menyerahkannya ke
+                // layar "Buka Dengan"; data URL diperlakukan sebagai unduhan biasa. Dibatasi 15 MB karena ukurannya membengkak ~33%.
+                const save = href => { const a = document.createElement('a'); a.href = href; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); };
+                if (blob.size <= 15 * 1024 * 1024) {
+                    try {
+                        const du = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsDataURL(new Blob([blob], { type: 'application/octet-stream' })); });
+                        save(du);
+                        return;
+                    } catch (e) { _warn('localDataUrl', e); }
+                }
+                // Cadangan 2: tautan blob
                 const url = URL.createObjectURL(new Blob([blob], { type: 'application/octet-stream' }));
-                const a = document.createElement('a');
-                a.href = url; a.download = name;
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                save(url);
                 setTimeout(() => URL.revokeObjectURL(url), 120000);
             } catch (e) { _warn('musicDownloadLocal', e); showToast('Gagal menyimpan lagu'); }
         }
@@ -7923,7 +7962,7 @@
                 return;
             }
 
-            // Music modal — urutan prioritas: panel > album/playlist detail > full player > tab non-home > close
+            // Music modal — urutan prioritas: menu > panel > layar penuh (pemutar/EQ/artis/album/playlist) > tab non-home > tutup modal
             if (document.getElementById('musicModal').style.display === 'flex') {
                 // Satu entri riwayat milik modal musik dipertahankan: tiap back menutup SATU lapisan teratas,
                 // lalu entri dipasang lagi. Hanya kalau modal memang ditutup, entrinya dibuang (lihat langkah 6).
@@ -7933,35 +7972,16 @@
                     musicCloseTrackMenu();
                     return;
                 }
-                // 1. Panel (lyrics/queue/eq) terbuka?
+                // 1. Panel (lirik/antrean/timer/filter genre) terbuka?
                 if (document.getElementById('musicPanel').style.display === 'flex') {
                     musicClosePanel();
                     return;
                 }
-                // 2. Equalizer screen terbuka?
-                if (document.getElementById('musicEqScreen').style.display === 'flex') {
-                    musicCloseEqScreen();
-                    return;
-                }
-                // 2b. Album detail terbuka?
-                if (document.getElementById('musicAlbumDetail').style.display === 'flex') {
-                    musicCloseAlbumDetail();
-                    return;
-                }
-                // 2c. Artist profile terbuka?
-                if (document.getElementById('musicArtistProfile').style.display === 'flex') {
-                    musicCloseArtistProfile();
-                    return;
-                }
-                // 3. Playlist detail terbuka?
-                if (document.getElementById('musicPlaylistDetail').style.display === 'flex') {
-                    musicClosePlaylistDetail();
-                    return;
-                }
-                // 4. Full player terbuka?
-                if (document.getElementById('musicFullPlayer').style.display === 'flex') {
-                    musicCloseFullPlayer();
-                    return;
+                // 2-6. Layar penuh: tutup yang paling ATAS (yang dibuka terakhir)
+                const _top = _musicLayerTop();
+                if (_top) {
+                    const _closers = { musicFullPlayer: musicCloseFullPlayer, musicEqScreen: musicCloseEqScreen, musicArtistProfile: musicCloseArtistProfile, musicAlbumDetail: musicCloseAlbumDetail, musicPlaylistDetail: musicClosePlaylistDetail };
+                    if (_closers[_top.id]) { _closers[_top.id](); return; }
                 }
                 // 5. Tab selain home aktif?
                 const searchOpen = document.getElementById('musicSearchTab').style.display === 'flex';
@@ -7974,6 +7994,7 @@
                 }
                 // 6. Sudah di home → tutup modal (entri yang baru dipasang di atas ikut dibuang)
                 closeMusicModal();
+                try { updateActiveNav('home'); } catch (e) { _dbg('musicBackNav', e); } // kembali ke home film: sorot ikon Home
                 _ignorePopUntil = Date.now() + 400;
                 history.back();
                 return;
