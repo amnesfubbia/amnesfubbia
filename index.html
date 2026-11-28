@@ -5212,7 +5212,11 @@
             const shown = id => { const e = document.getElementById(id); return !!(e && e.style.display && e.style.display !== 'none'); };
             if (!shown('musicModal') || !shown('musicFullPlayer')) return false;
             // Video hanya tampil kalau pemutar penuh ada di paling atas (bukan tertutup Equalizer/detail/artis) dan tidak ada panel
-            return _musicLayerTop() === document.getElementById('musicFullPlayer') && !shown('musicPanel');
+            if (_musicLayerTop() !== document.getElementById('musicFullPlayer') || shown('musicPanel')) return false;
+            // Kotak video hanya dipakai kalau video YouTube benar-benar aktif untuk lagu ini. Untuk lagu lokal, preview 30 detik,
+            // atau saat video belum/tidak termuat, tampilkan poster (sebelumnya yang terlihat kotak hitam kosong).
+            const t = _musicCurrentTrack;
+            return !!_musicFrameWin && _musicFullMode && !_musicPreviewFallback && !(t && t.isLocal);
         }
         function _musicYtSync() {
             const anchor = document.getElementById('musicYtAnchor');
@@ -6667,19 +6671,52 @@
             const db = await _lmDb();
             return new Promise((res, rej) => { const rq = db.transaction('blob').objectStore('blob').get(id); rq.onsuccess = () => res(rq.result); rq.onerror = () => rej(rq.error); });
         }
-        // Unduh lagu lokal: unduhan langsung (sama seperti lagu 30 detik), dengan nama file aslinya.
+        // Unduh lagu lokal. Di browser: unduhan langsung dengan nama file aslinya (sama seperti lagu 30 detik).
+        // Di aplikasi pembungkus Median (WebView Android): tautan blob: ditangani Median dan berakhir di menu "Bagikan", jadi
+        // di sana disediakan dua pilihan: unduh langsung lewat data URL (uji coba), atau menu bagikan.
+        function _musicIsMedian() { return !!(window.median || window.gonative) || /\b(median|gonative)\b/i.test(navigator.userAgent); }
+        let _musicSavePending = null;
+        function _musicAnchorSave(href, name) {
+            const a = document.createElement('a');
+            a.href = href; a.download = name;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
         async function _musicDownloadLocal(t) {
             try {
                 const blob = await _lmGetBlobRaw(t.localId);
                 if (!blob) { showToast('File lagu tidak ditemukan di perangkat'); return; }
                 const meta = (await _lmAll()).find(m => m.id === t.localId);
                 const name = (meta && meta.name) || `${t.artist} - ${t.title}.m4a`;
-                const url = URL.createObjectURL(new Blob([blob], { type: 'application/octet-stream' }));
-                const a = document.createElement('a');
-                a.href = url; a.download = name;
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                setTimeout(() => URL.revokeObjectURL(url), 120000);
+                if (_musicIsMedian()) {
+                    _musicSavePending = { blob, name };
+                    _musicSheetOpen(_musicSheetTitle('Simpan lagu'),
+                        `<div style="font-size:12px;color:#888;padding:12px 0 4px;line-height:1.6">${_mEsc(name)}<br>Coba "Unduh langsung" dulu. Kalau tidak ada file yang tersimpan, pakai "Bagikan".</div>` +
+                        _musicSheetRow('fa-solid fa-download', 'Unduh langsung', 'musicSaveLocalDirect()') +
+                        _musicSheetRow('fa-solid fa-share-nodes', 'Bagikan / simpan lewat menu', 'musicSaveLocalShare()'));
+                    return;
+                }
+                _musicBlobSave(blob, name);
             } catch (e) { _warn('musicDownloadLocal', e); showToast('Gagal menyimpan lagu'); }
+        }
+        function _musicBlobSave(blob, name) {
+            const url = URL.createObjectURL(new Blob([blob], { type: 'application/octet-stream' }));
+            _musicAnchorSave(url, name);
+            setTimeout(() => URL.revokeObjectURL(url), 120000);
+        }
+        function musicSaveLocalShare() {
+            const p = _musicSavePending;
+            musicCloseTrackMenu();
+            if (p) _musicBlobSave(p.blob, p.name);
+        }
+        function musicSaveLocalDirect() {
+            const p = _musicSavePending;
+            musicCloseTrackMenu();
+            if (!p) return;
+            if (p.blob.size > 8 * 1024 * 1024) { showToast('File terlalu besar untuk unduh langsung, memakai menu Bagikan', 3200); _musicBlobSave(p.blob, p.name); return; }
+            const r = new FileReader();
+            r.onload = () => { _musicAnchorSave(r.result.replace(/^data:[^;,]*/, 'data:application/octet-stream'), p.name); showToast('Mengunduh…'); };
+            r.onerror = () => showToast('Gagal membaca file');
+            r.readAsDataURL(p.blob);
         }
         function musicDownload() {
             if (_musicCurrentTrack && _musicCurrentTrack.isLocal) { _musicDownloadLocal(_musicCurrentTrack); return; }
